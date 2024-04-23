@@ -29,14 +29,14 @@ Collider::Collider(std::vector<std::shared_ptr<Shape>> mesh, entityType type)
 void Collider::CheckCollision(std::vector<Entity> entities, int thisID)
 {
     for(int i = 0; i < entities.size(); i++){
-        cout << "this id = " << this->entityId << " and checking id " << entities[i].id << endl;
+//        cout << "this id = " << this->entityId << " and checking id " << entities[i].id << endl;
         /*cout << "this id = " << thisID << " and checking entities pos " << i << endl;*/
         //if(entities[i].id != this->entityId) // exclude self when checking collisions
         //{
-            cout << entities[i].collider->entityName << endl;
+//            cout << entities[i].collider->entityName << endl;
             
-            cout << "my type " << this->entityName << endl;
-            cout << "here" << endl;
+//            cout << "my type " << this->entityName << endl;
+//            cout << "here" << endl;
             /*cout << "this id = " << thisID << " and checking id " << entities[i].id << endl;
             cout << "this id = " << thisID << " and checking entities pos " << i << endl; */
            /* cout << "entity pos x = " << entities[i].position.x << endl;
@@ -50,8 +50,8 @@ void Collider::CheckCollision(std::vector<Entity> entities, int thisID)
             (entities[i].position.z - entities[this->entityId].position.z) * (entities[i].position.z - entities[this->entityId].position.z)
             );
             distance = std::abs(distance);
-            cout << "distance is " << distance << endl;
-            cout << "radial of other is " << entities[i].collider->GetRadial() << "compared to this radial which is " << entities[thisID].collider->GetRadial() << endl;
+//            cout << "distance is " << distance << endl;
+//            cout << "radial of other is " << entities[i].collider->GetRadial() << "compared to this radial which is " << entities[thisID].collider->GetRadial() << endl;
             
             if(distance < entities[i].collider->GetRadial() + entities[this->entityId].collider->GetRadial()){
                 // update this to account for butterfly collection
@@ -68,21 +68,21 @@ void Collider::CheckCollision(std::vector<Entity> entities, int thisID)
 int Collider::CatCollision(std::vector<Entity> entities, Entity *cat)
 {
     for(int i = 0; i < entities.size(); i++){
-        cout << "this id = " << cat->id << " and checking id " << entities[i].id << endl;
+//        cout << "this id = " << cat->id << " and checking id " << entities[i].id << endl;
         /*cout << "this id = " << thisID << " and checking entities pos " << i << endl;*/
         //if(entities[i].id != this->entityId) // exclude self when checking collisions
         //{
-            cout << "other entity name is " << entities[i].collider->entityName << endl;
+//            cout << "other entity name is " << entities[i].collider->entityName << endl;
             
-            cout << "my type " << cat->collider->entityName << endl;
-            cout << "here" << endl;
+//            cout << "my type " << cat->collider->entityName << endl;
+//            cout << "here" << endl;
             /*cout << "this id = " << thisID << " and checking id " << entities[i].id << endl;
             cout << "this id = " << thisID << " and checking entities pos " << i << endl; */
-            cout << "entity pos x = " << entities[i].position.x << endl;
-            cout << "player pos x = " << cat->position.x << endl;
-            cout << "entity pos z = " << entities[i].position.z << endl;
-            cout << "player pos z = " << cat->position.z << endl;
-            
+//            cout << "entity pos x = " << entities[i].position.x << endl;
+//            cout << "player pos x = " << cat->position.x << endl;
+//            cout << "entity pos z = " << entities[i].position.z << endl;
+//            cout << "player pos z = " << cat->position.z << endl;
+//
 
             float distance = std::sqrt(
             (entities[i].position.x - cat->position.x) * (entities[i].position.x - cat->position.x) + 
@@ -120,4 +120,39 @@ void Collider::ExitCollision(){
 
 float Collider::GetRadial(){
     return radial;
+}
+
+void Collider::CalculateBoundingBox(std::shared_ptr<Shape> mesh, glm::mat4 modelMatrix) {
+    glm::vec3 vertices[8] = {
+    glm::vec3(mesh->min.x, mesh->min.y, mesh->min.z),
+    glm::vec3(mesh->max.x, mesh->min.y, mesh->min.z),
+    glm::vec3(mesh->min.x, mesh->max.y, mesh->min.z),
+    glm::vec3(mesh->max.x, mesh->max.y, mesh->min.z),
+    glm::vec3(mesh->min.x, mesh->min.y, mesh->max.z),
+    glm::vec3(mesh->max.x, mesh->min.y, mesh->max.z),
+    glm::vec3(mesh->min.x, mesh->max.y, mesh->max.z),
+    glm::vec3(mesh->max.x, mesh->max.y, mesh->max.z)
+    };
+
+    // Transform vertices by the model matrix to get world coordinates
+    for (int i = 0; i < 8; ++i)
+    {
+        vertices[i] = glm::vec3(modelMatrix * glm::vec4(vertices[i], 1.0f));
+    }
+
+    // Find the bounds
+    glm::vec3 newMin = vertices[0];
+    glm::vec3 newMax = vertices[0];
+
+    for (int i = 1; i < 8; ++i)
+    {
+        newMin = glm::min(newMin, vertices[i]);
+        newMax = glm::max(newMax, vertices[i]);
+    }
+
+    this->worldMin = newMin;
+    this->worldMax = newMax;
+
+    cout << "New min: " << newMin.x << endl;
+
 }

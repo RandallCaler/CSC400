@@ -163,7 +163,7 @@ public:
 
 
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
-		cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
+//		cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
 		cam.angle -= 10 * (deltaX / 57.296);
 	}
 
@@ -175,7 +175,7 @@ public:
 		if (action == GLFW_PRESS)
 		{
 			glfwGetCursorPos(window, &posX, &posY);
-			cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
+//			cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
 		}
 	}
 
@@ -306,7 +306,7 @@ public:
 		bf1.m.velocity = vec3(2, 0, 2);
 		bf1.collider = new Collider(butterfly, Collider::BUTTERFLY);
 		bf1.collider->SetEntityID(bf1.id);
-		cout << "butterfly 1 " << bf1.id << endl;
+//		cout << "butterfly 1 " << bf1.id << endl;
 		bf1.collider->entityName = 'b';
 		bf1.scale = 0.01;
     
@@ -317,7 +317,7 @@ public:
 		bf2.m.velocity = vec3(.40, 0, .40);
 		bf2.collider = new Collider(butterfly, Collider::BUTTERFLY);
 		bf2.collider->SetEntityID(bf2.id);
-		cout << "butterfly 2 " << bf2.id << endl;
+//		cout << "butterfly 2 " << bf2.id << endl;
 		bf2.collider->entityName = 'b';
 		
 		bf2.scale = 0.01;
@@ -330,7 +330,7 @@ public:
 		bf3.m.velocity = vec3(.20, 0, .20);
 		bf3.collider = new Collider(butterfly, Collider::BUTTERFLY);
 		bf3.collider->SetEntityID(bf3.id);
-		cout << "butterfly 3 " << bf3.id << endl;
+//		cout << "butterfly 3 " << bf3.id << endl;
 		bf3.collider->entityName = 'b';
 	
 		bf3.scale = 0.01;
@@ -340,14 +340,14 @@ public:
 		// init cat entity
 		catEnt.initEntity(cat);
 		catEnt.position = cam.player_pos;
-		cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
+//		cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
 		// set forward
 		// set velocity
 		catEnt.collider = new Collider(cat, Collider::CAT);
 		catEnt.collider->SetEntityID(catEnt.id);
 		gameObjects.push_back(catEnt);
 		
-		cout << "cat " << catEnt.id << endl;
+//		cout << "cat " << catEnt.id << endl;
 		catEnt.collider->entityName = 'c';
 
 		// vec3 tree_loc[7];
@@ -405,11 +405,11 @@ public:
 	gameObjects.push_back(bf2);
 	gameObjects.push_back(bf3);
 
-	cout << "butterfly entities size = " << bf.size() << endl;
+//	cout << "butterfly entities size = " << bf.size() << endl;
 	for(int i = 0; i < bf.size(); i++){
 		cout << "bf[" << i << "] id is " << bf[i].id << endl;
 	}
-    cout << "gameObjects size = " << gameObjects.size() << endl;
+//    cout << "gameObjects size = " << gameObjects.size() << endl;
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initGround();
@@ -638,6 +638,8 @@ public:
 			Model->rotate(cam.player_rot, vec3(0, 1, 0));
 			Model->scale(vec3(0.7, 0.7, 0.7));
 
+            // Check calculating cat thing
+            catEnt.collider->CalculateBoundingBox(sphere, Model->topMatrix());
 			
 			Model->pushMatrix();  // upper left leg
 				Model->translate(vec3(0.16, 0.48, 0.35));
@@ -848,7 +850,9 @@ public:
 			Model->loadIdentity();
 			Model->scale(vec3(20.0));
 			tex.setModel(Model);
+
 			sphere->draw(tex.prog);
+
 		Model->popMatrix();
 
 		tex.unbindTexture(1);
@@ -858,9 +862,10 @@ public:
 
 
 		catEnt.position = cam.player_pos;
+
 		//halt animations if cat collides with flower or tree
-		cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
-		cout << "before calling check collision, catID = " << catEnt.id << endl;
+//		cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
+//		cout << "before calling check collision, catID = " << catEnt.id << endl;
 		int collided = catEnt.collider->CatCollision(bf, &catEnt);
 
 		if (collided != -1) {
@@ -870,7 +875,8 @@ public:
 
 
 
-		cout << "cat collision = " << catEnt.collider->IsColliding() <<  endl;
+
+//		cout << "cat collision = " << catEnt.collider->IsColliding() <<  endl;
 	//	check_collision(flower_loc, 7, tree_loc, 7, player_pos);
 		
 		//update animation variables

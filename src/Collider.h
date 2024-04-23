@@ -27,6 +27,12 @@ public:
     void ExitCollision();
     float GetRadial();
 
+    // AABB
+    void CalculateBoundingBox(std::shared_ptr<Shape> mesh, glm::mat4 modelMatrix);
+
+    glm::vec3 worldMin;
+    glm::vec3 worldMax;
+
 private:
 
     int entityId;
