@@ -304,7 +304,7 @@ public:
 		bf1.position = vec3(2, -0.3, -1);
 		bf1.m.forward = vec3(1, 0, 0);
 		bf1.m.velocity = vec3(2, 0, 2);
-		bf1.collider = new Collider(butterfly, Collider::BUTTERFLY);
+		bf1.collider = new Collider(&bf1);
 		bf1.collider->SetEntityID(bf1.id);
 //		cout << "butterfly 1 " << bf1.id << endl;
 		bf1.collider->entityName = 'b';
@@ -315,7 +315,7 @@ public:
 		bf2.position = vec3(-2, -0.3, 0.5);
 		bf2.m.forward = vec3(1, 0, 0);
 		bf2.m.velocity = vec3(.40, 0, .40);
-		bf2.collider = new Collider(butterfly, Collider::BUTTERFLY);
+		bf2.collider = new Collider(&bf2);
 		bf2.collider->SetEntityID(bf2.id);
 //		cout << "butterfly 2 " << bf2.id << endl;
 		bf2.collider->entityName = 'b';
@@ -328,7 +328,7 @@ public:
 		bf3.position = vec3(4, -0.3, 0.5);
 		bf3.m.forward = vec3(1, 0, 0);
 		bf3.m.velocity = vec3(.20, 0, .20);
-		bf3.collider = new Collider(butterfly, Collider::BUTTERFLY);
+		bf3.collider = new Collider(&bf3);
 		bf3.collider->SetEntityID(bf3.id);
 //		cout << "butterfly 3 " << bf3.id << endl;
 		bf3.collider->entityName = 'b';
@@ -343,7 +343,7 @@ public:
 //		cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
 		// set forward
 		// set velocity
-		catEnt.collider = new Collider(cat, Collider::CAT);
+		catEnt.collider = new Collider(&catEnt);
 		catEnt.collider->SetEntityID(catEnt.id);
 		gameObjects.push_back(catEnt);
 		
@@ -639,7 +639,7 @@ public:
 			Model->scale(vec3(0.7, 0.7, 0.7));
 
             // Check calculating cat thing
-            catEnt.collider->CalculateBoundingBox(sphere, Model->topMatrix());
+            catEnt.collider->CalculateBoundingBox(Model->topMatrix());
 			
 			Model->pushMatrix();  // upper left leg
 				Model->translate(vec3(0.16, 0.48, 0.35));

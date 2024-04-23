@@ -4,26 +4,9 @@
 
 Collider::Collider(){};
 
-Collider::Collider(std::vector<std::shared_ptr<Shape>> mesh, entityType type)
+Collider::Collider(Entity *owner) : worldMin(owner->minBB), worldMax(owner->maxBB)
 {
-    shared_ptr<Shape> base;
-    float adjustment;
-    if (type == FLOWER){        
-        base = mesh[2];
-        adjustment = 2.5f;
-    } else if (type == TREE){
-        base = mesh[0];
-        adjustment = .15f;
-    } else if (type == BUTTERFLY){
-        base = mesh[0];
-        adjustment = 0.01f;
-    } else if (type == CAT){
-        base = mesh[0];
-        adjustment = .4f;
-    }
-    radial = std::sqrt((base->max.x - base->min.x) * (base->max.x - base->min.x) + 
-                    (base->max.z - base->max.z) * (base->max.z - base->max.z));
-    radial *= adjustment;
+   
 }
 
 void Collider::CheckCollision(std::vector<Entity> entities, int thisID)
@@ -122,16 +105,16 @@ float Collider::GetRadial(){
     return radial;
 }
 
-void Collider::CalculateBoundingBox(std::shared_ptr<Entity> entity, glm::mat4 modelMatrix) {
+void Collider::CalculateBoundingBox(glm::mat4 modelMatrix) {
     glm::vec3 vertices[8] = {
-    glm::vec3(entity->minBB.x, entity->minBB.y, entity->minBB.z),
-    glm::vec3(entity->maxBB.x, entity->minBB.y, entity->minBB.z),
-    glm::vec3(entity->minBB.x, entity->maxBB.y, entity->minBB.z),
-    glm::vec3(entity->maxBB.x, entity->maxBB.y, entity->minBB.z),
-    glm::vec3(entity->minBB.x, entity->minBB.y, entity->maxBB.z),
-    glm::vec3(entity->maxBB.x, entity->minBB.y, entity->maxBB.z),
-    glm::vec3(entity->minBB.x, entity->maxBB.y, entity->maxBB.z),
-    glm::vec3(entity->maxBB.x, entity->maxBB.y, entity->maxBB.z)
+    glm::vec3(worldMin.x, worldMin.y, worldMin.z),
+    glm::vec3(worldMax.x, worldMin.y, worldMin.z),
+    glm::vec3(worldMin.x, worldMax.y, worldMin.z),
+    glm::vec3(worldMax.x, worldMax.y, worldMin.z),
+    glm::vec3(worldMin.x, worldMin.y, worldMax.z),
+    glm::vec3(worldMax.x, worldMin.y, worldMax.z),
+    glm::vec3(worldMin.x, worldMax.y, worldMax.z),
+    glm::vec3(worldMax.x, worldMax.y, worldMax.z)
     };
 
     // Transform vertices by the model matrix to get world coordinates
@@ -153,6 +136,7 @@ void Collider::CalculateBoundingBox(std::shared_ptr<Entity> entity, glm::mat4 mo
     this->worldMin = newMin;
     this->worldMax = newMax;
 
-    cout << "New min: " << newMin.x << endl;
+    cout << "MinBB: " << newMin.x << " " << newMin.y << " " << newMin.z << endl;
+    cout << "MaxBB: " << newMax.x << " " << newMax.y << " " << newMax.z << endl;
 
 }

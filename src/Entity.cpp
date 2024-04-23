@@ -28,6 +28,7 @@ void Entity::initEntity(std::vector<std::shared_ptr<Shape>> ref){
         if (maxBB.y < ref[i]->max.y) maxBB.y = ref[i]->max.y;
         if (maxBB.z < ref[i]->max.z) maxBB.z = ref[i]->max.z;
     }
+
     id = NEXT_ID;
 //    cout << "entity created with id " << id << endl;
     NEXT_ID++;

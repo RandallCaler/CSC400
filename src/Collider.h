@@ -18,7 +18,7 @@ public:
     char entityName;
 
     Collider();
-    Collider(std::vector<std::shared_ptr<Shape>> mesh, entityType type);
+    Collider(Entity *owner);
     void UpdateColliderSize();
     void CheckCollision(std::vector<Entity> entities, int thisID);
     int CatCollision(std::vector<Entity> entities, Entity *cat);
@@ -28,7 +28,7 @@ public:
     float GetRadial();
 
     // AABB
-    void CalculateBoundingBox(std::shared_ptr<Shape> mesh, glm::mat4 modelMatrix);
+    void CalculateBoundingBox( glm::mat4 modelMatrix);
 
     glm::vec3 worldMin;
     glm::vec3 worldMax;
