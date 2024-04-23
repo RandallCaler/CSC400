@@ -122,16 +122,16 @@ float Collider::GetRadial(){
     return radial;
 }
 
-void Collider::CalculateBoundingBox(std::shared_ptr<Shape> mesh, glm::mat4 modelMatrix) {
+void Collider::CalculateBoundingBox(std::shared_ptr<Entity> entity, glm::mat4 modelMatrix) {
     glm::vec3 vertices[8] = {
-    glm::vec3(mesh->min.x, mesh->min.y, mesh->min.z),
-    glm::vec3(mesh->max.x, mesh->min.y, mesh->min.z),
-    glm::vec3(mesh->min.x, mesh->max.y, mesh->min.z),
-    glm::vec3(mesh->max.x, mesh->max.y, mesh->min.z),
-    glm::vec3(mesh->min.x, mesh->min.y, mesh->max.z),
-    glm::vec3(mesh->max.x, mesh->min.y, mesh->max.z),
-    glm::vec3(mesh->min.x, mesh->max.y, mesh->max.z),
-    glm::vec3(mesh->max.x, mesh->max.y, mesh->max.z)
+    glm::vec3(entity->minBB.x, entity->minBB.y, entity->minBB.z),
+    glm::vec3(entity->maxBB.x, entity->minBB.y, entity->minBB.z),
+    glm::vec3(entity->minBB.x, entity->maxBB.y, entity->minBB.z),
+    glm::vec3(entity->maxBB.x, entity->maxBB.y, entity->minBB.z),
+    glm::vec3(entity->minBB.x, entity->minBB.y, entity->maxBB.z),
+    glm::vec3(entity->maxBB.x, entity->minBB.y, entity->maxBB.z),
+    glm::vec3(entity->minBB.x, entity->maxBB.y, entity->maxBB.z),
+    glm::vec3(entity->maxBB.x, entity->maxBB.y, entity->maxBB.z)
     };
 
     // Transform vertices by the model matrix to get world coordinates

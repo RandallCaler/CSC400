@@ -49,7 +49,9 @@ class Entity {
         glm::vec3 position;
         float scale;
         motion m;
- 
+
+        glm::vec3 minBB;
+        glm::vec3 maxBB;
     };
 
 

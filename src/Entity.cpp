@@ -14,9 +14,19 @@ Entity::Entity(){};
 
 void Entity::initEntity(std::vector<std::shared_ptr<Shape>> ref){
     objs = ref;
+    minBB = vec3(std::numeric_limits<float>::max());
+    maxBB = vec3(std::numeric_limits<float>::min());
+
     for (int i = 0; i < ref.size(); i++) {
         materials m;
         material.push_back(m);
+
+        if (minBB.x > ref[i]->min.x) minBB.x = ref[i]->min.x;
+        if (minBB.y > ref[i]->min.y) minBB.y = ref[i]->min.y;
+        if (minBB.z > ref[i]->min.z) minBB.z = ref[i]->min.z;
+        if (maxBB.x < ref[i]->max.x) maxBB.x = ref[i]->max.x;
+        if (maxBB.y < ref[i]->max.y) maxBB.y = ref[i]->max.y;
+        if (maxBB.z < ref[i]->max.z) maxBB.z = ref[i]->max.z;
     }
     id = NEXT_ID;
 //    cout << "entity created with id " << id << endl;
