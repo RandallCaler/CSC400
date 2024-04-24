@@ -1,7 +1,17 @@
+#ifndef INPUTHANDLER_H
+#define INPUTHANDLER_H
+
+#include "Entity.h"
 #include <queue>
-#include <iostream>
 
 #define IN_SIZE 7
+
+// #include <iostream>
+
+
+// #include <glm/gtc/type_ptr.hpp>
+// #include <glm/gtc/matrix_transform.hpp>
+
 
 class InputHandler
 {
@@ -13,5 +23,7 @@ public:
     ~InputHandler();
     // void handleMotionPlayer();
     // void handleMotionCamera();
-    void handleInput();
+    void handleInput(Entity penguin);
 };
+
+#endif

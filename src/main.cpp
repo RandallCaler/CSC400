@@ -150,14 +150,14 @@ public:
 		if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !catEnt.collider->IsColliding() && bounds < 19){
 			ih.inputStates[0] = 1;
 
-			cam.player_pos += vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
+			//cam.player_pos += vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
 			animate = true;
 		}
 
 		if (key == GLFW_KEY_A && (action == GLFW_PRESS) && !catEnt.collider->IsColliding()){
 			ih.inputStates[1] = 1;
 
-			cam.player_rot += 10 * 0.01745329;
+			//cam.player_rot += 10 * 0.01745329;
 			animate = true;
 		}
 
@@ -184,14 +184,15 @@ public:
 		if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !catEnt.collider->IsColliding() && bounds < 19){
 			ih.inputStates[0] = 0;
 
-			cam.player_pos += vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
+			cout << "w released" << endl;
+			//cam.player_pos += vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
 			animate = true;
 		}
 
 		if (key == GLFW_KEY_A && (action == GLFW_RELEASE) && !catEnt.collider->IsColliding()){
 			ih.inputStates[1] = 0;
 
-			cam.player_rot += 10 * 0.01745329;
+			//cam.player_rot += 10 * 0.01745329;
 			animate = true;
 		}
 
@@ -217,7 +218,7 @@ public:
 			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		}
 
-		ih.handleInput();
+		ih.handleInput(catEnt);
 	}
 
 
@@ -361,8 +362,8 @@ public:
 		// init butterfly 1
 		bf1.initEntity(butterfly);
 		bf1.position = vec3(2, -0.3, -1);
-		bf1.m.forward = vec3(1, 0, 0);
-		bf1.m.velocity = vec3(2, 0, 2);
+		bf1.m.forward = vec3(0, 0, 1);
+		bf1.m.velocity = 2.0;
 		bf1.collider = new Collider(butterfly, Collider::BUTTERFLY);
 		bf1.collider->SetEntityID(bf1.id);
 		//cout << "butterfly 1 " << bf1.id << endl;
@@ -372,8 +373,8 @@ public:
     	// init butterfly 2
 		bf2.initEntity(butterfly);
 		bf2.position = vec3(-2, -0.3, 0.5);
-		bf2.m.forward = vec3(1, 0, 0);
-		bf2.m.velocity = vec3(.40, 0, .40);
+		bf2.m.forward = vec3(-1, 0, 0);
+		bf2.m.velocity = 9.0;
 		bf2.collider = new Collider(butterfly, Collider::BUTTERFLY);
 		bf2.collider->SetEntityID(bf2.id);
 		//cout << "butterfly 2 " << bf2.id << endl;
@@ -386,7 +387,7 @@ public:
 		bf3.initEntity(butterfly);
 		bf3.position = vec3(4, -0.3, 0.5);
 		bf3.m.forward = vec3(1, 0, 0);
-		bf3.m.velocity = vec3(.20, 0, .20);
+		bf3.m.velocity = 4.0;
 		bf3.collider = new Collider(butterfly, Collider::BUTTERFLY);
 		bf3.collider->SetEntityID(bf3.id);
 		//cout << "butterfly 3 " << bf3.id << endl;

@@ -1,3 +1,6 @@
+#ifndef ENTITY_H
+#define ENTITY_H
+
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -20,7 +23,7 @@ typedef struct materials {
 
 struct motion {
     // the velocity of the obstacles will be a constant speed in the forward direction
-    glm::vec3 velocity;
+    float velocity;
     // a vector to inform which direction the object is facing
     glm::vec3 forward; 
 };
@@ -51,5 +54,8 @@ class Entity {
         motion m;
  
     };
+
+
+#endif
 
 
