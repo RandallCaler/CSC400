@@ -72,9 +72,22 @@ void InputHandler::handleInput(Entity *penguin){
             // case 2:
             //     //south
             //     break;
-            // case 3:
-            //     //east
-            //     break;
+            case 3:
+                //east
+
+                glm::mat4 eastRotation = glm::rotate(glm::mat4(1.0f), -1.71f, glm::vec3(0.0f, 1.0f, 0.0f));
+                penguin->m.forward = eastRotation * penguin->m.forward;
+
+                norm = glm::normalize(penguin->m.forward);
+                penguin->position.x += norm.x;
+                penguin->position.y += norm.y;
+                penguin->position.z += norm.z;
+
+                std::cout << "input state a: " << inputStates[1] << endl;
+                std::cout << "entity position:" << penguin->position.x << ", " << penguin->position.y << ", " << penguin->position.z << std::endl;
+                        
+
+                break;
             // case 4:
             //     //jump
             //     break;

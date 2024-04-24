@@ -164,14 +164,14 @@ public:
 		if (key == GLFW_KEY_S && (action == GLFW_PRESS) && bounds < 19){	
 			ih.inputStates[2] = 1;
 
-			cam.player_pos -= vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
+			//cam.player_pos -= vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
 			animate = true;
 		}
 
 		if (key == GLFW_KEY_D && (action == GLFW_PRESS)&& !catEnt.collider->IsColliding()){
 			ih.inputStates[3] = 1;
 
-			cam.player_rot -= 10 * 0.01745329;
+			//cam.player_rot -= 10 * 0.01745329;
 			animate = true;
 		}
 
@@ -185,28 +185,25 @@ public:
 			ih.inputStates[0] = 0;
 
 			cout << "w released" << endl;
-			//cam.player_pos += vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
+			
 			animate = true;
 		}
 
 		if (key == GLFW_KEY_A && (action == GLFW_RELEASE) && !catEnt.collider->IsColliding()){
 			ih.inputStates[1] = 0;
 
-			//cam.player_rot += 10 * 0.01745329;
 			animate = true;
 		}
 
 		if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 19){	
 			ih.inputStates[2] = 0;
 
-			cam.player_pos -= vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
 			animate = true;
 		}
 
 		if (key == GLFW_KEY_D && (action == GLFW_RELEASE)&& !catEnt.collider->IsColliding()){
 			ih.inputStates[3] = 0;
 
-			cam.player_rot -= 10 * 0.01745329;
 			animate = true;
 		}
 
