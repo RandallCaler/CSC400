@@ -218,7 +218,8 @@ public:
 			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		}
 
-		ih.handleInput(catEnt);
+		// Entity *catptr = &catEnt;
+		ih.handleInput(&catEnt);
 	}
 
 
@@ -362,7 +363,7 @@ public:
 		// init butterfly 1
 		bf1.initEntity(butterfly);
 		bf1.position = vec3(2, -0.3, -1);
-		bf1.m.forward = vec3(0, 0, 1);
+		bf1.m.forward = vec4(0, 0, 1, 1);
 		bf1.m.velocity = 2.0;
 		bf1.collider = new Collider(butterfly, Collider::BUTTERFLY);
 		bf1.collider->SetEntityID(bf1.id);
@@ -373,7 +374,7 @@ public:
     	// init butterfly 2
 		bf2.initEntity(butterfly);
 		bf2.position = vec3(-2, -0.3, 0.5);
-		bf2.m.forward = vec3(-1, 0, 0);
+		bf2.m.forward = vec4(-1, 0, .3, 1);
 		bf2.m.velocity = 9.0;
 		bf2.collider = new Collider(butterfly, Collider::BUTTERFLY);
 		bf2.collider->SetEntityID(bf2.id);
@@ -386,7 +387,7 @@ public:
    		 // init butterfly 3
 		bf3.initEntity(butterfly);
 		bf3.position = vec3(4, -0.3, 0.5);
-		bf3.m.forward = vec3(1, 0, 0);
+		bf3.m.forward = vec4(1, 0, 0, 1);
 		bf3.m.velocity = 4.0;
 		bf3.collider = new Collider(butterfly, Collider::BUTTERFLY);
 		bf3.collider->SetEntityID(bf3.id);
@@ -399,7 +400,10 @@ public:
 
 		// init cat entity
 		catEnt.initEntity(cat);
-		catEnt.position = cam.player_pos;
+		catEnt.position = vec3(0, 0, 0);
+		catEnt.m.forward = vec4(0, 0, 1, 1);
+		catEnt.m.velocity = 1.0;
+		//catEnt.position = cam.player_pos;
 		//cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
 		// set forward
 		// set velocity

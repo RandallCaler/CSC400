@@ -25,7 +25,7 @@ struct motion {
     // the velocity of the obstacles will be a constant speed in the forward direction
     float velocity;
     // a vector to inform which direction the object is facing
-    glm::vec3 forward; 
+    glm::vec4 forward; 
 };
 
 class Collider; // forward declaration to enable use of this class in Collider class

@@ -23,7 +23,7 @@ public:
     ~InputHandler();
     // void handleMotionPlayer();
     // void handleMotionCamera();
-    void handleInput(Entity penguin);
+    void handleInput(Entity *penguin);
 };
 
 #endif

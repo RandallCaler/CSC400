@@ -52,7 +52,9 @@ void Entity::updateMotion(float deltaTime) {
             m.velocity *= -1;
         }
         
-        position += m.velocity * normalize(m.forward) * deltaTime;
+        position.x += m.velocity * normalize(m.forward).x * deltaTime;
+        position.y += m.velocity * normalize(m.forward).y * deltaTime;
+        position.z += m.velocity * normalize(m.forward).z * deltaTime;
     
        // std::cout << "deltaTime: " << deltaTime << "entity position:" << position.x << ", " << position.y << ", " << position.z << std::endl;
         
