@@ -24,6 +24,7 @@ public:
     // void handleMotionPlayer();
     // void handleMotionCamera();
     void handleInput(Entity *penguin);
+    void updatePosition(glm::vec3 norm, Entity *penguin);
 };
 
 #endif
