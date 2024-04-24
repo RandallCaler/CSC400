@@ -15,6 +15,7 @@
 #include "WindowManager.h"
 #include "Texture.h"
 #include "stb_image.h"
+#include "InputHandler.h"
 // #include "Entity.h"
 #include "ShaderManager.h"
 #include "Camera.h"
@@ -54,6 +55,8 @@ public:
 	shared_ptr<Shape> sphere;
 
 	std::vector<shared_ptr<Shape>> butterfly;
+
+	InputHandler ih;
 
 
 	Entity bf1 = Entity();
@@ -140,30 +143,86 @@ public:
 		}
 
 		animate = false;
-		if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT)&& !catEnt.collider->IsColliding()){
-			cam.player_rot -= 10 * 0.01745329;
-			animate = true;
-		}
-		if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT) && !catEnt.collider->IsColliding()){
-			cam.player_rot += 10 * 0.01745329;
-			animate = true;
-		}
-		if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT) && !catEnt.collider->IsColliding() && bounds < 19){
+
+
+		// KEY PRESSED
+
+		if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !catEnt.collider->IsColliding() && bounds < 19){
+			ih.inputStates[0] = 1;
+
 			cam.player_pos += vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
 			animate = true;
 		}
-		if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT) && bounds < 19){
+
+		if (key == GLFW_KEY_A && (action == GLFW_PRESS) && !catEnt.collider->IsColliding()){
+			ih.inputStates[1] = 1;
+
+			cam.player_rot += 10 * 0.01745329;
+			animate = true;
+		}
+
+		if (key == GLFW_KEY_S && (action == GLFW_PRESS) && bounds < 19){	
+			ih.inputStates[2] = 1;
+
 			cam.player_pos -= vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
 			animate = true;
 		}
+
+		if (key == GLFW_KEY_D && (action == GLFW_PRESS)&& !catEnt.collider->IsColliding()){
+			ih.inputStates[3] = 1;
+
+			cam.player_rot -= 10 * 0.01745329;
+			animate = true;
+		}
+
+		if (key == GLFW_KEY_SPACE && (action == GLFW_PRESS)){
+			ih.inputStates[4] = 1;
+		}
+
+		// KEY RELEASED
+
+		if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !catEnt.collider->IsColliding() && bounds < 19){
+			ih.inputStates[0] = 0;
+
+			cam.player_pos += vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
+			animate = true;
+		}
+
+		if (key == GLFW_KEY_A && (action == GLFW_RELEASE) && !catEnt.collider->IsColliding()){
+			ih.inputStates[1] = 0;
+
+			cam.player_rot += 10 * 0.01745329;
+			animate = true;
+		}
+
+		if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 19){	
+			ih.inputStates[2] = 0;
+
+			cam.player_pos -= vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
+			animate = true;
+		}
+
+		if (key == GLFW_KEY_D && (action == GLFW_RELEASE)&& !catEnt.collider->IsColliding()){
+			ih.inputStates[3] = 0;
+
+			cam.player_rot -= 10 * 0.01745329;
+			animate = true;
+		}
+
+		if (key == GLFW_KEY_SPACE && (action == GLFW_RELEASE)){
+			ih.inputStates[4] = 0;
+		}
+	
 		if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
 			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		}
+
+		ih.handleInput();
 	}
 
 
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
-		cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
+		//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
 		cam.angle -= 10 * (deltaX / 57.296);
 	}
 
@@ -175,7 +234,7 @@ public:
 		if (action == GLFW_PRESS)
 		{
 			glfwGetCursorPos(window, &posX, &posY);
-			cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
+			//cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
 		}
 	}
 
@@ -306,7 +365,7 @@ public:
 		bf1.m.velocity = vec3(2, 0, 2);
 		bf1.collider = new Collider(butterfly, Collider::BUTTERFLY);
 		bf1.collider->SetEntityID(bf1.id);
-		cout << "butterfly 1 " << bf1.id << endl;
+		//cout << "butterfly 1 " << bf1.id << endl;
 		bf1.collider->entityName = 'b';
 		bf1.scale = 0.01;
     
@@ -317,7 +376,7 @@ public:
 		bf2.m.velocity = vec3(.40, 0, .40);
 		bf2.collider = new Collider(butterfly, Collider::BUTTERFLY);
 		bf2.collider->SetEntityID(bf2.id);
-		cout << "butterfly 2 " << bf2.id << endl;
+		//cout << "butterfly 2 " << bf2.id << endl;
 		bf2.collider->entityName = 'b';
 		
 		bf2.scale = 0.01;
@@ -330,7 +389,7 @@ public:
 		bf3.m.velocity = vec3(.20, 0, .20);
 		bf3.collider = new Collider(butterfly, Collider::BUTTERFLY);
 		bf3.collider->SetEntityID(bf3.id);
-		cout << "butterfly 3 " << bf3.id << endl;
+		//cout << "butterfly 3 " << bf3.id << endl;
 		bf3.collider->entityName = 'b';
 	
 		bf3.scale = 0.01;
@@ -340,14 +399,14 @@ public:
 		// init cat entity
 		catEnt.initEntity(cat);
 		catEnt.position = cam.player_pos;
-		cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
+		//cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
 		// set forward
 		// set velocity
 		catEnt.collider = new Collider(cat, Collider::CAT);
 		catEnt.collider->SetEntityID(catEnt.id);
 		gameObjects.push_back(catEnt);
 		
-		cout << "cat " << catEnt.id << endl;
+		//cout << "cat " << catEnt.id << endl;
 		catEnt.collider->entityName = 'c';
 
 		// vec3 tree_loc[7];
@@ -405,11 +464,11 @@ public:
 	gameObjects.push_back(bf2);
 	gameObjects.push_back(bf3);
 
-	cout << "butterfly entities size = " << bf.size() << endl;
+	//cout << "butterfly entities size = " << bf.size() << endl;
 	for(int i = 0; i < bf.size(); i++){
-		cout << "bf[" << i << "] id is " << bf[i].id << endl;
+		//cout << "bf[" << i << "] id is " << bf[i].id << endl;
 	}
-    cout << "gameObjects size = " << gameObjects.size() << endl;
+    //cout << "gameObjects size = " << gameObjects.size() << endl;
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initGround();
@@ -859,8 +918,8 @@ public:
 
 		catEnt.position = cam.player_pos;
 		//halt animations if cat collides with flower or tree
-		cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
-		cout << "before calling check collision, catID = " << catEnt.id << endl;
+		//cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
+		//cout << "before calling check collision, catID = " << catEnt.id << endl;
 		int collided = catEnt.collider->CatCollision(bf, &catEnt);
 
 		if (collided != -1) {
@@ -870,7 +929,7 @@ public:
 
 
 
-		cout << "cat collision = " << catEnt.collider->IsColliding() <<  endl;
+		//cout << "cat collision = " << catEnt.collider->IsColliding() <<  endl;
 	//	check_collision(flower_loc, 7, tree_loc, 7, player_pos);
 		
 		//update animation variables

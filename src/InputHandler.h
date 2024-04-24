@@ -1,16 +1,17 @@
+#include <queue>
+#include <iostream>
+
+#define IN_SIZE 7
+
 class InputHandler
 {
-private:
-    /* data */
 public:
-    InputHandler(/* args */);
+    // the queue takes in the corresponding index to the key pressed
+    std::queue<int> q;
+    int inputStates[IN_SIZE];
+    InputHandler();
     ~InputHandler();
+    // void handleMotionPlayer();
+    // void handleMotionCamera();
+    void handleInput();
 };
-
-InputHandler::InputHandler(/* args */)
-{
-}
-
-InputHandler::~InputHandler()
-{
-}

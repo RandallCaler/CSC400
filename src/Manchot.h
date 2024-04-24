@@ -7,6 +7,11 @@ private:
 public:
     Manchot(/* args */);
     ~Manchot();
+    void moveLeft();
+    void moveRight();
+    void moveForward();
+    void moveBackward();
+    void jump();
 };
 
 Manchot::Manchot(/* args */)
