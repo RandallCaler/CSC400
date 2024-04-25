@@ -31,6 +31,7 @@ class Entity {
     public:
     
         Entity();
+        Entity(string const& path);
         
         void initEntity(std::vector<std::shared_ptr<Shape>> ref);
 
@@ -46,10 +47,14 @@ class Entity {
         std::vector<std::shared_ptr<Shape>> objs;
         std::vector<materials> material;
         Collider* collider;
-        glm::vec3 position;
-        float scale;
+        glm::vec3 transform = glm::vec3(0);
+        glm::vec3 scaleVec = glm::vec3(1);
         motion m;
- 
+        float scale;
+        float rotX = 0.0;
+        float rotY = 0.0;
+        float rotZ = 0.0;
+        string fname;
     };
 
 

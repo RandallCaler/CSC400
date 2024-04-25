@@ -12,11 +12,16 @@ using namespace glm;
 
 Entity::Entity(){};
 
+Entity::Entity(string const& path) {
+    fname = path;
+};
+
 void Entity::initEntity(std::vector<std::shared_ptr<Shape>> ref){
     objs = ref;
     for (int i = 0; i < ref.size(); i++) {
         materials m;
         material.push_back(m);
+        
     }
     id = NEXT_ID;
     cout << "entity created with id " << id << endl;
@@ -49,16 +54,16 @@ void Entity::updateMotion(float deltaTime) {
         // Calculate dot product between forward vector and velocity
         float dotProduct = glm::dot(glm::normalize(m.forward), m.velocity);
 
-        float distance = sqrt((position.x * position.x) + (position.y * position.y) + (position.z * position.z));
+        float distance = sqrt((transform.x * transform.x) + (transform.y * transform.y) + (transform.z * transform.z));
         if(distance >= 19.5){
             m.velocity *= -1;
         }
         
-        // Update position based on dot product and velocity
-        // position += dotProduct * m.forward * deltaTime;
-        position += m.velocity * deltaTime;
+        // Update transform based on dot product and velocity
+        // transform += dotProduct * m.forward * deltaTime;
+        transform += m.velocity * deltaTime;
     
-        std::cout << "deltaTime: " << deltaTime << "entity position:" << position.x << ", " << position.y << ", " << position.z << std::endl;
+        std::cout << "deltaTime: " << deltaTime << "entity transform:" << transform.x << ", " << transform.y << ", " << transform.z << std::endl;
         
         // TODO add collision component
 

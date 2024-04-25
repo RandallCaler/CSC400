@@ -10,6 +10,7 @@ class Shader {
 
         void setModel(vec3 trans, float rotZ, float rotY, float rotX, float sc);
         void setModel(std::shared_ptr<MatrixStack>M);
+        void setModel(Entity entity);
 
         void initShader(const std::string &v, const std::string &f);
         void initTexVars();
