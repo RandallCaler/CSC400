@@ -225,6 +225,8 @@ public:
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
 		//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
 		cam.angle -= 10 * (deltaX / 57.296);
+		catEnt.m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
+		catEnt.m.forward.y = 0;
 		
 	}
 
@@ -414,7 +416,7 @@ public:
 
 		// init cat entity
 		catEnt.initEntity(bunny);
-		catEnt.position = vec3(0, 0, 0);
+		catEnt.position = vec3(0, -1, 0);
 		catEnt.m.forward = vec4(0, 0, 0.1, 1);
 		catEnt.m.velocity = 0.1;
 		catEnt.scale = 5.0;

@@ -69,7 +69,7 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
 
                 // if angle between camera and tempf is NOT 90, set 90
                 // angle = acos( dot( normalize(y-x), normalize(z-x) ) )
-                angle = glm::acos(glm::dot(vec3(norm), glm::normalize(cam->lookAtPt - cam->cameraPos)));
+                angle = glm::acos(glm::dot(vec3(norm), glm::normalize(cam->player_pos - cam->cameraPos)));
 
                 if((angle < (1.57 - epsilon)) || (angle > (1.57 + epsilon))){
                     penguin->position += vec3(norm);
@@ -92,7 +92,7 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
                 tempF = penguin->m.forward;
                 norm = glm::normalize(tempF);
 
-                angle = glm::acos(glm::dot(vec3(norm), glm::normalize(cam->lookAtPt - cam->cameraPos)));
+                angle = glm::acos(glm::dot(vec3(norm), glm::normalize(cam->player_pos - cam->cameraPos)));
 
                 if ((angle > 0.0 + epsilon) && (angle > 0.0 - epsilon)) {
                     penguin->position += (vec3(norm) * vec3(-1.0, -1.0, -1.0));
@@ -120,7 +120,7 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
                 tempF = eastRotation * penguin->m.forward;
                 norm = glm::normalize(tempF);
 
-                angle = glm::acos(glm::dot(vec3(norm), glm::normalize(cam->lookAtPt - cam->cameraPos)));
+                angle = glm::acos(glm::dot(vec3(norm), glm::normalize(cam->player_pos - cam->cameraPos)));
 
                 if((angle < (-1.57 - epsilon)) || (angle > (-1.57 + epsilon))){
                     penguin->position += vec3(norm);
