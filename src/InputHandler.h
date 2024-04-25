@@ -2,6 +2,7 @@
 #define INPUTHANDLER_H
 
 #include "Entity.h"
+#include "Camera.h"
 #include <queue>
 
 #define IN_SIZE 7
@@ -23,8 +24,7 @@ public:
     ~InputHandler();
     // void handleMotionPlayer();
     // void handleMotionCamera();
-    void handleInput(Entity *penguin);
-    void updatePosition(glm::vec3 norm, Entity *penguin);
+    void handleInput(Entity *penguin, Camera *cam);
 };
 
 #endif
