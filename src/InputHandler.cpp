@@ -35,6 +35,9 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
     // must translate y position for jump
     for (int i = 0; i < q.size(); i++) {
         vec4 norm;
+        vec4 tempF;
+        float angle;
+        float epsilon = 0.001;
         glm::mat4 westRotation;
         int x = q.front();
         q.pop();
@@ -58,10 +61,26 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
             case 1:
                 //west
                 westRotation = glm::rotate(glm::mat4(1.0f), 1.71f, glm::vec3(0.0f, 1.0f, 0.0f));
-                penguin->m.forward = westRotation * penguin->m.forward;
 
-                norm = glm::normalize(penguin->m.forward);
-                penguin->position += vec3(norm);
+                tempF = westRotation * penguin->m.forward;
+                norm = glm::normalize(tempF);
+
+                // if angle between camera and tempf is NOT 90, set 90
+                // angle = acos( dot( normalize(y-x), normalize(z-x) ) )
+                angle = glm::acos(glm::dot(vec3(norm), glm::normalize(cam->lookAtPt - cam->cameraPos)));
+
+                if((angle < (1.57 - epsilon)) || (angle < (1.57 - epsilon))){
+                    penguin->position += vec3(norm);
+                }
+                else{
+                    penguin->position += vec3(glm::normalize(penguin->m.forward));
+                }
+        
+                // penguin->m.forward = westRotation * penguin->m.forward;
+
+         
+
+               
                 
                 cam->player_pos = penguin->position;
 

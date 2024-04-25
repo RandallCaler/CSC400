@@ -225,6 +225,7 @@ public:
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
 		//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
 		cam.angle -= 10 * (deltaX / 57.296);
+		
 	}
 
 
