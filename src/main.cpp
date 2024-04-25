@@ -4,6 +4,7 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include <glad/glad.h>
 #include <algorithm>
 
@@ -34,18 +35,21 @@ using namespace glm;
 
 // static/global vars
 int Entity::NEXT_ID = 0;
+// Where the resources are loaded from
+std::string resourceDir = "../resources";
+
+map<string, shared_ptr<Shader>> shaders;
+vector<shared_ptr<Entity>> worldentities;
+int activeEntity = 0;
 
 class Application : public EventCallbacks
 {
 
 public:
-
 	WindowManager * windowManager = nullptr;
 
 	// Our shader program - use this one for Blinn-Phong has diffuse
-
-
-	Shader reg;           // 
+	Shader reg;
 
 	//Our shader program for textures
 	Shader tex;
@@ -68,8 +72,6 @@ public:
 	std::vector<shared_ptr<Shape>> tree1;
 	
 	std::vector<shared_ptr<Shape>> cat;
-
-	std::vector<shared_ptr<Shape>> cube;
 
 	std::vector<Entity> gameObjects;
 	
@@ -134,11 +136,6 @@ public:
 	int cur_idx = 0, next_idx = 1;
 	float frame = 0.0;
 
-	//level-editor stuff
-	Entity cubeEnt;
-
-	vector<Shader> ShaderList;
-
 
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -166,6 +163,26 @@ public:
 		}
 		if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
 			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		}
+
+		if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+			activeEntity = (activeEntity + 1)%worldentities.size();
+		}
+
+		if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+			worldentities[activeEntity]->transform.z += 1.0;
+		}
+
+		if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+			worldentities[activeEntity]->transform.z -= 1.0;
+		}
+
+		if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+			worldentities[activeEntity]->transform.x += 1.0;
+		}
+
+		if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+			worldentities[activeEntity]->transform.x -= 1.0;
 		}
 	}
 
@@ -205,18 +222,15 @@ public:
 
 		g_theta = -PI/2.0;
 
-		reg = Shader(resourceDirectory + "/simple_vert.glsl", resourceDirectory + "/simple_frag.glsl", false);
-		tex = Shader(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/tex_frag0.glsl", true);
+		// shaders["reg"] = make_shared<Shader>(resourceDirectory + "/simple_vert.glsl", resourceDirectory + "/simple_frag.glsl", false);
+		reg = *(shaders["reg"].get());
+		// tex = Shader(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/tex_frag0.glsl", true);
+		tex = *(shaders["tex"].get());
 
 		tex.addTexture(resourceDirectory + "/grass_tex.jpg");
 		tex.addTexture(resourceDirectory + "/sky.jpg");
 		tex.addTexture(resourceDirectory + "/cat_tex.jpg");
-		tex.addTexture(resourceDirectory + "/cat_tex_legs.jpg");	
-
-		//add shader to shaderlist
-		ShaderList.push_back(reg);
-		ShaderList.push_back(tex);
-    
+		tex.addTexture(resourceDirectory + "/cat_tex_legs.jpg");    
 	}
 
 	void initGeom(const std::string& resourceDirectory)
@@ -305,24 +319,6 @@ public:
 			}
 		}
 
-
-		cubeEnt = Entity((resourceDirectory + "/cube.obj"));
-
-		vector<tinyobj::shape_t> TOshapes6;
-		rc = tinyobj::LoadObj(TOshapes6, objMaterials, errStr, cubeEnt.fname.c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		}
-		else {
-			cube.push_back(make_shared<Shape>());
-			cube[0]->createShape(TOshapes6[0]);
-			cube[0]->measure();
-			cube[0]->init();
-		}
-
-		//add cube to entitylist
-		gameObjects.push_back(cubeEnt);
-
 		//bounding cylinder for trunk
 		tree_radial = std::sqrt(
 			(tree1[0]->max.x - tree1[0]->min.x) * (tree1[0]->max.x - tree1[0]->min.x)
@@ -379,9 +375,6 @@ public:
 		
 		cout << "cat " << catEnt.id << endl;
 		catEnt.collider->entityName = 'c';
-
-		// init cube
-		cubeEnt.initEntity(cube);
 
 		// vec3 tree_loc[7];
 		// tree_loc[0] = vec3(4, -5.5, 7);
@@ -637,10 +630,15 @@ public:
 		// 	}
 		// }
 
-		cubeEnt.setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
-		reg.setModel(cubeEnt);
-		reg.setMaterial(cubeEnt.material[0]);
-		cubeEnt.objs[0]->draw(reg.prog);
+		// material imported from save file
+		for (shared_ptr<Entity> entity : worldentities) {
+			reg.setModel(*entity);
+			for (int i = 0; i < entity->objs.size(); i++) {
+				reg.setMaterial(entity->material[i]);
+				printf("numobjs %u\n", entity->objs[0]);
+				entity->objs[i]->draw(reg.prog);
+			}
+		}
 
 		reg.prog->unbind();
 
@@ -948,13 +946,241 @@ public:
 	}
 };
 
+void loadShader(string buffer) {
+	size_t delimit = buffer.find(' ');
+	string id = buffer.substr(0, delimit);
+	printf("%s ", id.c_str());
+	buffer = buffer.substr(delimit + 1);
+
+	delimit = buffer.find(' ');
+	string vertexSFile = buffer.substr(0, delimit);
+	printf("%s ", vertexSFile.c_str());
+	buffer = buffer.substr(delimit + 1);
+	
+	delimit = buffer.find(' ');
+	string fragSFile = buffer.substr(0, delimit);
+	printf("%s ", fragSFile.c_str());
+	buffer = buffer.substr(delimit + 1);
+
+	shared_ptr<Shader> shader = make_shared<Shader>(resourceDir + vertexSFile, resourceDir + fragSFile, false);
+	
+	delimit = buffer.find(' ');
+	int numUniforms = strtol(buffer.substr(0, delimit).c_str(), NULL, 10);
+	printf("%i ", numUniforms);
+	buffer = buffer.substr(delimit + 1);
+
+	for (int i = 0; i < numUniforms; i++) {
+		delimit = buffer.find(' ');
+		string uniform = buffer.substr(0, delimit);
+		shader->setUniform(uniform);
+		printf("%s ", uniform.c_str());
+		buffer = buffer.substr(delimit + 1);
+	}
+
+	delimit = buffer.find(' ');
+	int numAttributes = strtol(buffer.substr(0, delimit).c_str(), NULL, 10);
+	printf("%i ", numAttributes);
+	buffer = buffer.substr(delimit + 1);
+
+	for (int i = 0; i < numAttributes; i++) {
+		delimit = buffer.find(' ');
+		string attribute = buffer.substr(0, delimit);
+		shader->setAttribute(attribute);
+		printf("%s ", attribute.c_str());
+		buffer = buffer.substr(delimit + 1);
+	}
+	printf("\n");
+	shaders[id] = shader;
+}
+
+void loadSingleShape(string buffer, map<string, pair<shared_ptr<Shape>, materials>>& shapes, vector<string>& files) {
+	vector<tinyobj::shape_t> TOshapes;
+	vector<tinyobj::material_t> objMaterials;
+	string errStr;
+
+	size_t delimit = buffer.find(' ');
+	string id = buffer.substr(0, delimit);
+	buffer = buffer.substr(delimit + 1);
+
+	delimit = buffer.find(' ');
+	string meshFile = buffer.substr(0, delimit);
+	buffer = buffer.substr(delimit + 1);
+	
+	delimit = buffer.find(' ');
+	string shapeName = buffer.substr(0, delimit);
+	buffer = buffer.substr(delimit + 1);
+
+	// TinyObj handles file read
+	bool rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr, (resourceDir + meshFile).c_str());
+	if (!rc) {
+		cerr << errStr << endl;
+	}
+	else {
+		// command line displays model names and index range of their meshes
+		printf("import from file %s\n", meshFile.c_str());
+		// parse into Shapes, then load in OpenGL
+		for(tinyobj::shape_t shape: TOshapes) {
+			if (shape.name == shapeName) {
+				shared_ptr<Shape> newShape = make_shared<Shape>();
+				newShape->createShape(shape);
+				newShape->measure();
+				newShape->init();
+				materials newMat = materials();
+				shapes[id] = make_pair(newShape, newMat);
+			}
+		}
+		errStr = "";
+	}
+
+	delimit = buffer.find(' ');
+	shapes[id].second.matAmb.r = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+
+	delimit = buffer.find(' ');
+	shapes[id].second.matAmb.g = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+
+	delimit = buffer.find(' ');
+	shapes[id].second.matAmb.b = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+	
+	delimit = buffer.find(' ');
+	shapes[id].second.matDif.r = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+
+	delimit = buffer.find(' ');
+	shapes[id].second.matDif.g = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+
+	delimit = buffer.find(' ');
+	shapes[id].second.matDif.b = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+	
+	delimit = buffer.find(' ');
+	shapes[id].second.matSpec.r = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+	delimit = buffer.find(' ');
+	shapes[id].second.matSpec.g = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+	delimit = buffer.find(' ');
+	shapes[id].second.matSpec.b = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+	
+	delimit = buffer.find(' ');
+	shapes[id].second.matShine = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+	printf("%s %s %s %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n", 
+		id.c_str(), meshFile.c_str(), shapeName.c_str(),
+		shapes[id].second.matAmb.r, shapes[id].second.matAmb.g, shapes[id].second.matAmb.b,
+		shapes[id].second.matDif.r, shapes[id].second.matDif.g, shapes[id].second.matDif.b,
+		shapes[id].second.matSpec.r, shapes[id].second.matSpec.g, shapes[id].second.matSpec.b,
+		shapes[id].second.matShine);
+}
+
+void loadEntity(string buffer, map<string, pair<shared_ptr<Shape>, materials>>& shapes) {
+	size_t delimit = buffer.find(' ');
+	string id = buffer.substr(0, delimit);
+	buffer = buffer.substr(delimit + 1);
+	printf("entity imported: %s\n", id.c_str());
+
+	delimit = buffer.find(' ');
+	int numShapes = strtol(buffer.substr(0, delimit).c_str(), NULL, 10);
+	buffer = buffer.substr(delimit + 1);
+	printf("%s %i ", id.c_str(), numShapes);
+
+	vector<shared_ptr<Shape>> entityShapes;
+	vector<materials> entityMats;
+	
+	for (int i = 0; i < numShapes; i++) {
+		delimit = buffer.find(' ');
+		string shapeID = buffer.substr(0, delimit);
+		printf("%s ", shapeID.c_str());
+		buffer = buffer.substr(delimit + 1);
+		entityShapes.push_back(shapes[shapeID].first);
+		entityMats.push_back(shapes[shapeID].second);
+	}
+
+	shared_ptr<Entity> newEntity = make_shared<Entity>();
+	newEntity->initEntity(entityShapes);
+	newEntity->material = entityMats;
+
+	delimit = buffer.find(' ');
+	newEntity->transform.x = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+
+	delimit = buffer.find(' ');
+	newEntity->transform.y = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+
+	delimit = buffer.find(' ');
+	newEntity->transform.z = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+
+	delimit = buffer.find(' ');
+	newEntity->rotX = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+
+	delimit = buffer.find(' ');
+	newEntity->rotY = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+
+	delimit = buffer.find(' ');
+	newEntity->rotZ = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+
+	delimit = buffer.find(' ');
+	float scaleX = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+	newEntity->scaleVec.x = scaleX;
+	newEntity->scale = scaleX;
+
+	delimit = buffer.find(' ');
+	float scaleY = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+	newEntity->scaleVec.y = scaleY;
+
+	delimit = buffer.find(' ');
+	float scaleZ = stof(buffer.substr(0, delimit));
+	buffer = buffer.substr(delimit + 1);
+	newEntity->scaleVec.z = scaleZ;
+	
+	printf("%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n",
+		newEntity->transform.x, newEntity->transform.y, newEntity->transform.z,
+		newEntity->rotX, newEntity->rotY, newEntity->rotZ,
+		newEntity->scaleVec.x, newEntity->scaleVec.y, newEntity->scaleVec.z);
+
+	worldentities.push_back(newEntity);
+}
 
 
+void loadFromFile(string path) {
+	map<string, pair<shared_ptr<Shape>, materials>> shapeLibrary;
+	vector<string> readFiles;
+	string buffer;
 
-int main(int argc, char *argv[])
-{
-	// Where the resources are loaded from
-	std::string resourceDir = "../resources";
+	printf("begin load from save at %s\n", (resourceDir+path).c_str());
+	ifstream saveFile(resourceDir + path);
+
+	while (getline(saveFile, buffer)) {
+		char type = buffer[0];
+		switch (type) {
+			case '1':
+				loadShader(buffer.substr(2));
+				break;
+			case '2':
+				loadSingleShape(buffer.substr(2), shapeLibrary, readFiles);
+				break;
+			case '3':
+				loadEntity(buffer.substr(2), shapeLibrary);
+				break;
+		}
+	}
+	printf("end load from save\n");
+
+}
+
+
+int main(int argc, char *argv[]) {
 
 	if (argc >= 2)
 	{
@@ -973,6 +1199,8 @@ int main(int argc, char *argv[])
 
 	// This is the code that will likely change program to program as you
 	// may need to initialize or set up different data and state
+
+	loadFromFile("/save.noot");
 
 	application->init(resourceDir);
 	
