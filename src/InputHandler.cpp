@@ -38,7 +38,10 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
         vec4 tempF;
         float angle;
         float epsilon = 0.001;
-        glm::mat4 westRotation;
+
+        glm::mat4 westRotation = glm::rotate(glm::mat4(1.0f), 1.71f, glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 eastRotation = glm::rotate(glm::mat4(1.0f), -1.71f, glm::vec3(0.0f, 1.0f, 0.0f));
+
         int x = q.front();
         q.pop();
 
@@ -60,7 +63,6 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
                 break;
             case 1:
                 //west
-                westRotation = glm::rotate(glm::mat4(1.0f), 1.71f, glm::vec3(0.0f, 1.0f, 0.0f));
 
                 tempF = westRotation * penguin->m.forward;
                 norm = glm::normalize(tempF);
@@ -69,19 +71,13 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
                 // angle = acos( dot( normalize(y-x), normalize(z-x) ) )
                 angle = glm::acos(glm::dot(vec3(norm), glm::normalize(cam->lookAtPt - cam->cameraPos)));
 
-                if((angle < (1.57 - epsilon)) || (angle < (1.57 - epsilon))){
+                if((angle < (1.57 - epsilon)) || (angle > (1.57 + epsilon))){
                     penguin->position += vec3(norm);
                 }
                 else{
                     penguin->position += vec3(glm::normalize(penguin->m.forward));
                 }
         
-                // penguin->m.forward = westRotation * penguin->m.forward;
-
-         
-
-               
-                
                 cam->player_pos = penguin->position;
 
                 std::cout << "input state a: " << inputStates[1] << endl;
@@ -90,11 +86,27 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
                 break;
             case 2:
                 //south
-                penguin->m.forward *= glm::vec4(-1.0, 0.0, -1.0, 1.0);
 
-                norm = glm::normalize(penguin->m.forward);
-                penguin->position += vec3(norm);
-                
+                // must handle, if angle is currently towards A, then turn ccw, if angle is towards D, turn cw
+
+                tempF = penguin->m.forward;
+                norm = glm::normalize(tempF);
+
+                angle = glm::acos(glm::dot(vec3(norm), glm::normalize(cam->lookAtPt - cam->cameraPos)));
+
+                if ((angle > 0.0 + epsilon) && (angle > 0.0 - epsilon)) {
+                    penguin->position += (vec3(norm) * vec3(-1.0, -1.0, -1.0));
+                    // penguin->position += vec3(0.0, 0.0, 1.0);
+                }
+                else if ((angle > (1.57 - epsilon)) && angle < (1.57 + epsilon)) {
+                    tempF = westRotation * tempF;
+                    penguin->position += vec3(glm::normalize(tempF));
+                }
+                else if ((angle > (-1.57 - epsilon)) && (angle > (-1.57+ epsilon))) {
+                    tempF = eastRotation * tempF;
+                    penguin->position += vec3(glm::normalize(tempF));
+                }
+
                 cam->player_pos = penguin->position;
 
                 std::cout << "input state s: " << inputStates[2] << endl;
@@ -105,12 +117,19 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
             case 3:
                 //east
 
-                glm::mat4 eastRotation = glm::rotate(glm::mat4(1.0f), -1.71f, glm::vec3(0.0f, 1.0f, 0.0f));
-                penguin->m.forward = eastRotation * penguin->m.forward;
+                tempF = eastRotation * penguin->m.forward;
+                norm = glm::normalize(tempF);
 
-                norm = glm::normalize(penguin->m.forward);
-                penguin->position += vec3(norm);
+                angle = glm::acos(glm::dot(vec3(norm), glm::normalize(cam->lookAtPt - cam->cameraPos)));
 
+                if((angle < (-1.57 - epsilon)) || (angle > (-1.57 + epsilon))){
+                    penguin->position += vec3(norm);
+                }
+                else{
+                    penguin->position += vec3(glm::normalize(penguin->m.forward));
+                }
+
+                cam->player_pos = penguin->position;
 
                 std::cout << "input state a: " << inputStates[1] << endl;
                 std::cout << "entity position:" << penguin->position.x << ", " << penguin->position.y << ", " << penguin->position.z << std::endl;

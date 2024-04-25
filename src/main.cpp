@@ -114,17 +114,17 @@ public:
 	bool animate = false;
 	float oscillate = 0;
 
-	//rules for cat walking around
-	bool back_up = false;
+	// //rules for cat walking around
+	// bool back_up = false;
 	
-	//keyframes for cat walking animation
-	double f[5][12] = {
-			{0.5, -0.6, 0.1, -0.5, 1.0, 0.1, 0.5, -0.5, 0, 0, -0.58, 0.58},
-			{0.5, 0, -0.4, -0.5, 0.45, 0.72, 0.45, -0.95, 0.72, 0, 0.1, 0.08},
-			{0.65, -0.5, 0.7, -0.5, 0, 0.7, 0.2, -0.85, 0.75, 0.1, 0.1, 0.082},
-			{0.4, -1.2, 1.3, 0.30, -0.3, 0, -0.2, -0.2, 0.1, 0.6, -0.6, 0},
-			{-0.1, -0.45, 0.55, 0.30, 0.1, -0.3, 0.1, -0.2, 0.2, 0, -0.6, 0.6}
-		};
+	// //keyframes for cat walking animation
+	// double f[5][12] = {
+	// 		{0.5, -0.6, 0.1, -0.5, 1.0, 0.1, 0.5, -0.5, 0, 0, -0.58, 0.58},
+	// 		{0.5, 0, -0.4, -0.5, 0.45, 0.72, 0.45, -0.95, 0.72, 0, 0.1, 0.08},
+	// 		{0.65, -0.5, 0.7, -0.5, 0, 0.7, 0.2, -0.85, 0.75, 0.1, 0.1, 0.082},
+	// 		{0.4, -1.2, 1.3, 0.30, -0.3, 0, -0.2, -0.2, 0.1, 0.6, -0.6, 0},
+	// 		{-0.1, -0.45, 0.55, 0.30, 0.1, -0.3, 0.1, -0.2, 0.2, 0, -0.6, 0.6}
+	// 	};
 
 	//bounding "cylinders" for flower & tree
 	double flower_radial;
@@ -963,19 +963,19 @@ public:
 		//cout << "cat collision = " << catEnt.collider->IsColliding() <<  endl;
 	//	check_collision(flower_loc, 7, tree_loc, 7, player_pos);
 		
-		//update animation variables
-		sTheta = -1*abs(sin(glfwGetTime() * 2));
-		cTheta = cos(glfwGetTime()) / 4;
-		if (animate) {
-			frame += 0.1;
-			if (frame >= 0.99 && frame <= 1.01) {
-				frame = 0.0;
-				cur_idx = (cur_idx + 1) % 5;
-				next_idx = (next_idx + 1) % 5;
-			}
-			oscillate += 0.2;  //oscillate while walking
-		}		
-		oscillate += 0.02; //to make sure cat is not entirely stagnant
+		// //update animation variables
+		// sTheta = -1*abs(sin(glfwGetTime() * 2));
+		// cTheta = cos(glfwGetTime()) / 4;
+		// if (animate) {
+		// 	frame += 0.1;
+		// 	if (frame >= 0.99 && frame <= 1.01) {
+		// 		frame = 0.0;
+		// 		cur_idx = (cur_idx + 1) % 5;
+		// 		next_idx = (next_idx + 1) % 5;
+		// 	}
+		// 	oscillate += 0.2;  //oscillate while walking
+		// }		
+		// oscillate += 0.02; //to make sure cat is not entirely stagnant
 
 		bounds = std::sqrt(   //update cat's distance from skybox
 			cam.player_pos[0] * cam.player_pos[0]
