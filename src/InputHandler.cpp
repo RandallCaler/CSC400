@@ -57,7 +57,6 @@ void InputHandler::handleInput(Entity *penguin){
                 std::cout << "entity position:" << penguin->position.x << ", " << penguin->position.y << ", " << penguin->position.z << std::endl;
         
 
-
                 // set forward vector to north
                 // update entity motion
                 break;

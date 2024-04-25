@@ -967,6 +967,7 @@ public:
 			}
 			bf[i].updateMotion(frametime);
 		}
+		// catEnt.updateMotion(frametime);
 
 
 	}
