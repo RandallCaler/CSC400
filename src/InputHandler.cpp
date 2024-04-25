@@ -9,7 +9,7 @@ InputHandler::InputHandler(){
 InputHandler::~InputHandler(){
 };
 
-void InputHandler::handleInput(Entity *penguin){
+void InputHandler::handleInput(Entity *penguin, Camera *cam){
     for (int i = 0; i < IN_SIZE; i++) {
         if(inputStates[i] == 1){
             q.push(i);
@@ -35,7 +35,7 @@ void InputHandler::handleInput(Entity *penguin){
     // must translate y position for jump
     for (int i = 0; i < q.size(); i++) {
         vec4 norm;
-
+        glm::mat4 westRotation;
         int x = q.front();
         q.pop();
         switch (x) {
@@ -43,9 +43,9 @@ void InputHandler::handleInput(Entity *penguin){
                 ///north
                 // penguin.position +=  vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
                 norm = glm::normalize(penguin->m.forward);
-                penguin->position.x += 2*norm.x;
-                penguin->position.y += norm.y;
-                penguin->position.z += 2*norm.z;
+                penguin->position += vec3(norm);
+                cam->player_pos = penguin->position;
+
                 
                 std::cout << "input state w: " << inputStates[0] << endl;
                 std::cout << "entity position:" << penguin->position.x << ", " << penguin->position.y << ", " << penguin->position.z << std::endl;
@@ -57,13 +57,13 @@ void InputHandler::handleInput(Entity *penguin){
                 break;
             case 1:
                 //west
-                glm::mat4 westRotation = glm::rotate(glm::mat4(1.0f), 1.71f, glm::vec3(0.0f, 1.0f, 0.0f));
+                westRotation = glm::rotate(glm::mat4(1.0f), 1.71f, glm::vec3(0.0f, 1.0f, 0.0f));
                 penguin->m.forward = westRotation * penguin->m.forward;
 
                 norm = glm::normalize(penguin->m.forward);
-                penguin->position.x += norm.x;
-                penguin->position.y += norm.y;
-                penguin->position.z += norm.z;
+                penguin->position += vec3(norm);
+                
+                cam->player_pos = penguin->position;
 
                 std::cout << "input state a: " << inputStates[1] << endl;
                 std::cout << "entity position:" << penguin->position.x << ", " << penguin->position.y << ", " << penguin->position.z << std::endl;
@@ -77,6 +77,8 @@ void InputHandler::handleInput(Entity *penguin){
                 penguin->position.x += norm.x;
                 penguin->position.y += norm.y;
                 penguin->position.z += norm.z;
+                
+                cam->player_pos = penguin->position;
 
                 std::cout << "input state s: " << inputStates[2] << endl;
                 std::cout << "entity position:" << penguin->position.x << ", " << penguin->position.y << ", " << penguin->position.z << std::endl;
@@ -97,8 +99,9 @@ void InputHandler::handleInput(Entity *penguin){
                 std::cout << "input state a: " << inputStates[1] << endl;
                 std::cout << "entity position:" << penguin->position.x << ", " << penguin->position.y << ", " << penguin->position.z << std::endl;
                         
-
+            
                 break;
+                
             // case 4:
             //     //jump
             //     break;

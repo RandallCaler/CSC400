@@ -16,7 +16,7 @@
 #include "Texture.h"
 #include "stb_image.h"
 #include "InputHandler.h"
-// #include "Entity.h"
+#include "Entity.h"
 #include "ShaderManager.h"
 #include "Camera.h"
 
@@ -53,6 +53,8 @@ public:
 
 	//our geometry
 	shared_ptr<Shape> sphere;
+
+	std::vector<shared_ptr<Shape>> bunny;
 
 	std::vector<shared_ptr<Shape>> butterfly;
 
@@ -216,7 +218,7 @@ public:
 		}
 
 		// Entity *catptr = &catEnt;
-		ih.handleInput(&catEnt);
+		ih.handleInput(&catEnt, &cam);
 	}
 
 
@@ -297,6 +299,20 @@ public:
 			cat[0]->createShape(TOshapesB[0]);
 			cat[0]->measure();
 			cat[0]->init();
+		}
+
+
+		vector<tinyobj::shape_t> TOshapesC;
+ 		vector<tinyobj::material_t> objMaterialsC;
+		//load in the mesh and make the shape(s)
+ 		rc = tinyobj::LoadObj(TOshapesC, objMaterialsC, errStr, (resourceDirectory + "/bunny.obj").c_str());
+		if (!rc) {
+			cerr << errStr << endl;
+		} else {	
+			bunny.push_back(make_shared<Shape>());
+			bunny[0]->createShape(TOshapesC[0]);
+			bunny[0]->measure();
+			bunny[0]->init();
 		}
 
 		vector<tinyobj::shape_t> TOshapes3;
@@ -396,10 +412,11 @@ public:
 
 
 		// init cat entity
-		catEnt.initEntity(cat);
+		catEnt.initEntity(bunny);
 		catEnt.position = vec3(0, 0, 0);
-		catEnt.m.forward = vec4(0, 0, 1, 1);
-		catEnt.m.velocity = 1.0;
+		catEnt.m.forward = vec4(0, 0, 0.1, 1);
+		catEnt.m.velocity = 0.1;
+		catEnt.scale = 5.0;
 		//catEnt.position = cam.player_pos;
 		//cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
 		// set forward
@@ -647,6 +664,14 @@ public:
 		}
 
 
+		catEnt.setMaterials(0, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
+		reg.setModel(catEnt.position, 0, 0, 0, catEnt.scale);
+		reg.setMaterial(catEnt.material[0]);
+		catEnt.objs[0]->draw(reg.prog);
+
+		std::cout << "entity position:" << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << std::endl;
+
+
 		//reg.setModel(vec3(4, -1, 4), cTheta*cTheta, 0, 0, 2.5);
 		// for (int i = 0; i < 7; i++) {
 					
@@ -676,7 +701,7 @@ public:
 
 		cam.SetView(tex.prog);
 
-
+		/*
 		materials c;
 		c.matAmb.r = 0.17;
         c.matAmb.g = 0.05;
@@ -886,6 +911,8 @@ public:
 
 		tex.unbindTexture(2);
 
+		*/
+
 
 		//sky box!
 
@@ -918,7 +945,8 @@ public:
 		drawGround(tex);  //draw ground here
 
 
-		catEnt.position = cam.player_pos;
+		//catEnt.position = cam.player_pos;
+		//cam.player_pos = catEnt.position;
 		//halt animations if cat collides with flower or tree
 		//cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
 		//cout << "before calling check collision, catID = " << catEnt.id << endl;
