@@ -69,6 +69,8 @@ public:
 	
 	std::vector<shared_ptr<Shape>> cat;
 
+	std::vector<shared_ptr<Shape>> cube;
+
 	std::vector<Entity> gameObjects;
 	
 	std::vector<Entity> trees;
@@ -131,6 +133,12 @@ public:
 	//interpolation of keyframes for animation
 	int cur_idx = 0, next_idx = 1;
 	float frame = 0.0;
+
+	//level-editor stuff
+	Entity cubeEnt;
+
+	vector<Shader> ShaderList;
+
 
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -204,6 +212,10 @@ public:
 		tex.addTexture(resourceDirectory + "/sky.jpg");
 		tex.addTexture(resourceDirectory + "/cat_tex.jpg");
 		tex.addTexture(resourceDirectory + "/cat_tex_legs.jpg");	
+
+		//add shader to shaderlist
+		ShaderList.push_back(reg);
+		ShaderList.push_back(tex);
     
 	}
 
@@ -293,6 +305,24 @@ public:
 			}
 		}
 
+
+		cubeEnt = Entity((resourceDirectory + "/cube.obj"));
+
+		vector<tinyobj::shape_t> TOshapes6;
+		rc = tinyobj::LoadObj(TOshapes6, objMaterials, errStr, cubeEnt.fname.c_str());
+		if (!rc) {
+			cerr << errStr << endl;
+		}
+		else {
+			cube.push_back(make_shared<Shape>());
+			cube[0]->createShape(TOshapes6[0]);
+			cube[0]->measure();
+			cube[0]->init();
+		}
+
+		//add cube to entitylist
+		gameObjects.push_back(cubeEnt);
+
 		//bounding cylinder for trunk
 		tree_radial = std::sqrt(
 			(tree1[0]->max.x - tree1[0]->min.x) * (tree1[0]->max.x - tree1[0]->min.x)
@@ -301,7 +331,7 @@ public:
 
 		// init butterfly 1
 		bf1.initEntity(butterfly);
-		bf1.position = vec3(2, -0.3, -1);
+		bf1.transform = vec3(2, -0.3, -1);
 		bf1.m.forward = vec3(1, 0, 0);
 		bf1.m.velocity = vec3(2, 0, 2);
 		bf1.collider = new Collider(butterfly, Collider::BUTTERFLY);
@@ -312,7 +342,7 @@ public:
     
     	// init butterfly 2
 		bf2.initEntity(butterfly);
-		bf2.position = vec3(-2, -0.3, 0.5);
+		bf2.transform = vec3(-2, -0.3, 0.5);
 		bf2.m.forward = vec3(1, 0, 0);
 		bf2.m.velocity = vec3(.40, 0, .40);
 		bf2.collider = new Collider(butterfly, Collider::BUTTERFLY);
@@ -325,7 +355,7 @@ public:
     
    		 // init butterfly 3
 		bf3.initEntity(butterfly);
-		bf3.position = vec3(4, -0.3, 0.5);
+		bf3.transform = vec3(4, -0.3, 0.5);
 		bf3.m.forward = vec3(1, 0, 0);
 		bf3.m.velocity = vec3(.20, 0, .20);
 		bf3.collider = new Collider(butterfly, Collider::BUTTERFLY);
@@ -339,8 +369,8 @@ public:
 
 		// init cat entity
 		catEnt.initEntity(cat);
-		catEnt.position = cam.player_pos;
-		cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
+		catEnt.transform = cam.player_pos;
+		cout << catEnt.transform.x << ", " << catEnt.transform.y << ", " << catEnt.transform.z << endl;
 		// set forward
 		// set velocity
 		catEnt.collider = new Collider(cat, Collider::CAT);
@@ -349,6 +379,9 @@ public:
 		
 		cout << "cat " << catEnt.id << endl;
 		catEnt.collider->entityName = 'c';
+
+		// init cube
+		cubeEnt.initEntity(cube);
 
 		// vec3 tree_loc[7];
 		// tree_loc[0] = vec3(4, -5.5, 7);
@@ -363,7 +396,7 @@ public:
 		// for (int i = 0; i < 7; i++) {
 		// 	Entity e = Entity();
       	// 	e.initEntity(tree1);
-		// 	e.position = tree_loc[i] + vec3(0, 4.1, 0);
+		// 	e.transform = tree_loc[i] + vec3(0, 4.1, 0);
 		// 	e.setMaterials(0, 0, 0, 0, 0.897093, 0.588047, 0.331905, 0.5, 0.5, 0.5, 200);
 		// 	for (int j = 1; j < 12; j++) {
 		// 		e.setMaterials(j, 0.1, 0.2, 0.1, 0.285989, 0.567238, 0.019148, 0.5, 0.5, 0.5, 200);
@@ -388,7 +421,7 @@ public:
 		// for (int i = 0; i < 7; i++) {
 		// 	Entity e = Entity();
       	// 	e.initEntity(flower);
-		// 	e.position = flower_loc[i];
+		// 	e.transform = flower_loc[i];
 		// 	e.setMaterials(0, 0.2, 0.1, 0.1, 0.94, 0.42, 0.64, 0.7, 0.23, 0.60, 100);
 		// 	e.setMaterials(1, 0.1, 0.1, 0.1, 0.94, 0.72, 0.22, 0.23, 0.23, 0.20, 100);
 		// 	e.setMaterials(2, 0.05, 0.15, 0.05, 0.24, 0.92, 0.41, 1, 1, 1, 0);
@@ -558,7 +591,7 @@ public:
 		bf[0].setMaterials(1, 0.4, 0.2, 0.2, 0.94, 0.23, 0.20, 0.9, 0.23, 0.20, 0.6);
 		bf[0].setMaterials(2, 0.4, 0.2, 0.2, 0.94, 0.23, 0.20, 0.9, 0.23, 0.20, 0.6);
 
-		reg.setModel(bf[0].position, -1.1, 4.1, 0, bf[0].scale); //body
+		reg.setModel(bf[0].transform, -1.1, 4.1, 0, bf[0].scale); //body
 
 		for (int i = 0; i < 3; i++) {
 			reg.setMaterial(bf[0].material[i]);
@@ -569,7 +602,7 @@ public:
 		bf[1].setMaterials(1, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
 		bf[1].setMaterials(2, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
 
-		reg.setModel(bf[1].position, -1.1, 4.1, 0, bf[1].scale); //body
+		reg.setModel(bf[1].transform, -1.1, 4.1, 0, bf[1].scale); //body
 		for (int i = 0; i < 3; i++) {
 			reg.setMaterial(bf[1].material[i]);
 			bf[1].objs[i]->draw(reg.prog);
@@ -579,7 +612,7 @@ public:
 		bf[2].setMaterials(1, 0.3, 0.3, 0.2, 0.90, 0.73, 0.20, 0.9, 0.23, 0.20, 0.6);
 		bf[2].setMaterials(2, 0.3, 0.3, 0.2, 0.90, 0.73, 0.20, 0.9, 0.23, 0.20, 0.6);
 
-		reg.setModel(bf[2].position, -1.1, 4.1, 0, bf[2].scale); //body
+		reg.setModel(bf[2].transform, -1.1, 4.1, 0, bf[2].scale); //body
 		for (int i = 0; i < 3; i++) {
 			reg.setMaterial(bf[2].material[i]);
 			bf[2].objs[i]->draw(reg.prog);
@@ -589,7 +622,7 @@ public:
 		//reg.setModel(vec3(4, -1, 4), cTheta*cTheta, 0, 0, 2.5);
 		// for (int i = 0; i < 7; i++) {
 					
-		// 	reg.setModel(flowers[i].position, cTheta*cTheta+0.03, 0, 0, 2.5); 
+		// 	reg.setModel(flowers[i].transform, cTheta*cTheta+0.03, 0, 0, 2.5); 
 		// 	for (int j = 0; j < 3; j++) {
 		// 		reg.setMaterial(flowers[i].material[j]);
 		// 		flowers[i].objs[j]->draw(reg.prog);
@@ -597,13 +630,17 @@ public:
 		// }
 
 		// for (int i = 0; i < 7; i++) {
-		// 	reg.setModel(trees[i].position, 0, 0, 0, 0.15); 
+		// 	reg.setModel(trees[i].transform, 0, 0, 0, 0.15); 
 		// 	for (int j = 0; j < 12; j++) {
 		// 		reg.setMaterial(trees[i].material[j]);
 		// 		trees[i].objs[j]->draw(reg.prog);
 		// 	}
 		// }
 
+		cubeEnt.setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
+		reg.setModel(cubeEnt);
+		reg.setMaterial(cubeEnt.material[0]);
+		cubeEnt.objs[0]->draw(reg.prog);
 
 		reg.prog->unbind();
 
@@ -857,9 +894,9 @@ public:
 		drawGround(tex);  //draw ground here
 
 
-		catEnt.position = cam.player_pos;
+		catEnt.transform = cam.player_pos;
 		//halt animations if cat collides with flower or tree
-		cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
+		cout << catEnt.transform.x << ", " << catEnt.transform.y << ", " << catEnt.transform.z << endl;
 		cout << "before calling check collision, catID = " << catEnt.id << endl;
 		int collided = catEnt.collider->CatCollision(bf, &catEnt);
 
@@ -901,7 +938,7 @@ public:
 				if (bf[i].scale < 0.00001) {
 					bf[i].scale = 0.01;
 					bf_flags[i] = 0;
-					bf[i].position = vec3(0, -0.3, 0);
+					bf[i].transform = vec3(0, -0.3, 0);
 				}
 			}
 			bf[i].updateMotion(frametime);

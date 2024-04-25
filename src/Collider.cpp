@@ -39,15 +39,15 @@ void Collider::CheckCollision(std::vector<Entity> entities, int thisID)
             cout << "here" << endl;
             /*cout << "this id = " << thisID << " and checking id " << entities[i].id << endl;
             cout << "this id = " << thisID << " and checking entities pos " << i << endl; */
-           /* cout << "entity pos x = " << entities[i].position.x << endl;
-            cout << "player pos x = " << entities[thisID].position.x << endl;
-            cout << "entity pos z = " << entities[i].position.z << endl;
-            cout << "player pos z = " << entities[thisID].position.z << endl;
+           /* cout << "entity pos x = " << entities[i].transform.x << endl;
+            cout << "player pos x = " << entities[thisID].transform.x << endl;
+            cout << "entity pos z = " << entities[i].transform.z << endl;
+            cout << "player pos z = " << entities[thisID].transform.z << endl;
             */
 
             float distance = std::sqrt(
-            (entities[i].position.x - entities[this->entityId].position.x) * (entities[i].position.x - entities[this->entityId].position.x) + 
-            (entities[i].position.z - entities[this->entityId].position.z) * (entities[i].position.z - entities[this->entityId].position.z)
+            (entities[i].transform.x - entities[this->entityId].transform.x) * (entities[i].transform.x - entities[this->entityId].transform.x) + 
+            (entities[i].transform.z - entities[this->entityId].transform.z) * (entities[i].transform.z - entities[this->entityId].transform.z)
             );
             distance = std::abs(distance);
             cout << "distance is " << distance << endl;
@@ -78,15 +78,15 @@ int Collider::CatCollision(std::vector<Entity> entities, Entity *cat)
             cout << "here" << endl;
             /*cout << "this id = " << thisID << " and checking id " << entities[i].id << endl;
             cout << "this id = " << thisID << " and checking entities pos " << i << endl; */
-            cout << "entity pos x = " << entities[i].position.x << endl;
-            cout << "player pos x = " << cat->position.x << endl;
-            cout << "entity pos z = " << entities[i].position.z << endl;
-            cout << "player pos z = " << cat->position.z << endl;
+            cout << "entity pos x = " << entities[i].transform.x << endl;
+            cout << "player pos x = " << cat->transform.x << endl;
+            cout << "entity pos z = " << entities[i].transform.z << endl;
+            cout << "player pos z = " << cat->transform.z << endl;
             
 
             float distance = std::sqrt(
-            (entities[i].position.x - cat->position.x) * (entities[i].position.x - cat->position.x) + 
-            (entities[i].position.z - cat->position.z) * (entities[i].position.z - cat->position.z)
+            (entities[i].transform.x - cat->transform.x) * (entities[i].transform.x - cat->transform.x) + 
+            (entities[i].transform.z - cat->transform.z) * (entities[i].transform.z - cat->transform.z)
             );
             distance = std::abs(distance);
             if(distance < entities[i].collider->GetRadial() + cat->collider->GetRadial()){

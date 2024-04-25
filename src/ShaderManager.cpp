@@ -44,6 +44,16 @@ void Shader::setModel(vec3 trans, float rotZ, float rotY, float rotX, float sc) 
   	glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(ctm));
 }
 
+void Shader::setModel(Entity entity) {
+    mat4 Trans = glm::translate(glm::mat4(1.0f), entity.transform);
+    mat4 RotX = glm::rotate(glm::mat4(1.0f), entity.rotX, vec3(1, 0, 0));
+    mat4 RotY = glm::rotate(glm::mat4(1.0f), entity.rotY, vec3(0, 1, 0));
+    mat4 RotZ = glm::rotate(glm::mat4(1.0f), entity.rotZ, vec3(0, 0, 1));
+    mat4 ScaleS = glm::scale(glm::mat4(1.0f), entity.scaleVec);
+    mat4 ctm = Trans * RotX * RotY * RotZ * ScaleS;
+    glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(ctm));
+}
+
 void Shader::setModel(std::shared_ptr<MatrixStack> M) {
     glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 }
