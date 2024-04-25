@@ -40,6 +40,7 @@ std::string resourceDir = "../resources";
 
 map<string, shared_ptr<Shader>> shaders;
 vector<shared_ptr<Entity>> worldentities;
+int activeEntity = 0;
 
 class Application : public EventCallbacks
 {
@@ -162,6 +163,26 @@ public:
 		}
 		if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
 			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		}
+
+		if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+			activeEntity = (activeEntity + 1)%worldentities.size();
+		}
+
+		if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+			worldentities[activeEntity]->transform.z += 1.0;
+		}
+
+		if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+			worldentities[activeEntity]->transform.z -= 1.0;
+		}
+
+		if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+			worldentities[activeEntity]->transform.x += 1.0;
+		}
+
+		if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+			worldentities[activeEntity]->transform.x -= 1.0;
 		}
 	}
 
