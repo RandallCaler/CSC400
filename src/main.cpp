@@ -39,6 +39,7 @@ int Entity::NEXT_ID = 0;
 std::string resourceDir = "../resources";
 
 map<string, shared_ptr<Shader>> shaders;
+vector<shared_ptr<Entity>> worldentities;
 
 class Application : public EventCallbacks
 {
@@ -70,8 +71,6 @@ public:
 	std::vector<shared_ptr<Shape>> tree1;
 	
 	std::vector<shared_ptr<Shape>> cat;
-
-	std::vector<shared_ptr<Shape>> cube;
 
 	std::vector<Entity> gameObjects;
 	
@@ -135,9 +134,6 @@ public:
 	//interpolation of keyframes for animation
 	int cur_idx = 0, next_idx = 1;
 	float frame = 0.0;
-
-	//level-editor stuff
-	Entity cubeEnt;
 
 
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -302,24 +298,6 @@ public:
 			}
 		}
 
-
-		cubeEnt = Entity((resourceDirectory + "/cube.obj"));
-
-		vector<tinyobj::shape_t> TOshapes6;
-		rc = tinyobj::LoadObj(TOshapes6, objMaterials, errStr, cubeEnt.fname.c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		}
-		else {
-			cube.push_back(make_shared<Shape>());
-			cube[0]->createShape(TOshapes6[0]);
-			cube[0]->measure();
-			cube[0]->init();
-		}
-
-		//add cube to entitylist
-		gameObjects.push_back(cubeEnt);
-
 		//bounding cylinder for trunk
 		tree_radial = std::sqrt(
 			(tree1[0]->max.x - tree1[0]->min.x) * (tree1[0]->max.x - tree1[0]->min.x)
@@ -376,9 +354,6 @@ public:
 		
 		cout << "cat " << catEnt.id << endl;
 		catEnt.collider->entityName = 'c';
-
-		// init cube
-		cubeEnt.initEntity(cube);
 
 		// vec3 tree_loc[7];
 		// tree_loc[0] = vec3(4, -5.5, 7);
@@ -573,9 +548,9 @@ public:
 
 		
 		//material shader first
-		shaders["reg"]->prog->bind();
-		glUniformMatrix4fv(shaders["reg"]->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-		cam.SetView(shaders["reg"]->prog);
+		reg.prog->bind();
+		glUniformMatrix4fv(reg.prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
+		cam.SetView(reg.prog);
 
 		float butterfly_height[3] = {1.1, 1.7, 1.5};
 
@@ -588,31 +563,31 @@ public:
 		bf[0].setMaterials(1, 0.4, 0.2, 0.2, 0.94, 0.23, 0.20, 0.9, 0.23, 0.20, 0.6);
 		bf[0].setMaterials(2, 0.4, 0.2, 0.2, 0.94, 0.23, 0.20, 0.9, 0.23, 0.20, 0.6);
 
-		shaders["reg"]->setModel(bf[0].transform, -1.1, 4.1, 0, bf[0].scale); //body
+		reg.setModel(bf[0].transform, -1.1, 4.1, 0, bf[0].scale); //body
 
 		for (int i = 0; i < 3; i++) {
-			shaders["reg"]->setMaterial(bf[0].material[i]);
-			bf[0].objs[i]->draw(shaders["reg"]->prog);
+			reg.setMaterial(bf[0].material[i]);
+			bf[0].objs[i]->draw(reg.prog);
 		}
 
 		bf[1].setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
 		bf[1].setMaterials(1, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
 		bf[1].setMaterials(2, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
 
-		shaders["reg"]->setModel(bf[1].transform, -1.1, 4.1, 0, bf[1].scale); //body
+		reg.setModel(bf[1].transform, -1.1, 4.1, 0, bf[1].scale); //body
 		for (int i = 0; i < 3; i++) {
-			shaders["reg"]->setMaterial(bf[1].material[i]);
-			bf[1].objs[i]->draw(shaders["reg"]->prog);
+			reg.setMaterial(bf[1].material[i]);
+			bf[1].objs[i]->draw(reg.prog);
 		}
     
     	bf[2].setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
 		bf[2].setMaterials(1, 0.3, 0.3, 0.2, 0.90, 0.73, 0.20, 0.9, 0.23, 0.20, 0.6);
 		bf[2].setMaterials(2, 0.3, 0.3, 0.2, 0.90, 0.73, 0.20, 0.9, 0.23, 0.20, 0.6);
 
-		shaders["reg"]->setModel(bf[2].transform, -1.1, 4.1, 0, bf[2].scale); //body
+		reg.setModel(bf[2].transform, -1.1, 4.1, 0, bf[2].scale); //body
 		for (int i = 0; i < 3; i++) {
-			shaders["reg"]->setMaterial(bf[2].material[i]);
-			bf[2].objs[i]->draw(shaders["reg"]->prog);
+			reg.setMaterial(bf[2].material[i]);
+			bf[2].objs[i]->draw(reg.prog);
 		}
 
 
@@ -634,12 +609,17 @@ public:
 		// 	}
 		// }
 
-		cubeEnt.setMaterials(0, 0.1, 0.1, 0.1, 0.7, 0.02, 0.02, 0.95, 0.73, 0.50, 50);
-		shaders["reg"]->setModel(cubeEnt);
-		shaders["reg"]->setMaterial(cubeEnt.material[0]);
-		cubeEnt.objs[0]->draw(shaders["reg"]->prog);
+		// material imported from save file
+		for (shared_ptr<Entity> entity : worldentities) {
+			reg.setModel(*entity);
+			for (int i = 0; i < entity->objs.size(); i++) {
+				reg.setMaterial(entity->material[i]);
+				printf("numobjs %u\n", entity->objs[0]);
+				entity->objs[i]->draw(reg.prog);
+			}
+		}
 
-		shaders["reg"]->prog->unbind();
+		reg.prog->unbind();
 
 
 
@@ -1009,73 +989,83 @@ void loadSingleShape(string buffer, map<string, pair<shared_ptr<Shape>, material
 	string shapeName = buffer.substr(0, delimit);
 	buffer = buffer.substr(delimit + 1);
 
-	if (find(files.begin(), files.end(), meshFile) == files.end()) {
-		// TinyObj handles file read
-		bool rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr, (resourceDir + meshFile).c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		}
-		else {
-			// command line displays model names and index range of their meshes
-			printf("import from file %s\n", meshFile.c_str());
-			// parse into Shapes, then load in OpenGL
-			for(tinyobj::shape_t shape: TOshapes) {
+	// TinyObj handles file read
+	bool rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr, (resourceDir + meshFile).c_str());
+	if (!rc) {
+		cerr << errStr << endl;
+	}
+	else {
+		// command line displays model names and index range of their meshes
+		printf("import from file %s\n", meshFile.c_str());
+		// parse into Shapes, then load in OpenGL
+		for(tinyobj::shape_t shape: TOshapes) {
+			if (shape.name == shapeName) {
 				shared_ptr<Shape> newShape = make_shared<Shape>();
 				newShape->createShape(shape);
 				newShape->measure();
 				newShape->init();
 				materials newMat = materials();
-				shapes[shape.name] = make_pair(newShape, newMat);
+				shapes[id] = make_pair(newShape, newMat);
 			}
-
-			errStr = "";
 		}
+		errStr = "";
 	}
 
 	delimit = buffer.find(' ');
-	shapes[shapeName].second.matAmb.r = stof(buffer.substr(0, delimit));
+	shapes[id].second.matAmb.r = stof(buffer.substr(0, delimit));
 	buffer = buffer.substr(delimit + 1);
+
 	delimit = buffer.find(' ');
-	shapes[shapeName].second.matAmb.g = stof(buffer.substr(0, delimit));
+	shapes[id].second.matAmb.g = stof(buffer.substr(0, delimit));
 	buffer = buffer.substr(delimit + 1);
+
 	delimit = buffer.find(' ');
-	shapes[shapeName].second.matAmb.b = stof(buffer.substr(0, delimit));
+	shapes[id].second.matAmb.b = stof(buffer.substr(0, delimit));
 	buffer = buffer.substr(delimit + 1);
 	
 	delimit = buffer.find(' ');
-	shapes[shapeName].second.matDif.r = stof(buffer.substr(0, delimit));
+	shapes[id].second.matDif.r = stof(buffer.substr(0, delimit));
 	buffer = buffer.substr(delimit + 1);
+
 	delimit = buffer.find(' ');
-	shapes[shapeName].second.matDif.g = stof(buffer.substr(0, delimit));
+	shapes[id].second.matDif.g = stof(buffer.substr(0, delimit));
 	buffer = buffer.substr(delimit + 1);
+
 	delimit = buffer.find(' ');
-	shapes[shapeName].second.matDif.b = stof(buffer.substr(0, delimit));
+	shapes[id].second.matDif.b = stof(buffer.substr(0, delimit));
 	buffer = buffer.substr(delimit + 1);
 	
 	delimit = buffer.find(' ');
-	shapes[shapeName].second.matSpec.r = stof(buffer.substr(0, delimit));
+	shapes[id].second.matSpec.r = stof(buffer.substr(0, delimit));
 	buffer = buffer.substr(delimit + 1);
 	delimit = buffer.find(' ');
-	shapes[shapeName].second.matSpec.g = stof(buffer.substr(0, delimit));
+	shapes[id].second.matSpec.g = stof(buffer.substr(0, delimit));
 	buffer = buffer.substr(delimit + 1);
 	delimit = buffer.find(' ');
-	shapes[shapeName].second.matSpec.b = stof(buffer.substr(0, delimit));
+	shapes[id].second.matSpec.b = stof(buffer.substr(0, delimit));
 	buffer = buffer.substr(delimit + 1);
 	
 	delimit = buffer.find(' ');
-	shapes[shapeName].second.matShine = stof(buffer.substr(0, delimit));
+	shapes[id].second.matShine = stof(buffer.substr(0, delimit));
 	buffer = buffer.substr(delimit + 1);
+	printf("%s %s %s %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n", 
+		id.c_str(), meshFile.c_str(), shapeName.c_str(),
+		shapes[id].second.matAmb.r, shapes[id].second.matAmb.g, shapes[id].second.matAmb.b,
+		shapes[id].second.matDif.r, shapes[id].second.matDif.g, shapes[id].second.matDif.b,
+		shapes[id].second.matSpec.r, shapes[id].second.matSpec.g, shapes[id].second.matSpec.b,
+		shapes[id].second.matShine);
 }
 
 void loadEntity(string buffer, map<string, pair<shared_ptr<Shape>, materials>>& shapes) {
 	size_t delimit = buffer.find(' ');
 	string id = buffer.substr(0, delimit);
 	buffer = buffer.substr(delimit + 1);
-	printf("entity imported: %s\n", id);
+	printf("entity imported: %s\n", id.c_str());
 
 	delimit = buffer.find(' ');
 	int numShapes = strtol(buffer.substr(0, delimit).c_str(), NULL, 10);
 	buffer = buffer.substr(delimit + 1);
+	printf("%s %i ", id.c_str(), numShapes);
 
 	vector<shared_ptr<Shape>> entityShapes;
 	vector<materials> entityMats;
@@ -1083,7 +1073,8 @@ void loadEntity(string buffer, map<string, pair<shared_ptr<Shape>, materials>>& 
 	for (int i = 0; i < numShapes; i++) {
 		delimit = buffer.find(' ');
 		string shapeID = buffer.substr(0, delimit);
-		buffer = buffer.substr(delimit);
+		printf("%s ", shapeID.c_str());
+		buffer = buffer.substr(delimit + 1);
 		entityShapes.push_back(shapes[shapeID].first);
 		entityMats.push_back(shapes[shapeID].second);
 	}
@@ -1131,6 +1122,13 @@ void loadEntity(string buffer, map<string, pair<shared_ptr<Shape>, materials>>& 
 	float scaleZ = stof(buffer.substr(0, delimit));
 	buffer = buffer.substr(delimit + 1);
 	newEntity->scaleVec.z = scaleZ;
+	
+	printf("%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n",
+		newEntity->transform.x, newEntity->transform.y, newEntity->transform.z,
+		newEntity->rotX, newEntity->rotY, newEntity->rotZ,
+		newEntity->scaleVec.x, newEntity->scaleVec.y, newEntity->scaleVec.z);
+
+	worldentities.push_back(newEntity);
 }
 
 

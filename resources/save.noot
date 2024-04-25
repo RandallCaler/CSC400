@@ -1,2 +1,6 @@
 1 reg /simple_vert.glsl /simple_frag.glsl 8 P V M MatAmb MatDif MatSpec MatShine lightPos 3 vertPos vertNor vertTex
 1 tex /tex_vert.glsl /tex_frag0.glsl 10 P V M MatAmb MatDif MatSpec MatShine lightPos flip Texture0 3 vertPos vertNor vertTex
+2 cubeR /cube.obj Cube 0.1 0.1 0.1 0.7 0.02 0.02 0.95 0.73 0.50 50
+2 cubeB /cube.obj Cube 0.1 0.1 0.1 0.02 0.02 0.7 0.95 0.73 0.50 50
+3 cube1 1 cubeB 1.0 1.0 1.0 0.0 0.0 0.0 1.0 1.0 1.0
+3 cube2 1 cubeR -1.0 1.0 1.0 0.0 0.0 0.0 1.0 1.0 1.0

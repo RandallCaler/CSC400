@@ -16,17 +16,17 @@ void Shader::initShader(const std::string &v, const std::string &f) {
 	prog->setVerbose(true);
 	prog->setShaderNames(v, f);
 	prog->init();
-	prog->addUniform("P");
-	prog->addUniform("V");
-	prog->addUniform("M");
-	prog->addUniform("MatAmb");
-	prog->addUniform("MatDif");
-	prog->addUniform("MatSpec");
-	prog->addUniform("MatShine");
-	prog->addUniform("lightPos");
-	prog->addAttribute("vertPos");
-	prog->addAttribute("vertNor");
-	prog->addAttribute("vertTex");
+	// prog->addUniform("P");
+	// prog->addUniform("V");
+	// prog->addUniform("M");
+	// prog->addUniform("MatAmb");
+	// prog->addUniform("MatDif");
+	// prog->addUniform("MatSpec");
+	// prog->addUniform("MatShine");
+	// prog->addUniform("lightPos");
+	// prog->addAttribute("vertPos");
+	// prog->addAttribute("vertNor");
+	// prog->addAttribute("vertTex");
 }
 
 void Shader::initTexVars() {
@@ -100,7 +100,7 @@ Shader::Shader(const std::string &v, const std::string &f, bool has_tex) {
     initShader(v, f);
     if (has_tex) {
         has_texture = true;
-        initTexVars();
+        // initTexVars();
     }
 }
 
