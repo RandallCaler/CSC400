@@ -24,6 +24,9 @@ class Shader {
         void setTexture(int i);
         void unbindTexture(int i);
 
+        void setUniform(std::string uniformName);
+        void setAttribute(std::string attributeName);
+
         
         Shader(const std::string &v, const std::string &f, bool has_tex);
         Shader();

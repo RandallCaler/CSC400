@@ -88,6 +88,13 @@ void Shader::unbindTexture(int i) {
     textures[i]->unbind();
 }
 
+void Shader::setUniform(std::string uniformName) {
+	prog->addUniform(uniformName);
+}
+
+void Shader::setAttribute(std::string attributeName) {
+	prog->addAttribute(attributeName);
+}
 
 Shader::Shader(const std::string &v, const std::string &f, bool has_tex) {
     initShader(v, f);
