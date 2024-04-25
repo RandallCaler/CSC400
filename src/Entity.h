@@ -52,6 +52,7 @@ class Entity {
         glm::vec3 position;
         float scale;
         motion m;
+        float rotate;
  
     };
 

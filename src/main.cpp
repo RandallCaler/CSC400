@@ -227,6 +227,7 @@ public:
 		cam.angle -= 10 * (deltaX / 57.296);
 		catEnt.m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
 		catEnt.m.forward.y = 0;
+		catEnt.rotate -= 10 * (deltaX / 57.296);
 		
 	}
 
@@ -420,6 +421,7 @@ public:
 		catEnt.m.forward = vec4(0, 0, 0.1, 1);
 		catEnt.m.velocity = 0.1;
 		catEnt.scale = 5.0;
+		catEnt.rotate = 0.0;
 		//catEnt.position = cam.player_pos;
 		//cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
 		// set forward
@@ -668,7 +670,7 @@ public:
 
 
 		catEnt.setMaterials(0, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
-		reg.setModel(catEnt.position, 0, 0, 0, catEnt.scale);
+		reg.setModel(catEnt.position, 0, catEnt.rotate, 0, catEnt.scale);
 		reg.setMaterial(catEnt.material[0]);
 		catEnt.objs[0]->draw(reg.prog);
 
