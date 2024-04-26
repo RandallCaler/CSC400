@@ -7,7 +7,7 @@ using namespace glm;
 Camera::Camera(vec3 v, float p, float d, float a, vec3 pp, float pr, vec3 g)
 {   
     cameraPos = vec3(0.0f, 0.0f, 4.0f);
-    lookAtPt = vec3(0.0f, 0.0f, 0.0f);
+    lookAtPt = pp;
     upV = vec3(0, 1, 0);
     player_pos = pp;
     player_rot = pr;
