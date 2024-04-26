@@ -97,34 +97,14 @@ public:
 	shared_ptr<Texture> texture2;
 	shared_ptr<Texture> texture3;
 
-	//animation data
-	float lightTrans = 0;
-	float sTheta = 0;
-	float cTheta = 0;
-	float gTrans = 0;
-
-	//camera
-	double g_theta;
 	vec3 strafe = vec3(1, 0, 0);
 
 	// 	view pitch dist angle playerpos playerrot animate g_eye
 	Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
 
-	//player animation
-	bool animate = false;
-	float oscillate = 0;
-
-	//bounding "cylinders" for flower & tree
-	double flower_radial;
-	double tree_radial;
-
 	//bounds for world
 	double bounds;
 	
-	//interpolation of keyframes for animation
-	int cur_idx = 0, next_idx = 1;
-	float frame = 0.0;
-
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -132,37 +112,22 @@ public:
 			glfwSetWindowShouldClose(window, GL_TRUE);
 		}
 
-		animate = false;
-
-
 		// KEY PRESSED
 
 		if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !catEnt.collider->IsColliding() && bounds < 19){
 			ih.inputStates[0] = 1;
-
-			//cam.player_pos += vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
-			animate = true;
 		}
 
 		if (key == GLFW_KEY_A && (action == GLFW_PRESS) && !catEnt.collider->IsColliding()){
 			ih.inputStates[1] = 1;
-
-			//cam.player_rot += 10 * 0.01745329;
-			animate = true;
 		}
 
 		if (key == GLFW_KEY_S && (action == GLFW_PRESS) && bounds < 19){	
 			ih.inputStates[2] = 1;
-
-			//cam.player_pos -= vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
-			animate = true;
 		}
 
 		if (key == GLFW_KEY_D && (action == GLFW_PRESS)&& !catEnt.collider->IsColliding()){
 			ih.inputStates[3] = 1;
-
-			//cam.player_rot -= 10 * 0.01745329;
-			animate = true;
 		}
 
 		if (key == GLFW_KEY_SPACE && (action == GLFW_PRESS)){
@@ -173,28 +138,18 @@ public:
 
 		if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !catEnt.collider->IsColliding() && bounds < 19){
 			ih.inputStates[0] = 0;
-
-			cout << "w released" << endl;
-			
-			animate = true;
 		}
 
 		if (key == GLFW_KEY_A && (action == GLFW_RELEASE) && !catEnt.collider->IsColliding()){
 			ih.inputStates[1] = 0;
-
-			animate = true;
 		}
 
 		if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 19){	
 			ih.inputStates[2] = 0;
-
-			animate = true;
 		}
 
 		if (key == GLFW_KEY_D && (action == GLFW_RELEASE)&& !catEnt.collider->IsColliding()){
 			ih.inputStates[3] = 0;
-
-			animate = true;
 		}
 
 		if (key == GLFW_KEY_SPACE && (action == GLFW_RELEASE)){
@@ -213,6 +168,8 @@ public:
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
 		//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
 		cam.angle -= 10 * (deltaX / 57.296);
+
+		// cat entity updated with camera
 		catEnt.m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
 		catEnt.m.forward.y = 0;
 		catEnt.rotate -= 10 * (deltaX / 57.296);
@@ -246,8 +203,6 @@ public:
 		glClearColor(.72f, .84f, 1.06f, 1.0f);
 		// Enable z-buffer test.
 		glEnable(GL_DEPTH_TEST);
-
-		g_theta = -PI/2.0;
 
 		reg = Shader(resourceDirectory + "/simple_vert.glsl", resourceDirectory + "/simple_frag.glsl", false);
 		tex = Shader(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/tex_frag0.glsl", true);
@@ -336,13 +291,6 @@ public:
 			}
 		}
 
-		//bounding cylinder of flower
-		flower_radial = std::sqrt(
-			(flower[2]->max.x - flower[2]->min.x) * (flower[2]->max.x - flower[2]->min.x)
-			+ (flower[2]->max.z - flower[2]->min.z) * (flower[2]->max.z - flower[2]->min.z)
-		) * 2.5;
-
-
 		vector<tinyobj::shape_t> TOshapes5;
 		rc = tinyobj::LoadObj(TOshapes5, objMaterials, errStr, (resourceDirectory + "/trees.obj").c_str());
 		if (!rc) {
@@ -358,12 +306,6 @@ public:
 				tree1[i]->init();
 			}
 		}
-
-		//bounding cylinder for trunk
-		tree_radial = std::sqrt(
-			(tree1[0]->max.x - tree1[0]->min.x) * (tree1[0]->max.x - tree1[0]->min.x)
-			+ (tree1[0]->max.z - tree1[0]->min.z) * (tree1[0]->max.z - tree1[0]->min.z)
-		);
 
 		// init butterfly 1
 		bf1.initEntity(butterfly);
@@ -420,13 +362,13 @@ public:
 		
 		//cout << "cat " << catEnt.id << endl;
 		catEnt.collider->entityName = 'c';
-		bf.push_back(bf1);
+
+    	bf.push_back(bf1);
 		bf.push_back(bf2);
 		bf.push_back(bf3);
 		gameObjects.push_back(bf1);
 		gameObjects.push_back(bf2);
 		gameObjects.push_back(bf3);
-	
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initGround();
@@ -610,7 +552,6 @@ public:
 
 		std::cout << "entity position:" << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << std::endl;
 
-
 		reg.prog->unbind();
 
 
@@ -621,7 +562,7 @@ public:
 
 		cam.SetView(tex.prog);
 
-
+		//sky box!
 		materials sky_box;
 		sky_box.matAmb.r = 0.2;
         sky_box.matAmb.g = 0.3;
@@ -655,7 +596,6 @@ public:
 		if (collided != -1) {
 			bf_flags[collided] = 1;
 		}
-
 
 
 		bounds = std::sqrt(   //update cat's distance from skybox

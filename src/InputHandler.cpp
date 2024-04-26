@@ -26,6 +26,7 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
         }
     }
 
+    // must be tested with space bar and diagonal motion
     while(q.size() > 3) {
         std::cout << "key discarded: " << q.front() << std::endl;
         q.pop();
@@ -53,13 +54,6 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
                 penguin->position += vec3(norm);
                 cam->player_pos = penguin->position;
 
-                
-                std::cout << "input state w: " << inputStates[0] << endl;
-                std::cout << "entity position:" << penguin->position.x << ", " << penguin->position.y << ", " << penguin->position.z << std::endl;
-        
-
-                // set forward vector to north
-                // update entity motion
                 break;
             case 1:
                 //west
@@ -80,9 +74,6 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
         
                 cam->player_pos = penguin->position;
 
-                std::cout << "input state a: " << inputStates[1] << endl;
-                std::cout << "entity position:" << penguin->position.x << ", " << penguin->position.y << ", " << penguin->position.z << std::endl;
-                        
                 break;
             case 2:
                 //south
@@ -109,10 +100,6 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
 
                 cam->player_pos = penguin->position;
 
-                std::cout << "input state s: " << inputStates[2] << endl;
-                std::cout << "entity position:" << penguin->position.x << ", " << penguin->position.y << ", " << penguin->position.z << std::endl;
-                      
-
                 break;
             case 3:
                 //east
@@ -131,10 +118,6 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
 
                 cam->player_pos = penguin->position;
 
-                std::cout << "input state a: " << inputStates[1] << endl;
-                std::cout << "entity position:" << penguin->position.x << ", " << penguin->position.y << ", " << penguin->position.z << std::endl;
-                        
-            
                 break;
                 
             // case 4:
