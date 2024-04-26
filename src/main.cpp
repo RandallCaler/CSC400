@@ -114,18 +114,6 @@ public:
 	bool animate = false;
 	float oscillate = 0;
 
-	// //rules for cat walking around
-	// bool back_up = false;
-	
-	// //keyframes for cat walking animation
-	// double f[5][12] = {
-	// 		{0.5, -0.6, 0.1, -0.5, 1.0, 0.1, 0.5, -0.5, 0, 0, -0.58, 0.58},
-	// 		{0.5, 0, -0.4, -0.5, 0.45, 0.72, 0.45, -0.95, 0.72, 0, 0.1, 0.08},
-	// 		{0.65, -0.5, 0.7, -0.5, 0, 0.7, 0.2, -0.85, 0.75, 0.1, 0.1, 0.082},
-	// 		{0.4, -1.2, 1.3, 0.30, -0.3, 0, -0.2, -0.2, 0.1, 0.6, -0.6, 0},
-	// 		{-0.1, -0.45, 0.55, 0.30, 0.1, -0.3, 0.1, -0.2, 0.2, 0, -0.6, 0.6}
-	// 	};
-
 	//bounding "cylinders" for flower & tree
 	double flower_radial;
 	double tree_radial;
@@ -432,67 +420,13 @@ public:
 		
 		//cout << "cat " << catEnt.id << endl;
 		catEnt.collider->entityName = 'c';
-
-		// vec3 tree_loc[7];
-		// tree_loc[0] = vec3(4, -5.5, 7);
-		// tree_loc[1] = vec3(-2.9,-5.5, -7);
-		// tree_loc[2] = vec3(8, -5.5, -3);
-		// tree_loc[3] = vec3(6, -5.5, -3.7);
-		// tree_loc[4] = vec3(-1, -5.5, 4.9);
-		// tree_loc[5] = vec3(-5, -5.5, 9);
-		// tree_loc[6] = vec3(-6, -5.5, 2);
-
-		// // init tree entities
-		// for (int i = 0; i < 7; i++) {
-		// 	Entity e = Entity();
-      	// 	e.initEntity(tree1);
-		// 	e.position = tree_loc[i] + vec3(0, 4.1, 0);
-		// 	e.setMaterials(0, 0, 0, 0, 0.897093, 0.588047, 0.331905, 0.5, 0.5, 0.5, 200);
-		// 	for (int j = 1; j < 12; j++) {
-		// 		e.setMaterials(j, 0.1, 0.2, 0.1, 0.285989, 0.567238, 0.019148, 0.5, 0.5, 0.5, 200);
-		// 	}
-		// 	e.collider = new Collider(tree1, Collider::TREE);
-		// 	e.collider->SetEntityID(e.id);
-		// 	trees.push_back(e);
-		// 	gameObjects.push_back(e);
-		// }
-
-		// //where each flower will go
-		// vec3 flower_loc[7];
-		// flower_loc[0] = vec3(4, -1, 4);
-		// flower_loc[1] = vec3(-2.3, -1, 3);
-		// flower_loc[2] = vec3(-2, -1.2, -3);
-		// flower_loc[3] = vec3(4, -1, -3.2);
-		// flower_loc[4] = vec3(-5, -1, 2);
-		// flower_loc[5] = vec3(1, -1, -1.7);
-		// flower_loc[6] = vec3(3, -1, -2);
-
-		// // init flower entities
-		// for (int i = 0; i < 7; i++) {
-		// 	Entity e = Entity();
-      	// 	e.initEntity(flower);
-		// 	e.position = flower_loc[i];
-		// 	e.setMaterials(0, 0.2, 0.1, 0.1, 0.94, 0.42, 0.64, 0.7, 0.23, 0.60, 100);
-		// 	e.setMaterials(1, 0.1, 0.1, 0.1, 0.94, 0.72, 0.22, 0.23, 0.23, 0.20, 100);
-		// 	e.setMaterials(2, 0.05, 0.15, 0.05, 0.24, 0.92, 0.41, 1, 1, 1, 0);
-		// 	e.collider = new Collider(flower, Collider::FLOWER);
-		// 	e.collider->SetEntityID(e.id);
-		// 	flowers.push_back(e);
-		// 	gameObjects.push_back(e);
-		// }
-    
-    bf.push_back(bf1);
-    bf.push_back(bf2);
-    bf.push_back(bf3);
-	gameObjects.push_back(bf1);
-	gameObjects.push_back(bf2);
-	gameObjects.push_back(bf3);
-
-	//cout << "butterfly entities size = " << bf.size() << endl;
-	for(int i = 0; i < bf.size(); i++){
-		//cout << "bf[" << i << "] id is " << bf[i].id << endl;
-	}
-    //cout << "gameObjects size = " << gameObjects.size() << endl;
+		bf.push_back(bf1);
+		bf.push_back(bf2);
+		bf.push_back(bf3);
+		gameObjects.push_back(bf1);
+		gameObjects.push_back(bf2);
+		gameObjects.push_back(bf3);
+	
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initGround();
@@ -677,25 +611,6 @@ public:
 		std::cout << "entity position:" << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << std::endl;
 
 
-		//reg.setModel(vec3(4, -1, 4), cTheta*cTheta, 0, 0, 2.5);
-		// for (int i = 0; i < 7; i++) {
-					
-		// 	reg.setModel(flowers[i].position, cTheta*cTheta+0.03, 0, 0, 2.5); 
-		// 	for (int j = 0; j < 3; j++) {
-		// 		reg.setMaterial(flowers[i].material[j]);
-		// 		flowers[i].objs[j]->draw(reg.prog);
-		// 	}
-		// }
-
-		// for (int i = 0; i < 7; i++) {
-		// 	reg.setModel(trees[i].position, 0, 0, 0, 0.15); 
-		// 	for (int j = 0; j < 12; j++) {
-		// 		reg.setMaterial(trees[i].material[j]);
-		// 		trees[i].objs[j]->draw(reg.prog);
-		// 	}
-		// }
-
-
 		reg.prog->unbind();
 
 
@@ -705,221 +620,6 @@ public:
 		glUniformMatrix4fv(tex.prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 
 		cam.SetView(tex.prog);
-
-		/*
-		materials c;
-		c.matAmb.r = 0.17;
-        c.matAmb.g = 0.05;
-        c.matAmb.b = 0.05;
-        c.matDif.r = 0;
-        c.matDif.g = 0;
-        c.matDif.b = 0;
-        c.matSpec.r = 0.2;
-        c.matSpec.g = 0.1;
-        c.matSpec.b = 0.1;
-        c.matShine = 5;
-		tex.flip(1);
-		tex.setMaterial(c);
-		tex.setTexture(3);
-
-
-		//hierarchical modeling with cat!!
-		Model->pushMatrix();
-			Model->translate(cam.player_pos + vec3(0, cos(oscillate) * 0.009, 0));
-			Model->rotate(cam.player_rot, vec3(0, 1, 0));
-			Model->scale(vec3(0.7, 0.7, 0.7));
-
-			
-			Model->pushMatrix();  // upper left leg
-				Model->translate(vec3(0.16, 0.48, 0.35));
-				Model->rotate(f[cur_idx][0] * (1 - frame) + f[next_idx][0] * frame, vec3(1, 0, 0));
-				Model->translate(vec3(0, -0.09, 0));
-
-				Model->pushMatrix();  // upper left calf
-					Model->translate(vec3(0, -0.17, 0));
-					Model->rotate(f[cur_idx][1] * (1 - frame) + f[next_idx][1] * frame, vec3(1, 0, 0));
-					Model->translate(vec3(0, -0.17, 0));
-
-					Model->pushMatrix();  // upper left foot
-						Model->translate(vec3(0, -0.15, -0.018));
-						Model->rotate(f[cur_idx][2] * (1 - frame) + f[next_idx][2] * frame, vec3(1, 0, 0));
-						Model->translate(vec3(0, 0, 0.09));
-
-						Model->scale(vec3(0.08, 0.045, 0.1));
-						tex.setModel(Model);
-						sphere->draw(tex.prog);
-					Model->popMatrix();
-
-					Model->scale(vec3(0.08, 0.18, 0.084));
-					tex.setModel(Model);
-					sphere->draw(tex.prog);
-				Model->popMatrix();
-
-				Model->scale(vec3(0.11, 0.29, 0.12));
-				tex.setModel(Model);
-				sphere->draw(tex.prog);
-			Model->popMatrix();
-
-
-
-
-			Model->pushMatrix(); // upper right leg
-				Model->translate(vec3(-0.16, 0.48, 0.35));
-				Model->rotate(f[cur_idx][3] * (1 - frame) + f[next_idx][3] * frame, vec3(1, 0, 0));
-				Model->translate(vec3(0, -0.09, 0));
-
-				Model->pushMatrix();  // upper right calf
-					Model->translate(vec3(0, -0.17, 0));
-					Model->rotate(f[cur_idx][4] * (1 - frame) + f[next_idx][4] * frame, vec3(1, 0, 0));
-					Model->translate(vec3(0, -0.17, 0));
-
-					Model->pushMatrix();  // upper right foot
-						Model->translate(vec3(0, -0.15, -0.018));
-						Model->rotate(f[cur_idx][5] * (1 - frame) + f[next_idx][5] * frame, vec3(1, 0, 0));
-						Model->translate(vec3(0, 0, 0.09));
-
-						Model->scale(vec3(0.08, 0.045, 0.1));
-						tex.setModel(Model);
-						sphere->draw(tex.prog);
-					Model->popMatrix();
-
-					Model->scale(vec3(0.08, 0.18, 0.084));
-					tex.setModel(Model);
-					sphere->draw(tex.prog);
-				Model->popMatrix();
-
-				Model->scale(vec3(0.11, 0.29, 0.12));
-				tex.setModel(Model);
-				sphere->draw(tex.prog);
-			Model->popMatrix();
-
-
-
-
-			Model->pushMatrix(); // lower left leg
-				Model->translate(vec3(0.2, 0.58, -0.29));
-				Model->rotate(f[cur_idx][6] * (1 - frame) + f[next_idx][6] * frame, vec3(1, 0, 0));
-				Model->translate(vec3(0, -0.27, 0));
-
-				Model->pushMatrix();  // lower left calf
-					Model->translate(vec3(0, -0.18, 0));
-					Model->rotate(f[cur_idx][7] * (1 - frame) + f[next_idx][7] * frame, vec3(1, 0, 0));
-					Model->translate(vec3(0, -0.15, 0));
-
-					Model->pushMatrix();  // lower left foot
-						Model->translate(vec3(0, -0.13, 0));
-						Model->rotate(f[cur_idx][8] * (1 - frame) + f[next_idx][8] * frame, vec3(1, 0, 0));
-						Model->translate(vec3(0, 0, 0.045));
-
-						Model->scale(vec3(0.08, 0.05, 0.11));
-						tex.setModel(Model);
-						sphere->draw(tex.prog);
-					Model->popMatrix();
-
-					Model->scale(vec3(0.082, 0.17, 0.082));
-					tex.setModel(Model);
-					sphere->draw(tex.prog);
-				Model->popMatrix();
-
-				Model->scale(vec3(0.12, 0.3, 0.12));
-				tex.setModel(Model);
-				sphere->draw(tex.prog);
-			Model->popMatrix();
-
-
-
-
-
-			Model->pushMatrix(); // lower right leg
-				Model->translate(vec3(-0.2, 0.58, -0.29));
-				Model->rotate(f[cur_idx][9] * (1 - frame) + f[next_idx][9] * frame, vec3(1, 0, 0));
-				Model->translate(vec3(0, -0.27, 0));
-
-				Model->pushMatrix();  // lower right calf
-					Model->translate(vec3(0, -0.18, 0));
-					Model->rotate(f[cur_idx][10] * (1 - frame) + f[next_idx][10] * frame, vec3(1, 0, 0));
-					Model->translate(vec3(0, -0.15, 0));
-
-					Model->pushMatrix();  // lower right foot
-						Model->translate(vec3(0, -0.13, 0));
-						Model->rotate(f[cur_idx][11] * (1 - frame) + f[next_idx][11] * frame, vec3(1, 0, 0));
-						Model->translate(vec3(0, 0, 0.045));
-
-						Model->scale(vec3(0.08, 0.05, 0.11));
-						tex.setModel(Model);
-						sphere->draw(tex.prog);
-					Model->popMatrix();
-
-					Model->scale(vec3(0.082, 0.17, 0.082));
-					tex.setModel(Model);
-					sphere->draw(tex.prog);
-				Model->popMatrix();
-
-
-
-				Model->scale(vec3(0.12, 0.3, 0.12));
-				tex.setModel(Model);
-				sphere->draw(tex.prog);
-			Model->popMatrix();
-
-
-			Model->pushMatrix(); // tail base
-				Model->translate(vec3(0, 0.62, -0.27));
-				Model->rotate(2.1, vec3(1, 0, 0));
-				Model->translate(vec3(0, -0.27, 0));
-
-				Model->pushMatrix();  // main stiff part
-					Model->translate(vec3(0, -0.12, 0));
-					Model->rotate(0.8, vec3(1, 0, 0));
-					Model->translate(vec3(0, -0.15, 0));
-
-					Model->pushMatrix();  // wiggling part
-						Model->translate(vec3(0, -0.13, 0));
-						Model->rotate(cos(glfwGetTime()*3) / 2, vec3(0, 0, 1));
-						Model->translate(vec3(0, -0.13, 0));
-
-						Model->pushMatrix();  // wiggling tip
-							Model->translate(vec3(0, -0.06, 0));
-							Model->rotate(cos(glfwGetTime()*5) / 3, vec3(0, 0, 1));
-							Model->translate(vec3(0, -0.13, 0));
-
-							Model->scale(vec3(0.09, 0.16, 0.09));
-							tex.setModel(Model);
-							sphere->draw(tex.prog);
-						Model->popMatrix();
-
-
-						Model->scale(vec3(0.1, 0.16, 0.1));
-						tex.setModel(Model);
-						sphere->draw(tex.prog);
-					Model->popMatrix();
-
-					Model->scale(vec3(0.11, 0.22, 0.11));
-					tex.setModel(Model);
-					sphere->draw(tex.prog);
-				Model->popMatrix();
-
-				Model->scale(vec3(0.12, 0.2, 0.12));
-				tex.setModel(Model);
-				sphere->draw(tex.prog);
-			Model->popMatrix();
-
-			tex.unbindTexture(3);
-			tex.setTexture(2);
-
-			Model->scale(vec3(0.4, 0.4, 0.4));
-			tex.setModel(Model);
-			cat[0]->draw(tex.prog); // body !
-
-
-		Model->popMatrix();
-
-		tex.unbindTexture(2);
-
-		*/
-
-
-		//sky box!
 
 
 		materials sky_box;
@@ -950,11 +650,6 @@ public:
 		drawGround(tex);  //draw ground here
 
 
-		//catEnt.position = cam.player_pos;
-		//cam.player_pos = catEnt.position;
-		//halt animations if cat collides with flower or tree
-		//cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
-		//cout << "before calling check collision, catID = " << catEnt.id << endl;
 		int collided = catEnt.collider->CatCollision(bf, &catEnt);
 
 		if (collided != -1) {
@@ -962,24 +657,6 @@ public:
 		}
 
 
-
-
-		//cout << "cat collision = " << catEnt.collider->IsColliding() <<  endl;
-	//	check_collision(flower_loc, 7, tree_loc, 7, player_pos);
-		
-		// //update animation variables
-		// sTheta = -1*abs(sin(glfwGetTime() * 2));
-		// cTheta = cos(glfwGetTime()) / 4;
-		// if (animate) {
-		// 	frame += 0.1;
-		// 	if (frame >= 0.99 && frame <= 1.01) {
-		// 		frame = 0.0;
-		// 		cur_idx = (cur_idx + 1) % 5;
-		// 		next_idx = (next_idx + 1) % 5;
-		// 	}
-		// 	oscillate += 0.2;  //oscillate while walking
-		// }		
-		// oscillate += 0.02; //to make sure cat is not entirely stagnant
 
 		bounds = std::sqrt(   //update cat's distance from skybox
 			cam.player_pos[0] * cam.player_pos[0]
@@ -1000,7 +677,6 @@ public:
 			}
 			bf[i].updateMotion(frametime);
 		}
-		// catEnt.updateMotion(frametime);
 
 
 	}
