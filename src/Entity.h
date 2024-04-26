@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef ENTITY_H_INCLUDED
+#define ENTITY_H_INCLUDED
+
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -57,4 +62,4 @@ class Entity {
         string fname;
     };
 
-
+#endif

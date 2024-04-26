@@ -1,4 +1,7 @@
+#pragma once
 
+#ifndef SHADER_MANAGER_H_INCLUDED
+#define SHADER_MANAGER_H_INCLUDED
 
 #include "Components.h"
 #include "Entity.h"
@@ -38,3 +41,5 @@ class Shader {
 	    std::vector<shared_ptr<Texture>> textures;
 
 };
+
+#endif
