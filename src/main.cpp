@@ -45,7 +45,8 @@ public:
 
 	// Our shader program - use this one for Blinn-Phong has diffuse
 
-	Shader reg;       
+
+	Shader reg;           // 
 
 	//Our shader program for textures
 	Shader tex;
@@ -57,7 +58,6 @@ public:
 
 	std::vector<shared_ptr<Shape>> butterfly;
 
-	// manages input states of wasd space
 	InputHandler ih;
 
 
@@ -67,12 +67,21 @@ public:
 	Entity catEnt = Entity();
 	
   	std::vector<Entity> bf;
+
+	std::vector<shared_ptr<Shape>> flower;
+
+	std::vector<shared_ptr<Shape>> tree1;
 	
 	std::vector<shared_ptr<Shape>> cat;
 
 	std::vector<Entity> gameObjects;
+	
+	std::vector<Entity> trees;
+
+	std::vector<Entity> flowers;
 
 	int bf_flags[3] = {0, 0, 0};
+
 
 	int nextID = 0;
 
@@ -88,12 +97,14 @@ public:
 	shared_ptr<Texture> texture2;
 	shared_ptr<Texture> texture3;
 
-	// view pitch dist angle playerpos playerrot animate g_eye
+	vec3 strafe = vec3(1, 0, 0);
+
+	// 	view pitch dist angle playerpos playerrot animate g_eye
 	Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
 
-	// bounds for world
+	//bounds for world
 	double bounds;
-
+	
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -149,6 +160,7 @@ public:
 			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		}
 
+		// Entity *catptr = &catEnt;
 		ih.handleInput(&catEnt, &cam);
 	}
 
@@ -157,10 +169,9 @@ public:
 		//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
 		cam.angle -= 10 * (deltaX / 57.296);
 
-		// ensures camera movement is in sync with player object
+		// cat entity updated with camera
 		catEnt.m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
 		catEnt.m.forward.y = 0;
-		// rotates player object
 		catEnt.rotate -= 10 * (deltaX / 57.296);
 		
 	}
@@ -198,6 +209,8 @@ public:
 
 		tex.addTexture(resourceDirectory + "/grass_tex.jpg");
 		tex.addTexture(resourceDirectory + "/sky.jpg");
+		tex.addTexture(resourceDirectory + "/cat_tex.jpg");
+		tex.addTexture(resourceDirectory + "/cat_tex_legs.jpg");	
     
 	}
 
@@ -220,6 +233,21 @@ public:
 			sphere->measure();
 			sphere->init();
 		}
+
+		// Initialize cat mesh.
+		vector<tinyobj::shape_t> TOshapesB;
+ 		vector<tinyobj::material_t> objMaterialsB;
+		//load in the mesh and make the shape(s)
+ 		rc = tinyobj::LoadObj(TOshapesB, objMaterialsB, errStr, (resourceDirectory + "/cat.obj").c_str());
+		if (!rc) {
+			cerr << errStr << endl;
+		} else {	
+			cat.push_back(make_shared<Shape>());
+			cat[0]->createShape(TOshapesB[0]);
+			cat[0]->measure();
+			cat[0]->init();
+		}
+
 
 		vector<tinyobj::shape_t> TOshapesC;
  		vector<tinyobj::material_t> objMaterialsC;
@@ -245,6 +273,37 @@ public:
 				butterfly[i]->createShape(TOshapes3[i]);
 				butterfly[i]->measure();
 				butterfly[i]->init();
+			}
+		}
+
+		vector<tinyobj::shape_t> TOshapes4;
+		rc = tinyobj::LoadObj(TOshapes4, objMaterials, errStr, (resourceDirectory + "/flower.obj").c_str());
+		if (!rc) {
+			cerr << errStr << endl;
+		} else {
+			//for now all our shapes will not have textures - change in later labs
+			for (int i = 0; i < 3; i++) {
+				//scan in current obj part of flower
+				flower.push_back(make_shared<Shape>());
+				flower[i]->createShape(TOshapes4[i]);
+				flower[i]->measure();
+				flower[i]->init();
+			}
+		}
+
+		vector<tinyobj::shape_t> TOshapes5;
+		rc = tinyobj::LoadObj(TOshapes5, objMaterials, errStr, (resourceDirectory + "/trees.obj").c_str());
+		if (!rc) {
+			cerr << errStr << endl;
+		} else {
+			//for now all our shapes will not have textures - change in later labs
+			for (int i = 0; i < 12; i++) {
+				//scan in current obj part of flower
+				tree1.push_back(make_shared<Shape>());
+
+				tree1[i]->createShape(TOshapes5[i]);
+				tree1[i]->measure();
+				tree1[i]->init();
 			}
 		}
 
@@ -311,14 +370,8 @@ public:
 		gameObjects.push_back(bf2);
 		gameObjects.push_back(bf3);
 
-		//cout << "butterfly entities size = " << bf.size() << endl;
-		for(int i = 0; i < bf.size(); i++){
-			//cout << "bf[" << i << "] id is " << bf[i].id << endl;
-		}
-		//cout << "gameObjects size = " << gameObjects.size() << endl;
-
-			//code to load in the ground plane (CPU defined data passed to GPU)
-			initGround();
+		//code to load in the ground plane (CPU defined data passed to GPU)
+		initGround();
 	}
 
 	//directly pass quad for the ground to the GPU
