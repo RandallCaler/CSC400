@@ -19,6 +19,7 @@
 // #include "Entity.h"
 #include "ShaderManager.h"
 #include "Camera.h"
+#include "ImportExport.h"
 
 #include <chrono>
 
@@ -50,7 +51,6 @@ public:
 
 	// Our shader program - use this one for Blinn-Phong has diffuse
 	Shader reg;
-
 	//Our shader program for textures
 	Shader tex;
 
@@ -184,6 +184,14 @@ public:
 		if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
 			worldentities[activeEntity]->transform.x -= 1.0;
 		}
+
+		if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
+			worldentities[activeEntity]->rotY += 0.1;
+		}
+
+		if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+			worldentities[activeEntity]->rotY -= 0.1;
+		}
 	}
 
 
@@ -226,6 +234,7 @@ public:
 		reg = *(shaders["reg"].get());
 		// tex = Shader(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/tex_frag0.glsl", true);
 		tex = *(shaders["tex"].get());
+		tex.has_texture = true;
 
 		tex.addTexture(resourceDirectory + "/grass_tex.jpg");
 		tex.addTexture(resourceDirectory + "/sky.jpg");
@@ -650,7 +659,6 @@ public:
 
 		cam.SetView(tex.prog);
 
-
 		materials c;
 		c.matAmb.r = 0.17;
         c.matAmb.g = 0.05;
@@ -665,7 +673,6 @@ public:
 		tex.flip(1);
 		tex.setMaterial(c);
 		tex.setTexture(3);
-
 
 		//hierarchical modeling with cat!!
 		Model->pushMatrix();
@@ -946,253 +953,15 @@ public:
 	}
 };
 
-void loadShader(string buffer) {
-	size_t delimit = buffer.find(' ');
-	string id = buffer.substr(0, delimit);
-	printf("%s ", id.c_str());
-	buffer = buffer.substr(delimit + 1);
-
-	delimit = buffer.find(' ');
-	string vertexSFile = buffer.substr(0, delimit);
-	printf("%s ", vertexSFile.c_str());
-	buffer = buffer.substr(delimit + 1);
-	
-	delimit = buffer.find(' ');
-	string fragSFile = buffer.substr(0, delimit);
-	printf("%s ", fragSFile.c_str());
-	buffer = buffer.substr(delimit + 1);
-
-	shared_ptr<Shader> shader = make_shared<Shader>(resourceDir + vertexSFile, resourceDir + fragSFile, false);
-	
-	delimit = buffer.find(' ');
-	int numUniforms = strtol(buffer.substr(0, delimit).c_str(), NULL, 10);
-	printf("%i ", numUniforms);
-	buffer = buffer.substr(delimit + 1);
-
-	for (int i = 0; i < numUniforms; i++) {
-		delimit = buffer.find(' ');
-		string uniform = buffer.substr(0, delimit);
-		shader->setUniform(uniform);
-		printf("%s ", uniform.c_str());
-		buffer = buffer.substr(delimit + 1);
-	}
-
-	delimit = buffer.find(' ');
-	int numAttributes = strtol(buffer.substr(0, delimit).c_str(), NULL, 10);
-	printf("%i ", numAttributes);
-	buffer = buffer.substr(delimit + 1);
-
-	for (int i = 0; i < numAttributes; i++) {
-		delimit = buffer.find(' ');
-		string attribute = buffer.substr(0, delimit);
-		shader->setAttribute(attribute);
-		printf("%s ", attribute.c_str());
-		buffer = buffer.substr(delimit + 1);
-	}
-	printf("\n");
-	shaders[id] = shader;
-}
-
-void loadSingleShape(string buffer, map<string, pair<shared_ptr<Shape>, materials>>& shapes, vector<string>& files) {
-	vector<tinyobj::shape_t> TOshapes;
-	vector<tinyobj::material_t> objMaterials;
-	string errStr;
-
-	size_t delimit = buffer.find(' ');
-	string id = buffer.substr(0, delimit);
-	buffer = buffer.substr(delimit + 1);
-
-	delimit = buffer.find(' ');
-	string meshFile = buffer.substr(0, delimit);
-	buffer = buffer.substr(delimit + 1);
-	
-	delimit = buffer.find(' ');
-	string shapeName = buffer.substr(0, delimit);
-	buffer = buffer.substr(delimit + 1);
-
-	// TinyObj handles file read
-	bool rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr, (resourceDir + meshFile).c_str());
-	if (!rc) {
-		cerr << errStr << endl;
-	}
-	else {
-		// command line displays model names and index range of their meshes
-		printf("import from file %s\n", meshFile.c_str());
-		// parse into Shapes, then load in OpenGL
-		for(tinyobj::shape_t shape: TOshapes) {
-			if (shape.name == shapeName) {
-				shared_ptr<Shape> newShape = make_shared<Shape>();
-				newShape->createShape(shape);
-				newShape->measure();
-				newShape->init();
-				materials newMat = materials();
-				shapes[id] = make_pair(newShape, newMat);
-			}
-		}
-		errStr = "";
-	}
-
-	delimit = buffer.find(' ');
-	shapes[id].second.matAmb.r = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-
-	delimit = buffer.find(' ');
-	shapes[id].second.matAmb.g = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-
-	delimit = buffer.find(' ');
-	shapes[id].second.matAmb.b = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-	
-	delimit = buffer.find(' ');
-	shapes[id].second.matDif.r = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-
-	delimit = buffer.find(' ');
-	shapes[id].second.matDif.g = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-
-	delimit = buffer.find(' ');
-	shapes[id].second.matDif.b = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-	
-	delimit = buffer.find(' ');
-	shapes[id].second.matSpec.r = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-	delimit = buffer.find(' ');
-	shapes[id].second.matSpec.g = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-	delimit = buffer.find(' ');
-	shapes[id].second.matSpec.b = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-	
-	delimit = buffer.find(' ');
-	shapes[id].second.matShine = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-	printf("%s %s %s %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n", 
-		id.c_str(), meshFile.c_str(), shapeName.c_str(),
-		shapes[id].second.matAmb.r, shapes[id].second.matAmb.g, shapes[id].second.matAmb.b,
-		shapes[id].second.matDif.r, shapes[id].second.matDif.g, shapes[id].second.matDif.b,
-		shapes[id].second.matSpec.r, shapes[id].second.matSpec.g, shapes[id].second.matSpec.b,
-		shapes[id].second.matShine);
-}
-
-void loadEntity(string buffer, map<string, pair<shared_ptr<Shape>, materials>>& shapes) {
-	size_t delimit = buffer.find(' ');
-	string id = buffer.substr(0, delimit);
-	buffer = buffer.substr(delimit + 1);
-	printf("entity imported: %s\n", id.c_str());
-
-	delimit = buffer.find(' ');
-	int numShapes = strtol(buffer.substr(0, delimit).c_str(), NULL, 10);
-	buffer = buffer.substr(delimit + 1);
-	printf("%s %i ", id.c_str(), numShapes);
-
-	vector<shared_ptr<Shape>> entityShapes;
-	vector<materials> entityMats;
-	
-	for (int i = 0; i < numShapes; i++) {
-		delimit = buffer.find(' ');
-		string shapeID = buffer.substr(0, delimit);
-		printf("%s ", shapeID.c_str());
-		buffer = buffer.substr(delimit + 1);
-		entityShapes.push_back(shapes[shapeID].first);
-		entityMats.push_back(shapes[shapeID].second);
-	}
-
-	shared_ptr<Entity> newEntity = make_shared<Entity>();
-	newEntity->initEntity(entityShapes);
-	newEntity->material = entityMats;
-
-	delimit = buffer.find(' ');
-	newEntity->transform.x = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-
-	delimit = buffer.find(' ');
-	newEntity->transform.y = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-
-	delimit = buffer.find(' ');
-	newEntity->transform.z = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-
-	delimit = buffer.find(' ');
-	newEntity->rotX = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-
-	delimit = buffer.find(' ');
-	newEntity->rotY = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-
-	delimit = buffer.find(' ');
-	newEntity->rotZ = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-
-	delimit = buffer.find(' ');
-	float scaleX = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-	newEntity->scaleVec.x = scaleX;
-	newEntity->scale = scaleX;
-
-	delimit = buffer.find(' ');
-	float scaleY = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-	newEntity->scaleVec.y = scaleY;
-
-	delimit = buffer.find(' ');
-	float scaleZ = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-	newEntity->scaleVec.z = scaleZ;
-	
-	printf("%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n",
-		newEntity->transform.x, newEntity->transform.y, newEntity->transform.z,
-		newEntity->rotX, newEntity->rotY, newEntity->rotZ,
-		newEntity->scaleVec.x, newEntity->scaleVec.y, newEntity->scaleVec.z);
-
-	worldentities.push_back(newEntity);
-}
-
-
-void loadFromFile(string path) {
-	map<string, pair<shared_ptr<Shape>, materials>> shapeLibrary;
-	vector<string> readFiles;
-	string buffer;
-
-	printf("begin load from save at %s\n", (resourceDir+path).c_str());
-	ifstream saveFile(resourceDir + path);
-
-	while (getline(saveFile, buffer)) {
-		char type = buffer[0];
-		switch (type) {
-			case '1':
-				loadShader(buffer.substr(2));
-				break;
-			case '2':
-				loadSingleShape(buffer.substr(2), shapeLibrary, readFiles);
-				break;
-			case '3':
-				loadEntity(buffer.substr(2), shapeLibrary);
-				break;
-		}
-	}
-	printf("end load from save\n");
-
-}
-
-
 int main(int argc, char *argv[]) {
-
-	if (argc >= 2)
-	{
+	if (argc >= 2) {
 		resourceDir = argv[1];
 	}
 
 	Application *application = new Application();
-
-	// Your main will always include a similar set up to establish your window
-	// and GL context, etc.
-
 	WindowManager *windowManager = new WindowManager();
+	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities);
+
 	windowManager->init(640, 480);
 	windowManager->setEventCallbacks(application);
 	application->windowManager = windowManager;
@@ -1200,10 +969,9 @@ int main(int argc, char *argv[]) {
 	// This is the code that will likely change program to program as you
 	// may need to initialize or set up different data and state
 
-	loadFromFile("/save.noot");
+	levelEditor->loadFromFile("/save.noot");
 
 	application->init(resourceDir);
-	
 	application->initGeom(resourceDir);
 
 	float dt = 1 / 60.0;
@@ -1211,8 +979,7 @@ int main(int argc, char *argv[]) {
 	auto lastTime = chrono::high_resolution_clock::now();
 
 	// Loop until the user closes the window.
-	while (! glfwWindowShouldClose(windowManager->getHandle()))
-	{
+	while (!glfwWindowShouldClose(windowManager->getHandle()))	{
 		// save current time for next frame
 		auto nextLastTime = chrono::high_resolution_clock::now();
 
