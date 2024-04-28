@@ -12,22 +12,6 @@ Collider::Collider(Entity *owner) : worldMin(owner->minBB), worldMax(owner->maxB
 void Collider::CheckCollision(std::vector<Entity> entities, int thisID)
 {
     for(int i = 0; i < entities.size(); i++){
-//        cout << "this id = " << this->entityId << " and checking id " << entities[i].id << endl;
-        /*cout << "this id = " << thisID << " and checking entities pos " << i << endl;*/
-        //if(entities[i].id != this->entityId) // exclude self when checking collisions
-        //{
-//            cout << entities[i].collider->entityName << endl;
-            
-//            cout << "my type " << this->entityName << endl;
-//            cout << "here" << endl;
-            /*cout << "this id = " << thisID << " and checking id " << entities[i].id << endl;
-            cout << "this id = " << thisID << " and checking entities pos " << i << endl; */
-           /* cout << "entity pos x = " << entities[i].position.x << endl;
-            cout << "player pos x = " << entities[thisID].position.x << endl;
-            cout << "entity pos z = " << entities[i].position.z << endl;
-            cout << "player pos z = " << entities[thisID].position.z << endl;
-            */
-
             float distance = std::sqrt(
             (entities[i].position.x - entities[this->entityId].position.x) * (entities[i].position.x - entities[this->entityId].position.x) + 
             (entities[i].position.z - entities[this->entityId].position.z) * (entities[i].position.z - entities[this->entityId].position.z)
@@ -48,42 +32,42 @@ void Collider::CheckCollision(std::vector<Entity> entities, int thisID)
     }
 }
 
-int Collider::CatCollision(std::vector<Entity> entities, Entity *cat)
-{
-    for(int i = 0; i < entities.size(); i++){
-//        cout << "this id = " << cat->id << " and checking id " << entities[i].id << endl;
-        /*cout << "this id = " << thisID << " and checking entities pos " << i << endl;*/
-        //if(entities[i].id != this->entityId) // exclude self when checking collisions
-        //{
-//            cout << "other entity name is " << entities[i].collider->entityName << endl;
-            
-//            cout << "my type " << cat->collider->entityName << endl;
-//            cout << "here" << endl;
-            /*cout << "this id = " << thisID << " and checking id " << entities[i].id << endl;
-            cout << "this id = " << thisID << " and checking entities pos " << i << endl; */
-//            cout << "entity pos x = " << entities[i].position.x << endl;
-//            cout << "player pos x = " << cat->position.x << endl;
-//            cout << "entity pos z = " << entities[i].position.z << endl;
-//            cout << "player pos z = " << cat->position.z << endl;
+//int Collider::CatCollision(std::vector<Entity> entities, Entity *cat)
+//{
+//    for(int i = 0; i < entities.size(); i++){
+////        cout << "this id = " << cat->id << " and checking id " << entities[i].id << endl;
+//        /*cout << "this id = " << thisID << " and checking entities pos " << i << endl;*/
+//        //if(entities[i].id != this->entityId) // exclude self when checking collisions
+//        //{
+////            cout << "other entity name is " << entities[i].collider->entityName << endl;
+//            
+////            cout << "my type " << cat->collider->entityName << endl;
+////            cout << "here" << endl;
+//            /*cout << "this id = " << thisID << " and checking id " << entities[i].id << endl;
+//            cout << "this id = " << thisID << " and checking entities pos " << i << endl; */
+////            cout << "entity pos x = " << entities[i].position.x << endl;
+////            cout << "player pos x = " << cat->position.x << endl;
+////            cout << "entity pos z = " << entities[i].position.z << endl;
+////            cout << "player pos z = " << cat->position.z << endl;
+////
 //
-
-            float distance = std::sqrt(
-            (entities[i].position.x - cat->position.x) * (entities[i].position.x - cat->position.x) + 
-            (entities[i].position.z - cat->position.z) * (entities[i].position.z - cat->position.z)
-            );
-            distance = std::abs(distance);
-            if(distance < entities[i].collider->GetRadial() + cat->collider->GetRadial()){
-                // update this to account for butterfly collection
-                colliding = true;
-                return i;
-            }
-            else {
-                colliding = false;
-            }
-        //} 
-    }
-    return -1;
-}
+//            //float distance = std::sqrt(
+//            //(entities[i].position.x - cat->position.x) * (entities[i].position.x - cat->position.x) + 
+//            //(entities[i].position.z - cat->position.z) * (entities[i].position.z - cat->position.z)
+//            //);
+//            //distance = std::abs(distance);
+//            //if(distance < entities[i].collider->GetRadial() + cat->collider->GetRadial()){
+//            //    // update this to account for butterfly collection
+//            //    colliding = true;
+//            //    return i;
+//            //}
+//            //else {
+//            //    colliding = false;
+//            //}
+//        //} 
+//    }
+//    return -1;
+//}
 
 void Collider::UpdateColliderSize(){
 
@@ -135,8 +119,5 @@ void Collider::CalculateBoundingBox(glm::mat4 modelMatrix) {
 
     this->worldMin = newMin;
     this->worldMax = newMax;
-
-    cout << "MinBB: " << newMin.x << " " << newMin.y << " " << newMin.z << endl;
-    cout << "MaxBB: " << newMax.x << " " << newMax.y << " " << newMax.z << endl;
 
 }

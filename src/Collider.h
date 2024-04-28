@@ -21,14 +21,13 @@ public:
     Collider(Entity *owner);
     void UpdateColliderSize();
     void CheckCollision(std::vector<Entity> entities, int thisID);
-    int CatCollision(std::vector<Entity> entities, Entity *cat);
     void SetEntityID(int ID);
     bool IsColliding();
     void ExitCollision();
     float GetRadial();
 
     // AABB
-    void CalculateBoundingBox( glm::mat4 modelMatrix);
+    void CalculateBoundingBox(glm::mat4 modelMatrix);
 
     glm::vec3 worldMin;
     glm::vec3 worldMax;

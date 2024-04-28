@@ -48,6 +48,10 @@ void Shader::setModel(std::shared_ptr<MatrixStack> M) {
     glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
 }
 
+void Shader::setModel(glm::mat4& M) {
+    glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M));
+}
+
 void Shader::addTexture(const std::string &f) {
     if (has_texture) {
         shared_ptr<Texture> texture0 = make_shared<Texture>();
@@ -59,11 +63,11 @@ void Shader::addTexture(const std::string &f) {
     }
 }
 
-void Shader::setMaterial(materials material) {
-    glUniform3f(prog->getUniform("MatAmb"), material.matAmb.r, material.matAmb.g, material.matAmb.b);
-	glUniform3f(prog->getUniform("MatDif"), material.matDif.r, material.matDif.g, material.matDif.b);
-	glUniform3f(prog->getUniform("MatSpec"), material.matSpec.r, material.matSpec.g, material.matSpec.b);
-	glUniform1f(prog->getUniform("MatShine"), material.matShine);
+void Shader::setMaterial(material material) {
+    glUniform3f(prog->getUniform("MatAmb"), material.amb.r, material.amb.g, material.amb.b);
+	glUniform3f(prog->getUniform("MatDif"), material.dif.r, material.dif.g, material.dif.b);
+	glUniform3f(prog->getUniform("MatSpec"), material.spec.r, material.spec.g, material.spec.b);
+	glUniform1f(prog->getUniform("MatShine"), material.shine);
 }
 
 void Shader::flip(int f) {
@@ -93,4 +97,16 @@ Shader::Shader() {
 
 Shader::~Shader() {
     ;
+}
+
+
+unsigned int ShaderManager::ID = 0;
+
+ShaderManager::ShaderManager() : shaderList{}, shaderTable{} {}
+void ShaderManager::AddShader(shared_ptr<Shader> shader) {
+    shaderList.push_back(shader);
+    shaderTable[shader->name] = ID++;
+}
+void ShaderManager::Draw(Entity& entity) {
+    auto shaderptr = shaderList[shaderTable[entity.shaderName]];
 }

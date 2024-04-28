@@ -9,17 +9,17 @@
 using namespace std;
 using namespace glm;
 
+int Entity::NEXT_ID = 0;
 
 Entity::Entity(){};
-
 void Entity::initEntity(std::vector<std::shared_ptr<Shape>> ref){
     objs = ref;
     minBB = vec3(std::numeric_limits<float>::max());
     maxBB = vec3(std::numeric_limits<float>::min());
 
     for (int i = 0; i < ref.size(); i++) {
-        materials m;
-        material.push_back(m);
+        material m;
+        materials.push_back(m);
 
         if (minBB.x > ref[i]->min.x) minBB.x = ref[i]->min.x;
         if (minBB.y > ref[i]->min.y) minBB.y = ref[i]->min.y;
@@ -29,24 +29,26 @@ void Entity::initEntity(std::vector<std::shared_ptr<Shape>> ref){
         if (maxBB.z < ref[i]->max.z) maxBB.z = ref[i]->max.z;
     }
 
-    id = NEXT_ID;
-//    cout << "entity created with id " << id << endl;
-    NEXT_ID++;
-//    cout << "NEXTID is now " << NEXT_ID << endl;
+    id = NEXT_ID++;
+    shaderName = "";
 }
 
 void Entity::setMaterials(int i, float r1, float g1, float b1, float r2, float g2, float b2, 
     float r3, float g3, float b3, float s) {
-        material[i].matAmb.r = r1;
-        material[i].matAmb.g = g1;
-        material[i].matAmb.b = b1;
-        material[i].matDif.r = r2;
-        material[i].matDif.g = g2;
-        material[i].matDif.b = b2;
-        material[i].matSpec.r = r3;
-        material[i].matSpec.g = g3;
-        material[i].matSpec.b = b3;
-        material[i].matShine = s;
+        materials[i].amb.r = r1;
+        materials[i].amb.g = g1;
+        materials[i].amb.b = b1;
+        materials[i].dif.r = r2;
+        materials[i].dif.g = g2;
+        materials[i].dif.b = b2;
+        materials[i].spec.r = r3;
+        materials[i].spec.g = g3;
+        materials[i].spec.b = b3;
+        materials[i].shine = s;
+}
+
+void Entity::setMaterials(int i, material& mat) {
+    materials[i] = mat;
 }
 
 void Entity::updateScale(float newScale){
