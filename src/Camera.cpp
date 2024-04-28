@@ -27,10 +27,12 @@ Camera::~Camera()
 }
 
 void Camera::SetView(std::shared_ptr<Program> shader) {
-    vec3 v_eye = player_pos + vec3(0,2,-3);
-    vec3 v_dir = -vec3(sin(-angle) * cos(pitch), sin(pitch), cos(angle) * cos(pitch)) + v_eye;
-    // mat4 scale = glm::scale(glm::mat4(1.0f), view->scale);
-	mat4 v_mat = lookAt(v_eye, v_dir, vec3(0,1,0));
+    horiz = dist * cos(pitch * 0.01745329);   // for third person camera - calculate horizontal and
+    vert = dist * sin(pitch * 0.01745329);    // vertical offset based on maintained distance
+    offX = horiz * sin(angle);				// rotation around cat
+    offZ = horiz * cos(angle);
 
-	glUniformMatrix4fv(shader->getUniform("V"), 1, GL_FALSE, value_ptr(v_mat));
+    g_eye = vec3(player_pos[0] - offX, player_pos[1] + vert, player_pos[2] - offZ);
+    glm::mat4 Cam = glm::lookAt(g_eye, player_pos, vec3(0, 1, 0));
+    glUniformMatrix4fv(shader->getUniform("V"), 1, GL_FALSE, value_ptr(Cam));
 }

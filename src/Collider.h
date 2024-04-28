@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef COLLIDER_H_INCLUDED
-#define COLLIDER_H_INCLUDED
-
 #include "Shape.h"
 
 class Entity; // forward declaration to enable use of this class in Entity class
@@ -39,5 +34,3 @@ private:
     bool colliding = false;
 
 };
-
-#endif

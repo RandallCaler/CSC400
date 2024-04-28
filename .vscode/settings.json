@@ -65,14 +65,6 @@
         "xstring": "cpp",
         "xtr1common": "cpp",
         "xtree": "cpp",
-        "xutility": "cpp",
-        "ranges": "cpp",
-        "array": "cpp",
-        "list": "cpp",
-        "queue": "cpp",
-        "set": "cpp",
-        "span": "cpp",
-        "unordered_map": "cpp",
-        "xhash": "cpp"
+        "xutility": "cpp"
     }
 }
