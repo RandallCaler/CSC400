@@ -6,16 +6,14 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <algorithm>
-
 #include "GLSL.h"
 #include "Program.h"
 #include "Shape.h"
-#include "Collider.h"
 #include "MatrixStack.h"
 #include "WindowManager.h"
 #include "Texture.h"
 #include "stb_image.h"
-// #include "Entity.h"
+#include "PhysicalObject.h"
 #include "ShaderManager.h"
 #include "Camera.h"
 
@@ -59,7 +57,7 @@ public:
 	Entity bf1 = Entity();
 	Entity bf2 = Entity();
 	Entity bf3 = Entity();
-	Entity catEnt = Entity();
+	Entity *catEnt = new PhysicalObject();
 	
   	std::vector<Entity> bf;
 
@@ -140,15 +138,15 @@ public:
 		}
 
 		animate = false;
-		if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT)&& !catEnt.collider->IsColliding()){
+		if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT)&& !catEnt->collider->IsColliding()){
 			cam.player_rot -= 10 * 0.01745329;
 			animate = true;
 		}
-		if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT) && !catEnt.collider->IsColliding()){
+		if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT) && !catEnt->collider->IsColliding()){
 			cam.player_rot += 10 * 0.01745329;
 			animate = true;
 		}
-		if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT) && !catEnt.collider->IsColliding() && bounds < 19){
+		if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT) && !catEnt->collider->IsColliding() && bounds < 19){
 			cam.player_pos += vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
 			animate = true;
 		}
@@ -338,17 +336,17 @@ public:
 
 
 		// init cat entity
-		catEnt.initEntity(cat);
-		catEnt.position = cam.player_pos;
+		catEnt->initEntity(cat);
+		catEnt->position = cam.player_pos;
 //		cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
 		// set forward
 		// set velocity
-		catEnt.collider = new Collider(&catEnt);
-		catEnt.collider->SetEntityID(catEnt.id);
-		gameObjects.push_back(catEnt);
+		catEnt->collider = new Collider(catEnt);
+		catEnt->collider->SetEntityID(catEnt->id);
+		gameObjects.push_back(*dynamic_cast<Entity *>(catEnt));
 		
 //		cout << "cat " << catEnt.id << endl;
-		catEnt.collider->entityName = 'c';
+		catEnt->collider->entityName = 'c';
 
 		// vec3 tree_loc[7];
 		// tree_loc[0] = vec3(4, -5.5, 7);
@@ -639,7 +637,7 @@ public:
 			Model->scale(vec3(0.7, 0.7, 0.7));
 
             // Check calculating cat thing
-            catEnt.collider->CalculateBoundingBox(Model->topMatrix());
+            catEnt->collider->CalculateBoundingBox(Model->topMatrix());
 			
 			Model->pushMatrix();  // upper left leg
 				Model->translate(vec3(0.16, 0.48, 0.35));
@@ -861,12 +859,12 @@ public:
 		drawGround(tex);  //draw ground here
 
 
-		catEnt.position = cam.player_pos;
+		catEnt->position = cam.player_pos;
 
 		//halt animations if cat collides with flower or tree
 //		cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
 //		cout << "before calling check collision, catID = " << catEnt.id << endl;
-		int collided = catEnt.collider->CatCollision(bf, &catEnt);
+		int collided = catEnt->collider->CatCollision(bf, catEnt);
 
 		if (collided != -1) {
 			bf_flags[collided] = 1;

@@ -1,8 +1,6 @@
-
-
 #include "Components.h"
-#include "Entity.h"
 
+struct materials;
 
 class Shader {
     public:
