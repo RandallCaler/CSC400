@@ -1,5 +1,7 @@
-#ifndef ENTITY_H
-#define ENTITY_H
+#pragma once
+
+#ifndef ENTITY_H_INCLUDED
+#define ENTITY_H_INCLUDED
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -23,7 +25,7 @@ typedef struct materials {
 
 struct motion {
     // the velocity of the obstacles will be a constant speed in the forward direction
-    float velocity;
+    glm::vec3 velocity;
     // a vector to inform which direction the object is facing
     glm::vec4 forward; 
 };
@@ -34,6 +36,7 @@ class Entity {
     public:
     
         Entity();
+        Entity(string const& path);
         
         void initEntity(std::vector<std::shared_ptr<Shape>> ref);
 
@@ -49,14 +52,14 @@ class Entity {
         std::vector<std::shared_ptr<Shape>> objs;
         std::vector<materials> material;
         Collider* collider;
-        glm::vec3 position;
-        float scale;
+        glm::vec3 position = glm::vec3(0);
+        glm::vec3 scaleVec = glm::vec3(1);
         motion m;
-        float rotate;
- 
+        float scale;
+        float rotX = 0.0;
+        float rotY = 0.0;
+        float rotZ = 0.0;
+        string fname;
     };
 
-
 #endif
-
-

@@ -4,16 +4,26 @@ layout(location = 1) in vec3 vertNor;
 uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
-uniform vec3 lightPos;
+uniform vec3 lightDir; // position of light source in model space
 
 out vec3 fragNor;
-out vec3 lightDir;
+out vec3 LDir;
 out vec3 EPos;
 
-void main()
-{
-	gl_Position = P * V * M * vertPos;
-	fragNor = (V*M * vec4(vertNor, 0.0)).xyz;
-	lightDir = vec3(V*(vec4(lightPos - (M*vertPos).xyz, 0.0)));
-	EPos = vec3(1); //PULLED for release
+void main() {
+	// translate model to view space
+    vec4 viewPos = V * M * vertPos;
+
+    // vertex normal in view space
+    fragNor = (transpose(inverse(V * M)) * vec4(vertNor, 0.0)).xyz;
+
+    // direction of light source in view space
+    LDir = mat3(V) * lightDir;
+	
+	// vertex position in view space
+	EPos = vec3(viewPos);
+
+    // complete vertex shading
+    gl_Position = P * viewPos;
 }
+ 

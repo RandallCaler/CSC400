@@ -1,5 +1,7 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#pragma once
+
+#ifndef CAMERA_H_INCLUDED
+#define CAMERA_H_INCLUDED
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -31,6 +33,5 @@ class Camera
         // float pitch;
         // float yaw;
 };
-
 
 #endif

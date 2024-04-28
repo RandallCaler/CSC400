@@ -12,6 +12,10 @@ using namespace glm;
 
 Entity::Entity(){};
 
+Entity::Entity(string const& path) {
+    fname = path;
+};
+
 void Entity::initEntity(std::vector<std::shared_ptr<Shape>> ref){
     objs = ref;
     for (int i = 0; i < ref.size(); i++) {
@@ -52,9 +56,7 @@ void Entity::updateMotion(float deltaTime) {
             m.velocity *= -1;
         }
         
-        position.x += m.velocity * normalize(m.forward).x * deltaTime;
-        position.y += m.velocity * normalize(m.forward).y * deltaTime;
-        position.z += m.velocity * normalize(m.forward).z * deltaTime;
+        position += m.velocity * vec3(normalize(m.forward)) * deltaTime;
     
        // std::cout << "deltaTime: " << deltaTime << "entity position:" << position.x << ", " << position.y << ", " << position.z << std::endl;
         

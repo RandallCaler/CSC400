@@ -18,6 +18,7 @@
 #include "InputHandler.h"
 #include "Entity.h"
 #include "ShaderManager.h"
+#include "ImportExport.h"
 #include "Camera.h"
 
 #include <chrono>
@@ -25,6 +26,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
 #define PI 3.1415927
+#define EPSILON 0.0001
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -36,20 +38,24 @@ using namespace glm;
 // static/global vars
 int Entity::NEXT_ID = 0;
 
+// Where the resources are loaded from
+std::string resourceDir = "../resources";
+
+map<string, shared_ptr<Shader>> shaders;
+vector<shared_ptr<Entity>> worldentities;
+
 class Application : public EventCallbacks
 {
 
 public:
-
 	WindowManager * windowManager = nullptr;
 
 	// Our shader program - use this one for Blinn-Phong has diffuse
-
-
-	Shader reg;           // 
-
+	Shader reg;
 	//Our shader program for textures
 	Shader tex;
+
+	bool editMode = false;
 
 	//our geometry
 	shared_ptr<Shape> sphere;
@@ -101,9 +107,18 @@ public:
 
 	// 	view pitch dist angle playerpos playerrot animate g_eye
 	Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
+	double cursor_x = 0;
+	double cursor_y = 0;
+
 
 	//bounds for world
 	double bounds;
+
+	// temp variables, should be incorporated into controller
+	int activeEntity = 0;
+	float editSpeed = 2.0;
+	int editSRT = 0; // 0 - translation, 1 - rotation, 2 - scale
+	vec3 mobileVel = vec3(0);
 	
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -114,50 +129,115 @@ public:
 
 		// KEY PRESSED
 
-		if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !catEnt.collider->IsColliding() && bounds < 19){
-			ih.inputStates[0] = 1;
+		if (key == GLFW_KEY_CAPS_LOCK && (action == GLFW_PRESS)){
+			editMode = !editMode;
+			editSRT = 0;
+			editSpeed = 2.0;
 		}
 
-		if (key == GLFW_KEY_A && (action == GLFW_PRESS) && !catEnt.collider->IsColliding()){
-			ih.inputStates[1] = 1;
-		}
+		if (editMode) {
+			if (action == GLFW_PRESS) {
+				switch (key) {
+					case GLFW_KEY_TAB:
+						activeEntity = (activeEntity + 1)%worldentities.size();
+						break;
+					case GLFW_KEY_W:
+						mobileVel.z = editSpeed;
+						break;
+					case GLFW_KEY_S:
+						mobileVel.z = -editSpeed;
+						break;
+					case GLFW_KEY_A:
+						mobileVel.x = editSpeed;
+						break;
+					case GLFW_KEY_D:
+						mobileVel.x = -editSpeed;
+						break;
+					case GLFW_KEY_E:
+						mobileVel.y = editSpeed;
+						break;
+					case GLFW_KEY_Q:
+						mobileVel.y = -editSpeed;
+						break;
+					case GLFW_KEY_Z:
+						editSRT = 2;
+						break;
+					case GLFW_KEY_X:
+						editSRT = 1;
+						break;
+					case GLFW_KEY_C:
+						editSRT = 0;
+						break;
 
-		if (key == GLFW_KEY_S && (action == GLFW_PRESS) && bounds < 19){	
-			ih.inputStates[2] = 1;
+				}
+			}
+			if (action == GLFW_RELEASE) {
+				switch (key) {
+					case GLFW_KEY_W:
+					case GLFW_KEY_S:
+						mobileVel.z = 0.0;
+						break;
+					case GLFW_KEY_A:
+					case GLFW_KEY_D:
+						mobileVel.x = 0.0;
+						break;
+					case GLFW_KEY_E:
+					case GLFW_KEY_Q:
+						mobileVel.y = 0.0;
+						break;
+				}
+			}
 		}
+		else {
+			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !catEnt.collider->IsColliding() && bounds < 19){
+				ih.inputStates[0] = 1;
+			}
 
-		if (key == GLFW_KEY_D && (action == GLFW_PRESS)&& !catEnt.collider->IsColliding()){
-			ih.inputStates[3] = 1;
-		}
+			if (key == GLFW_KEY_A && (action == GLFW_PRESS) && !catEnt.collider->IsColliding()){
+				ih.inputStates[1] = 1;
+			}
 
-		if (key == GLFW_KEY_SPACE && (action == GLFW_PRESS)){
-			ih.inputStates[4] = 1;
-		}
+			if (key == GLFW_KEY_S && (action == GLFW_PRESS) && bounds < 19){	
+				ih.inputStates[2] = 1;
+			}
 
-		// KEY RELEASED
+			if (key == GLFW_KEY_D && (action == GLFW_PRESS)&& !catEnt.collider->IsColliding()){
+				ih.inputStates[3] = 1;
+			}
 
-		if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !catEnt.collider->IsColliding() && bounds < 19){
-			ih.inputStates[0] = 0;
-		}
-
-		if (key == GLFW_KEY_A && (action == GLFW_RELEASE) && !catEnt.collider->IsColliding()){
-			ih.inputStates[1] = 0;
-		}
-
-		if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 19){	
-			ih.inputStates[2] = 0;
-		}
-
-		if (key == GLFW_KEY_D && (action == GLFW_RELEASE)&& !catEnt.collider->IsColliding()){
-			ih.inputStates[3] = 0;
-		}
-
-		if (key == GLFW_KEY_SPACE && (action == GLFW_RELEASE)){
-			ih.inputStates[4] = 0;
-		}
+			if (key == GLFW_KEY_SPACE && (action == GLFW_PRESS)){
+				ih.inputStates[4] = 1;
+			}
 	
-		if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
-			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+			if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			}
+
+			// KEY RELEASED
+
+			if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !catEnt.collider->IsColliding() && bounds < 19){
+				ih.inputStates[0] = 0;
+			}
+
+			if (key == GLFW_KEY_A && (action == GLFW_RELEASE) && !catEnt.collider->IsColliding()){
+				ih.inputStates[1] = 0;
+			}
+
+			if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 19){	
+				ih.inputStates[2] = 0;
+			}
+
+			if (key == GLFW_KEY_D && (action == GLFW_RELEASE)&& !catEnt.collider->IsColliding()){
+				ih.inputStates[3] = 0;
+			}
+
+			if (key == GLFW_KEY_SPACE && (action == GLFW_RELEASE)){
+				ih.inputStates[4] = 0;
+			}
+			
+			if (key == GLFW_KEY_F1 && action == GLFW_RELEASE) {
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			}
 		}
 
 		// Entity *catptr = &catEnt;
@@ -166,13 +246,25 @@ public:
 
 
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
-		//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
-		cam.angle -= 10 * (deltaX / 57.296);
+		if (editMode) {
+			if (deltaY>0) {
+				mobileVel *= 0.9;
+				editSpeed *= 0.9;
+			}
+			else {
+				mobileVel *= 1.1;
+				editSpeed *= 1.1;
+			}
+		}
+		else {
+			//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
+			cam.angle -= 10 * (deltaX / 57.296);
 
-		// cat entity updated with camera
-		catEnt.m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
-		catEnt.m.forward.y = 0;
-		catEnt.rotate -= 10 * (deltaX / 57.296);
+			// cat entity updated with camera
+			catEnt.m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
+			catEnt.m.forward.y = 0;
+			catEnt.rotY -= 10 * (deltaX / 57.296);
+		}
 		
 	}
 
@@ -181,17 +273,40 @@ public:
 	{
 		double posX, posY;
 
-		if (action == GLFW_PRESS)
-		{
-			glfwGetCursorPos(window, &posX, &posY);
-			//cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
+		if (action == GLFW_PRESS) {
+			if (button == GLFW_MOUSE_BUTTON_LEFT) {
+				glfwGetCursorPos(window, &posX, &posY);
+				cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
+			}
+			else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+				int cursor_mode = glfwGetInputMode(window, GLFW_CURSOR);
+				if (cursor_mode == GLFW_CURSOR_DISABLED)
+					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+				else {
+					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+					glfwGetCursorPos(window, &cursor_x, &cursor_y);
+				}
+			}
 		}
 	}
 
 
-	void resizeCallback(GLFWwindow *window, int width, int height)
-	{
+	void resizeCallback(GLFWwindow *window, int width, int height) {
 		glViewport(0, 0, width, height);
+	}
+
+	void cursorPosCallback(GLFWwindow* window, double x, double y) {
+		if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
+			float sensitivity = 0.001f;
+
+			cam.angle += (x-cursor_x) * sensitivity;
+			cam.pitch += (y-cursor_y) * sensitivity;
+
+			cam.pitch = std::min(M_PI/2 - EPSILON, std::max(-M_PI/2 + EPSILON, (double)cam.pitch));
+
+			cursor_x = x;
+			cursor_y = y;
+		}
 	}
 
 
@@ -204,14 +319,16 @@ public:
 		// Enable z-buffer test.
 		glEnable(GL_DEPTH_TEST);
 
-		reg = Shader(resourceDirectory + "/simple_vert.glsl", resourceDirectory + "/simple_frag.glsl", false);
-		tex = Shader(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/tex_frag0.glsl", true);
+		// shaders["reg"] = make_shared<Shader>(resourceDirectory + "/simple_vert.glsl", resourceDirectory + "/simple_frag.glsl", false);
+		reg = *(shaders["reg"].get());
+		// tex = Shader(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/tex_frag0.glsl", true);
+		tex = *(shaders["tex"].get());
+		tex.has_texture = true;
 
 		tex.addTexture(resourceDirectory + "/grass_tex.jpg");
 		tex.addTexture(resourceDirectory + "/sky.jpg");
 		tex.addTexture(resourceDirectory + "/cat_tex.jpg");
-		tex.addTexture(resourceDirectory + "/cat_tex_legs.jpg");	
-    
+		tex.addTexture(resourceDirectory + "/cat_tex_legs.jpg");
 	}
 
 	void initGeom(const std::string& resourceDirectory)
@@ -311,7 +428,7 @@ public:
 		bf1.initEntity(butterfly);
 		bf1.position = vec3(2, -0.3, -1);
 		bf1.m.forward = vec4(0, 0, 1, 1);
-		bf1.m.velocity = 2.0;
+		bf1.m.velocity = vec3(2.0) * vec3(bf1.m.forward);
 		bf1.collider = new Collider(butterfly, Collider::BUTTERFLY);
 		bf1.collider->SetEntityID(bf1.id);
 		//cout << "butterfly 1 " << bf1.id << endl;
@@ -322,7 +439,7 @@ public:
 		bf2.initEntity(butterfly);
 		bf2.position = vec3(-2, -0.3, 0.5);
 		bf2.m.forward = vec4(-1, 0, .3, 1);
-		bf2.m.velocity = 9.0;
+		bf2.m.velocity = vec3(9.0) * vec3(bf2.m.forward);
 		bf2.collider = new Collider(butterfly, Collider::BUTTERFLY);
 		bf2.collider->SetEntityID(bf2.id);
 		//cout << "butterfly 2 " << bf2.id << endl;
@@ -335,7 +452,7 @@ public:
 		bf3.initEntity(butterfly);
 		bf3.position = vec3(4, -0.3, 0.5);
 		bf3.m.forward = vec4(1, 0, 0, 1);
-		bf3.m.velocity = 4.0;
+		bf3.m.velocity = vec3(4.0) * vec3(bf3.m.forward);
 		bf3.collider = new Collider(butterfly, Collider::BUTTERFLY);
 		bf3.collider->SetEntityID(bf3.id);
 		//cout << "butterfly 3 " << bf3.id << endl;
@@ -349,9 +466,9 @@ public:
 		catEnt.initEntity(bunny);
 		catEnt.position = vec3(0, -1, 0);
 		catEnt.m.forward = vec4(0, 0, 0.1, 1);
-		catEnt.m.velocity = 0.1;
+		catEnt.m.velocity = vec3(0.1) * vec3(catEnt.m.forward);
 		catEnt.scale = 5.0;
-		catEnt.rotate = 0.0;
+		catEnt.rotY = 0.0;
 		//catEnt.position = cam.player_pos;
 		//cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
 		// set forward
@@ -500,11 +617,31 @@ public:
 		Projection->pushMatrix();
 		Projection->perspective(45.0f, aspect, 0.01f, 100.0f);
 
+		// editor mode updates
+		if (editMode) {
+			switch (editSRT) {
+				case 0:
+					worldentities[activeEntity]->position += mobileVel * frametime;
+					break;
+				case 1:
+					worldentities[activeEntity]->rotX += mobileVel.x * frametime;
+					worldentities[activeEntity]->rotY += mobileVel.y * frametime;
+					worldentities[activeEntity]->rotZ += mobileVel.z * frametime;
+					break;
+				case 2:
+					worldentities[activeEntity]->scale += mobileVel.x * frametime;
+					worldentities[activeEntity]->scaleVec += mobileVel * frametime;
+					break;
+			}
+		}
 		
 		//material shader first
 		reg.prog->bind();
 		glUniformMatrix4fv(reg.prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		cam.SetView(reg.prog);
+
+		// directional light
+		glUniform3f(reg.prog->getUniform("lightDir"), -1.0f, 1.0f, -1.0f);
 
 		float butterfly_height[3] = {1.1, 1.7, 1.5};
 
@@ -546,11 +683,20 @@ public:
 
 
 		catEnt.setMaterials(0, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
-		reg.setModel(catEnt.position, 0, catEnt.rotate, 0, catEnt.scale);
+		reg.setModel(catEnt.position, 0, catEnt.rotY, 0, catEnt.scale);
 		reg.setMaterial(catEnt.material[0]);
 		catEnt.objs[0]->draw(reg.prog);
 
-		std::cout << "entity position:" << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << std::endl;
+		//std::cout << "entity position:" << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << std::endl;
+
+		// material imported from save file
+		for (shared_ptr<Entity> entity : worldentities) {
+			reg.setModel(*entity);
+			for (int i = 0; i < entity->objs.size(); i++) {
+				reg.setMaterial(entity->material[i]);
+				entity->objs[i]->draw(reg.prog);
+			}
+		}
 
 		reg.prog->unbind();
 
@@ -617,21 +763,17 @@ public:
 			}
 			bf[i].updateMotion(frametime);
 		}
-
-
 	}
 };
 
 
 
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 	// Where the resources are loaded from
 	std::string resourceDir = "../resources";
 
-	if (argc >= 2)
-	{
+	if (argc >= 2) {
 		resourceDir = argv[1];
 	}
 
@@ -641,6 +783,8 @@ int main(int argc, char *argv[])
 	// and GL context, etc.
 
 	WindowManager *windowManager = new WindowManager();
+	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities);
+
 	windowManager->init(640, 480);
 	windowManager->setEventCallbacks(application);
 	application->windowManager = windowManager;
@@ -648,8 +792,9 @@ int main(int argc, char *argv[])
 	// This is the code that will likely change program to program as you
 	// may need to initialize or set up different data and state
 
+	levelEditor->loadFromFile("/save.noot");
+
 	application->init(resourceDir);
-	
 	application->initGeom(resourceDir);
 
 	float dt = 1 / 60.0;
@@ -657,7 +802,7 @@ int main(int argc, char *argv[])
 	auto lastTime = chrono::high_resolution_clock::now();
 
 	// Loop until the user closes the window.
-	while (! glfwWindowShouldClose(windowManager->getHandle()))
+	while (!glfwWindowShouldClose(windowManager->getHandle()))
 	{
 		// save current time for next frame
 		auto nextLastTime = chrono::high_resolution_clock::now();
