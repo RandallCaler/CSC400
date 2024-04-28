@@ -48,14 +48,12 @@ void Shader::setModel(std::shared_ptr<MatrixStack> M) {
 }
 
 void Shader::addTexture(const std::string &f) {
-    if (has_texture) {
-        shared_ptr<Texture> texture0 = make_shared<Texture>();
-        texture0->setFilename(f);
-        texture0->init();
-        texture0->setUnit(0);
-        texture0->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
-        textures.push_back(texture0);
-    }
+    shared_ptr<Texture> texture0 = make_shared<Texture>();
+    texture0->setFilename(f);
+    texture0->init();
+    texture0->setUnit(0);
+    texture0->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+    textures.push_back(texture0);
 }
 
 void Shader::setMaterial(materials material) {
@@ -70,7 +68,9 @@ void Shader::flip(int f) {
 }
 
 void Shader::setTexture(int i) {
-    textures[i]->bind(prog->getUniform("Texture0"));
+    if (prog->getUniform("Texture0")) {
+        textures[i]->bind(prog->getUniform("Texture0"));
+    }
 }
 
 void Shader::unbindTexture(int i) {
