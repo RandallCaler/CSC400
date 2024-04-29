@@ -20,7 +20,11 @@ include_directories("ext")
 include_directories("ext/glad/include")
 
 # Set the executable.
-add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLSL})
+add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLSL}
+        src/GameObject.cpp
+        src/GameObject.h
+        src/PhysicalObject.cpp
+        src/PhysicalObject.h)
 
 # Helper function included from FindGfxLibs.cmake
 findGLFW3(${CMAKE_PROJECT_NAME})
