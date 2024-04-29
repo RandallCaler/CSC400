@@ -9,30 +9,30 @@ Collider::Collider(Entity *owner) : worldMin(owner->minBB), worldMax(owner->maxB
    
 }
 
-void Collider::CheckCollision(std::vector<Entity> entities, int thisID)
-{
-    for(int i = 0; i < entities.size(); i++){
-            float distance = std::sqrt(
-            (entities[i].position.x - entities[this->entityId].position.x) * (entities[i].position.x - entities[this->entityId].position.x) + 
-            (entities[i].position.z - entities[this->entityId].position.z) * (entities[i].position.z - entities[this->entityId].position.z)
-            );
-            distance = std::abs(distance);
-            // cout << "distance is " << distance << endl;
-            // cout << "radial of other is " << entities[i].collider->GetRadial() << "compared to this radial which is " << entities[thisID].collider->GetRadial() << endl;
-            
-            if(distance < entities[i].collider->GetRadial() + entities[this->entityId].collider->GetRadial()){
-                // update this to account for butterfly collection
-                colliding = true;
-                return;
-            }
-            else {
-                colliding = false;
-            }
-        //} 
-    }
-}
+//void Collider::CheckCollision(std::vector<Entity> entities, int thisID)
+//{
+//    for(int i = 0; i < entities.size(); i++){
+//            float distance = std::sqrt(
+//            (entities[i].position.x - entities[this->entityId].position.x) * (entities[i].position.x - entities[this->entityId].position.x) + 
+//            (entities[i].position.z - entities[this->entityId].position.z) * (entities[i].position.z - entities[this->entityId].position.z)
+//            );
+//            distance = std::abs(distance);
+//            // cout << "distance is " << distance << endl;
+//            // cout << "radial of other is " << entities[i].collider->GetRadial() << "compared to this radial which is " << entities[thisID].collider->GetRadial() << endl;
+//            
+//            if(distance < entities[i].collider->GetRadial() + entities[this->entityId].collider->GetRadial()){
+//                // update this to account for butterfly collection
+//                colliding = true;
+//                return;
+//            }
+//            else {
+//                colliding = false;
+//            }
+//        //} 
+//    }
+//}
 
-int Collider::CatCollision(std::vector<Entity> entities, Entity *cat)
+int Collider::CheckCollision(std::vector<Entity>& entities)
 {
     for(int i = 0; i < entities.size(); i++){
         // cout << "this id = " << cat->id << " and checking id " << entities[i].id << endl;
@@ -51,20 +51,37 @@ int Collider::CatCollision(std::vector<Entity> entities, Entity *cat)
         //     cout << "player pos z = " << cat->position.z << endl;
             
 
-            float distance = std::sqrt(
-            (entities[i].position.x - cat->position.x) * (entities[i].position.x - cat->position.x) + 
-            (entities[i].position.z - cat->position.z) * (entities[i].position.z - cat->position.z)
-            );
-            distance = std::abs(distance);
-            if(distance < entities[i].collider->GetRadial() + cat->collider->GetRadial()){
-                // update this to account for butterfly collection
+            //float distance = std::sqrt(
+            //(entities[i].position.x - cat->position.x) * (entities[i].position.x - cat->position.x) + 
+            //(entities[i].position.z - cat->position.z) * (entities[i].position.z - cat->position.z)
+            //);
+            //distance = std::abs(distance);
+            //if(distance < entities[i].collider->GetRadial() + cat->collider->GetRadial()){
+            //    // update this to account for butterfly collection
+            //    colliding = true;
+            //    return i;
+            //}
+            //else {
+            //    colliding = false;
+            //}
+        //} 
+
+        Entity e = entities[i];
+        bool iscolliding =
+            (worldMax.x >= e.collider->worldMin.x &&
+             worldMax.y >= e.collider->worldMin.y &&
+             worldMax.z >= e.collider->worldMin.z) ||
+            (worldMin.x >= e.collider->worldMax.x &&
+             worldMin.y >= e.collider->worldMax.y &&
+             worldMin.z >= e.collider->worldMax.z);
+
+            if (iscolliding) {
                 colliding = true;
                 return i;
             }
             else {
                 colliding = false;
             }
-        //} 
     }
     return -1;
 }
