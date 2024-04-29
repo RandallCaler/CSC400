@@ -21,12 +21,11 @@ void Entity::initEntity(std::vector<std::shared_ptr<Shape>> ref){
     for (int i = 0; i < ref.size(); i++) {
         materials m;
         material.push_back(m);
-        
     }
     id = NEXT_ID;
-    cout << "entity created with id " << id << endl;
+   // cout << "entity created with id " << id << endl;
     NEXT_ID++;
-    cout << "NEXTID is now " << NEXT_ID << endl;
+   // cout << "NEXTID is now " << NEXT_ID << endl;
 }
 
 void Entity::setMaterials(int i, float r1, float g1, float b1, float r2, float g2, float b2, 
@@ -51,19 +50,15 @@ void Entity::updateScale(float newScale){
 
 // velocity upon collision (bounds of world, or obstacle) and will rotate the model/"flip" the forward vector
 void Entity::updateMotion(float deltaTime) {
-        // Calculate dot product between forward vector and velocity
-        float dotProduct = glm::dot(glm::normalize(m.forward), m.velocity);
 
-        float distance = sqrt((transform.x * transform.x) + (transform.y * transform.y) + (transform.z * transform.z));
+        float distance = sqrt((position.x * position.x) + (position.y * position.y) + (position.z * position.z));
         if(distance >= 19.5){
             m.velocity *= -1;
         }
         
-        // Update transform based on dot product and velocity
-        // transform += dotProduct * m.forward * deltaTime;
-        transform += m.velocity * deltaTime;
+        position += m.velocity * vec3(normalize(m.forward)) * deltaTime;
     
-        std::cout << "deltaTime: " << deltaTime << "entity transform:" << transform.x << ", " << transform.y << ", " << transform.z << std::endl;
+       // std::cout << "deltaTime: " << deltaTime << "entity position:" << position.x << ", " << position.y << ", " << position.z << std::endl;
         
         // TODO add collision component
 

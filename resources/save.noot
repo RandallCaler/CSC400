@@ -1,6 +1,6 @@
 // Shaders: 1 shaderID vertexSFile fragSFile numUniforms [uniform1...] numAttributes [attribute1...]
-1 reg /simple_vert.glsl /simple_frag.glsl 8 P V M MatAmb MatDif MatSpec MatShine lightPos 3 vertPos vertNor vertTex
-1 tex /tex_vert.glsl /tex_frag0.glsl 10 P V M MatAmb MatDif MatSpec MatShine lightPos flip Texture0 3 vertPos vertNor vertTex
+1 reg /simple_vert.glsl /simple_frag.glsl 8 P V M MatAmb MatDif MatSpec MatShine lightDir 3 vertPos vertNor vertTex
+1 tex /tex_vert.glsl /tex_frag0.glsl 10 P V M MatAmb MatDif MatSpec MatShine lightDir flip Texture0 3 vertPos vertNor vertTex
 // Shapes: 2 shapeID objFile objShapeName matAmbX matAmbY matAmbZ matDifX matDifY matDifZ matSpecX matSpecY matSpecZ matShine
 2 cubeR /cube.obj Cube 0.1 0.1 0.1 0.7 0.02 0.02 0.95 0.73 0.50 50
 2 cubeB /cube.obj Cube 0.1 0.1 0.1 0.02 0.02 0.7 0.95 0.73 0.50 50

@@ -34,7 +34,7 @@ void Shader::setModel(vec3 trans, float rotZ, float rotY, float rotX, float sc) 
 }
 
 void Shader::setModel(Entity entity) {
-    mat4 Trans = glm::translate(glm::mat4(1.0f), entity.transform);
+    mat4 Trans = glm::translate(glm::mat4(1.0f), entity.position);
     mat4 RotX = glm::rotate(glm::mat4(1.0f), entity.rotX, vec3(1, 0, 0));
     mat4 RotY = glm::rotate(glm::mat4(1.0f), entity.rotY, vec3(0, 1, 0));
     mat4 RotZ = glm::rotate(glm::mat4(1.0f), entity.rotZ, vec3(0, 0, 1));

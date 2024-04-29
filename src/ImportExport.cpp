@@ -151,9 +151,9 @@ void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, materials>
 	newEntity->material = entityMats;
 
 	// import entity spatial properties
-	newEntity->transform.x = readFloat();
-	newEntity->transform.y = readFloat();
-	newEntity->transform.z = readFloat();
+	newEntity->position.x = readFloat();
+	newEntity->position.y = readFloat();
+	newEntity->position.z = readFloat();
 
 	newEntity->rotX = readFloat();
 	newEntity->rotY = readFloat();
@@ -167,7 +167,7 @@ void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, materials>
 	newEntity->scaleVec.z = readFloat();
 	
 	printf("%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n",
-		newEntity->transform.x, newEntity->transform.y, newEntity->transform.z,
+		newEntity->position.x, newEntity->position.y, newEntity->position.z,
 		newEntity->rotX, newEntity->rotY, newEntity->rotZ,
 		newEntity->scaleVec.x, newEntity->scaleVec.y, newEntity->scaleVec.z);
 	
