@@ -798,6 +798,7 @@ int main(int argc, char *argv[]) {
 		// Poll for and process events.
 		glfwPollEvents();
 	}
+	levelEditor->saveToFile("../resources/testOut.txt");
 
 	// Quit program.
 	windowManager->shutdown();

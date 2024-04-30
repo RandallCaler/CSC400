@@ -83,8 +83,6 @@ void ImporterExporter::loadTexture(map<string, shared_ptr<Texture>>& textures) {
 }
 
 void ImporterExporter::loadSingleShape(map<string, pair<shared_ptr<Shape>, material>>& shapes) {
-	// extract a mesh and lighting properties from the savefile entry in the buffer
-	
 	// tinyObj overhead
 	vector<tinyobj::shape_t> TOshapes;
 	vector<tinyobj::material_t> objMaterials;
@@ -202,8 +200,7 @@ void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, material>>
 
 void ImporterExporter::loadFromFile(string path) {
 	// ID-indexed library of mesh-material pairs, for building entities from shape data
-	map<string, pair<shared_ptr<Shape>, material>> shapeLibrary;
-	map<string, shared_ptr<Texture>> textureLibrary;
+	
 
 	printf("begin load from save at %s\n", (resourceDir+path).c_str());
 	ifstream saveFile(resourceDir + path);
@@ -228,4 +225,70 @@ void ImporterExporter::loadFromFile(string path) {
 		}
 	}
 	printf("end load from save\n");
+}
+
+// Shaders: 1 shaderID vertexSFile fragSFile numUniforms [uniform1...] numAttributes [attribute1...]
+string ImporterExporter::shadersToText(){
+	string result = "";
+	int shaderCount = 1;
+
+	// iterate through every shader and convert its properties to a string
+	for (auto shaderIter = shaders->begin(); shaderIter != shaders->end(); shaderIter++) {
+        string tag = "1 s" + to_string(shaderCount) + ' ';
+        string files = "/" + shaderIter->second->prog->getVShaderName() + " /" + shaderIter->second->prog->getFShaderName() + " ";
+
+		// process the uniforms
+        map<string, GLint> uniRef = shaderIter->second->prog->getUniforms();
+        string uniforms = to_string(uniRef.size()) + " ";
+        for (auto iter = uniRef.begin(); iter != uniRef.end(); iter++) {
+            uniforms += iter->first + " ";
+        }
+
+		//process the attributes
+		map<string, GLint> attRef = shaderIter->second->prog->getAttributes();
+        string attributes = to_string(attRef.size()) + " ";
+        for (auto iter = attRef.begin(); iter != attRef.end(); iter++) {
+            attributes += iter->first + " ";
+        }
+
+		result = result + tag + files + uniforms + attributes + '\n';
+		shaderCount++;
+    }
+
+    return result;
+}
+
+// Shapes: 2 shapeID objFile objShapeName matAmbX matAmbY matAmbZ matDifX matDifY matDifZ matSpecX matSpecY matSpecZ matShine
+string ImporterExporter::shapesToText(){
+	string result = "";
+
+	//create set of shapes w/ materials from entities
+	set<shapewmat> shapes;
+	for(int i = 0; i < worldentities->size(); i++){
+		
+	}
+
+	return result;
+}
+
+// Entities: 3 entityID numShapes [shapeID1...] transX transY transZ rotX rotY rotZ scaleX scaleY scaleZ
+string ImporterExporter::entitiesToText(){
+	string result = "";
+
+	//for(auto entity = )
+
+	return result;
+}
+
+void ImporterExporter::saveToFile(string outFileName){
+	std::ofstream outFile(outFileName);
+
+	if(outFile.is_open()){
+		outFile << shadersToText();
+		outFile.close();
+		cout << "outFile has been written and closed." << endl;
+	}
+	else {
+		std::cerr << "Error opening file from exporter." << endl;
+	}
 }

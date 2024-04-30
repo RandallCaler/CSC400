@@ -1,0 +1,2 @@
+1 s1 /../resources/simple_vert.glsl /../resources/simple_frag.glsl 8 M MatAmb MatDif MatShine MatSpec P V lightPos 3 vertNor vertPos vertTex 
+1 s2 /../resources/tex_vert.glsl /../resources/tex_frag0.glsl 10 M MatAmb MatDif MatShine MatSpec P Texture0 V flip lightPos 3 vertNor vertPos vertTex 

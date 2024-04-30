@@ -30,6 +30,11 @@ public:
 	GLint getAttribute(const std::string &name) const;
 	GLint getUniform(const std::string &name) const;
 
+	const std::string getVShaderName();
+	const std::string getFShaderName();
+	std::map<std::string, GLint> getUniforms();
+	std::map<std::string, GLint> getAttributes();
+
 protected:
 
 	std::string vShaderName;
