@@ -1,55 +1,39 @@
-
 #include "WindowManager.h"
-#include "GLSL.h"
 
-#include <iostream>
-
-
-void error_callback(int error, const char *description)
-{
+void error_callback(int error, const char *description) {
 	std::cerr << description << std::endl;
 }
 
 WindowManager * WindowManager::instance = nullptr;
 
-WindowManager::WindowManager()
-{
+WindowManager::WindowManager() {
 	if (instance)
-	{
 		std::cerr << "One instance of WindowManager has already been created, event callbacks of new instance will not work." << std::endl;
-	}
 
 	instance = this;
 }
 
-WindowManager::~WindowManager()
-{
+WindowManager::~WindowManager() {
 	if (instance == this)
-	{
 		instance = nullptr;
-	}
 }
 
-bool WindowManager::init(int const width, int const height)
-{
+bool WindowManager::init(int const width, int const height) {
 	glfwSetErrorCallback(error_callback);
 
 	// Initialize glfw library
 	if (!glfwInit())
-	{
 		return false;
-	}
 
 	//request the highest possible version of OGL - important for mac
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
 	// Create a windowed mode window and its OpenGL context.
 	windowHandle = glfwCreateWindow(width, height, "hello 3D", nullptr, nullptr);
-	if (! windowHandle)
-	{
+	if (!windowHandle) {
 		glfwTerminate();
 		return false;
 	}
@@ -57,8 +41,7 @@ bool WindowManager::init(int const width, int const height)
 	glfwMakeContextCurrent(windowHandle);
 
 	// Initialize GLAD
-	if (!gladLoadGL())
-	{
+	if (!gladLoadGL()) {
 		std::cerr << "Failed to initialize GLAD" << std::endl;
 		return false;
 	}
@@ -71,56 +54,45 @@ bool WindowManager::init(int const width, int const height)
 
 	glfwSetKeyCallback(windowHandle, key_callback);
 	glfwSetMouseButtonCallback(windowHandle, mouse_callback);
-	glfwSetFramebufferSizeCallback(windowHandle, resize_callback);
 	glfwSetScrollCallback(windowHandle, scroll_callback);
+	glfwSetFramebufferSizeCallback(windowHandle, resize_callback);
+
+	glfwSetInputMode(windowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(windowHandle, cursor_pos_callback);
 
 	return true;
 }
 
-void WindowManager::shutdown()
-{
+void WindowManager::shutdown() {
 	glfwDestroyWindow(windowHandle);
 	glfwTerminate();
 }
 
-void WindowManager::setEventCallbacks(EventCallbacks * callbacks_in)
-{
-	callbacks = callbacks_in;
-}
+void WindowManager::setEventCallbacks(EventCallbacks * callbacks_in) { callbacks = callbacks_in; }
 
-GLFWwindow * WindowManager::getHandle()
-{
-	return windowHandle;
-}
+GLFWwindow * WindowManager::getHandle() { return windowHandle; }
 
-void WindowManager::key_callback(GLFWwindow * window, int key, int scancode, int action, int mods)
-{
+void WindowManager::key_callback(GLFWwindow * window, int key, int scancode, int action, int mods) {
 	if (instance && instance->callbacks)
-	{
 		instance->callbacks->keyCallback(window, key, scancode, action, mods);
-	}
 }
 
-void WindowManager::mouse_callback(GLFWwindow * window, int button, int action, int mods)
-{
+void WindowManager::mouse_callback(GLFWwindow * window, int button, int action, int mods) {
 	if (instance && instance->callbacks)
-	{
 		instance->callbacks->mouseCallback(window, button, action, mods);
-	}
 }
 
-void WindowManager::resize_callback(GLFWwindow * window, int in_width, int in_height)
-{
+void WindowManager::scroll_callback(GLFWwindow * window, double xoffset, double yoffset) {
 	if (instance && instance->callbacks)
-	{
+		instance->callbacks->scrollCallback(window, xoffset, yoffset);
+}
+
+void WindowManager::resize_callback(GLFWwindow * window, int in_width, int in_height) {
+	if (instance && instance->callbacks)
 		instance->callbacks->resizeCallback(window, in_width, in_height);
-	}
 }
 
-void WindowManager::scroll_callback(GLFWwindow * window, double in_deltaX, double in_deltaY)
-{
+void WindowManager::cursor_pos_callback(GLFWwindow * window, double x, double y) {
 	if (instance && instance->callbacks)
-	{
-		instance->callbacks->scrollCallback(window, in_deltaX, in_deltaY);
-	}
+		instance->callbacks->cursorPosCallback(window, x, y);
 }

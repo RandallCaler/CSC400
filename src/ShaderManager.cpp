@@ -34,7 +34,7 @@ void Shader::setModel(vec3 trans, float rotZ, float rotY, float rotX, float sc) 
 }
 
 void Shader::setModel(Entity entity) {
-    mat4 Trans = glm::translate(glm::mat4(1.0f), entity.transform);
+    mat4 Trans = glm::translate(glm::mat4(1.0f), entity.position);
     mat4 RotX = glm::rotate(glm::mat4(1.0f), entity.rotX, vec3(1, 0, 0));
     mat4 RotY = glm::rotate(glm::mat4(1.0f), entity.rotY, vec3(0, 1, 0));
     mat4 RotZ = glm::rotate(glm::mat4(1.0f), entity.rotZ, vec3(0, 0, 1));
@@ -57,10 +57,18 @@ void Shader::addTexture(const std::string &f) {
 }
 
 void Shader::setMaterial(materials material) {
-    glUniform3f(prog->getUniform("MatAmb"), material.matAmb.r, material.matAmb.g, material.matAmb.b);
-	glUniform3f(prog->getUniform("MatDif"), material.matDif.r, material.matDif.g, material.matDif.b);
-	glUniform3f(prog->getUniform("MatSpec"), material.matSpec.r, material.matSpec.g, material.matSpec.b);
-	glUniform1f(prog->getUniform("MatShine"), material.matShine);
+    if (prog->getUniform("MatAmb") > 0) {
+        glUniform3f(prog->getUniform("MatAmb"), material.matAmb.r, material.matAmb.g, material.matAmb.b);
+    }
+    if (prog->getUniform("MatDif") > 0) {
+        glUniform3f(prog->getUniform("MatDif"), material.matDif.r, material.matDif.g, material.matDif.b);
+    }
+    if (prog->getUniform("MatSpec") > 0) {
+        glUniform3f(prog->getUniform("MatSpec"), material.matSpec.r, material.matSpec.g, material.matSpec.b);
+    }
+    if (prog->getUniform("MatShine") > 0) {
+        glUniform1f(prog->getUniform("MatShine"), material.matShine);
+    }
 }
 
 void Shader::flip(int f) {
@@ -68,7 +76,7 @@ void Shader::flip(int f) {
 }
 
 void Shader::setTexture(int i) {
-    if (prog->getUniform("Texture0")) {
+    if (prog->getUniform("Texture0") > 0) {
         textures[i]->bind(prog->getUniform("Texture0"));
     }
 }
@@ -87,10 +95,7 @@ void Shader::setAttribute(std::string attributeName) {
 
 Shader::Shader(const std::string &v, const std::string &f, bool has_tex) {
     initShader(v, f);
-    if (has_tex) {
-        has_texture = true;
-        // initTexVars();
-    }
+    has_texture = has_tex;
 }
 
 Shader::Shader() {

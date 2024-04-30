@@ -21,33 +21,24 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
+#include "GLSL.h"
+#include <iostream>
 
 // This interface let's us write our own class that can be notified by input
 // events, such as key presses and mouse movement.
-class EventCallbacks
-{
-
+class EventCallbacks {
 public:
-
-
 	virtual void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) = 0;
-
 	virtual void mouseCallback(GLFWwindow *window, int button, int action, int mods) = 0;
-
+	virtual void scrollCallback(GLFWwindow *window, double xoffset, double yoffset) = 0;
 	virtual void resizeCallback(GLFWwindow *window, int in_width, int in_height) = 0;
-
-	virtual void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) = 0;
-
+	virtual void cursorPosCallback(GLFWwindow * window, double x, double y) = 0;
 };
 
 // This class is responsible for all window management code, i.e. GLFW3 code
 // You shouldn't have to touch this code for any of the early lab assignments
-class WindowManager
-{
-
+class WindowManager {
 public:
-
 	WindowManager();
 	~WindowManager();
 
@@ -63,7 +54,6 @@ public:
 	GLFWwindow *getHandle();
 
 protected:
-
 	// This class implements the singleton design pattern
 	static WindowManager * instance;
 
@@ -71,7 +61,6 @@ protected:
 	EventCallbacks *callbacks = nullptr;
 
 private:
-
 	// What are these?!
 	//
 	// GLFW3 expects C-style callbacks, but we want to be able to use C++-style
@@ -80,8 +69,9 @@ private:
 	// This is a common trick or `idiom` that makes it possible
 	static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 	static void mouse_callback(GLFWwindow *window, int button, int action, int mods);
+	static void scroll_callback(GLFWwindow * window, double xoffset, double yoffset);
 	static void resize_callback(GLFWwindow *window, int in_width, int in_height);
-	static void scroll_callback(GLFWwindow *window, double in_deltaX, double in_deltaY);
+	static void cursor_pos_callback(GLFWwindow * window, double x, double y);
 
 };
 
