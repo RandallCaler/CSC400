@@ -12,7 +12,7 @@
 class Camera
 {
     public:
-        Camera(glm::vec3 v, float p, float d, float a, glm::vec3 pp, float pr, glm::vec3 g);
+        Camera(glm::vec3 v, float p, float d, float a, glm::vec3 pp, float pr, glm::vec3 g, bool free = false);
         ~Camera();
         void SetView(std::shared_ptr<Program> shader);
         // void updateCamera();
@@ -22,6 +22,7 @@ class Camera
         glm::vec3 view;
         glm::vec3 player_pos;
         glm::vec3 g_eye;
+        glm::vec3 vel;
         float player_rot;
         float pitch;
         float dist;
@@ -30,6 +31,7 @@ class Camera
         float vert;
         float offX;
         float offZ;
+        bool freeCam;
 
         // float pitch;
         // float yaw;

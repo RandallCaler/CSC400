@@ -96,6 +96,8 @@ public:
 
 	// 	view pitch dist angle playerpos playerrot animate g_eye
 	Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
+	Camera freeCam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5), true);
+	Camera* activeCam = &cam;
 	double cursor_x = 0;
 	double cursor_y = 0;
   
@@ -121,17 +123,21 @@ public:
 			editMode = !editMode;
 			editSRT = 0;
 			editSpeed = 2.0;
+			if (editMode) {
+				activeCam = &freeCam;
+			}
+			else {
+				activeCam = &cam;
+			}
 		}
 
 		if (editMode) {
 			if (action == GLFW_PRESS) {
 				switch (key) {
 					case GLFW_KEY_TAB:
+						activeEntity++;
 						if (activeEntity == worldentities.end()) {
 							activeEntity = worldentities.begin();
-						}
-						else {
-							activeEntity++;
 						}
 						break;
 					case GLFW_KEY_W:
@@ -161,7 +167,18 @@ public:
 					case GLFW_KEY_C:
 						editSRT = 0;
 						break;
-
+					case GLFW_KEY_UP:
+						freeCam.vel.z = editSpeed/10;
+						break;
+					case GLFW_KEY_DOWN:
+						freeCam.vel.z = -editSpeed/10;
+						break;
+					case GLFW_KEY_LEFT:
+						freeCam.vel.x = -editSpeed/10;
+						break;
+					case GLFW_KEY_RIGHT:
+						freeCam.vel.x = editSpeed/10;
+						break;
 				}
 			}
 			if (action == GLFW_RELEASE) {
@@ -178,8 +195,18 @@ public:
 					case GLFW_KEY_Q:
 						mobileVel.y = 0.0;
 						break;
+					case GLFW_KEY_UP:
+					case GLFW_KEY_DOWN:
+						freeCam.vel.z = 0.0;
+						break;
+					case GLFW_KEY_LEFT:
+					case GLFW_KEY_RIGHT:
+						freeCam.vel.x = 0.0;
+						break;
 				}
 			}
+			
+			ih.handleInput(NULL, &freeCam);
 		}
 		else {
 			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding() && bounds < 19){
@@ -242,10 +269,12 @@ public:
 			if (deltaY>0) {
 				mobileVel *= 0.9;
 				editSpeed *= 0.9;
+				freeCam.vel *= vec3(0.9);
 			}
 			else {
 				mobileVel *= 1.1;
 				editSpeed *= 1.1;
+				freeCam.vel *= vec3(1.1);
 			}
 		}
 		else {
@@ -287,16 +316,18 @@ public:
 	}
 
 	void cursorPosCallback(GLFWwindow* window, double x, double y) {
-		if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
-			float sensitivity = 0.001f;
+		if (editMode) {
+			if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
+				float sensitivity = 0.001f;
 
-			cam.angle += (x-cursor_x) * sensitivity;
-			cam.pitch += (y-cursor_y) * sensitivity;
+				freeCam.angle += (x-cursor_x) * sensitivity;
+				freeCam.pitch += (y-cursor_y) * sensitivity;
 
-			cam.pitch = std::min(M_PI/2 - EPSILON, std::max(-M_PI/2 + EPSILON, (double)cam.pitch));
+				freeCam.pitch = std::min(PI/2 - EPSILON, std::max(-PI/2 + EPSILON, (double)freeCam.pitch));
 
-			cursor_x = x;
-			cursor_y = y;
+				cursor_x = x;
+				cursor_y = y;
+			}
 		}
   }
 
@@ -310,7 +341,7 @@ public:
 		glClearColor(.72f, .84f, 1.06f, 1.0f);
 		// Enable z-buffer test.
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CLIP_DISTANCE0);
+		// glEnable(GL_CLIP_DISTANCE0);
 
 		reg = shaders["reg"];
 		// tex = shaders["tex"];
@@ -506,20 +537,19 @@ public:
       }
       //code to draw the ground plane
      void drawGround(shared_ptr<Shader> curS) {
-     	curS->prog->bind();
      	glBindVertexArray(GroundVertexArrayID);
 
 
 		material c;
-		c.amb.r = 0.05;
-        c.amb.g = 0.22;
-        c.amb.b = 0.05;
-        c.dif.r = 0;
-        c.dif.g = 0;
-        c.dif.b = 0;
-        c.spec.r = 3;
-        c.spec.g = 3;
-        c.spec.b = 3;
+		c.amb.r = 0.0;
+        c.amb.g = 0.0;
+        c.amb.b = 0.0;
+        c.dif.r = 1;
+        c.dif.g = 1;
+        c.dif.b = 1;
+        c.spec.r = 1;
+        c.spec.g = 1;
+        c.spec.b = 1;
         c.shine = 1.0;
 		curS->flip(1);
 		curS->setMaterial(c);
@@ -572,16 +602,13 @@ public:
 
 		// Apply perspective projection.
 		Projection->pushMatrix();
-		Projection->perspective(45.0f, aspect, 0.01f, 100.0f);
+		Projection->perspective(45.0f, aspect, 0.01f, 1000.0f);
 
 		// editor mode updates
 		if (editMode) {
 			switch (editSRT) {
 				case 0:
-					printf("TESTOUT\n");
-					printf("%lu\n", activeEntity);
 					activeEntity->second->position += mobileVel * frametime;
-					printf("TESTOUT\n");
 					break;
 				case 1:
 					activeEntity->second->rotX += mobileVel.x * frametime;
@@ -598,7 +625,7 @@ public:
 		//material shader first
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-		cam.SetView(curS->prog);
+		activeCam->SetView(curS->prog);
 
 		// directional light
 		glUniform3f(curS->prog->getUniform("lightDir"), -1.0f, 1.0f, -1.0f);
@@ -641,14 +668,12 @@ public:
 		// 	bf[2].objs[i]->draw(reg.prog);
 		// }
 
-		std::cout << "entity position:" << catEnt->position.x << ", " << catEnt->position.y << ", " << catEnt->position.z << std::endl;
+		// std::cout << "entity position:" << catEnt->position.x << ", " << catEnt->position.y << ", " << catEnt->position.z << std::endl;
 
 		// catEnt.setMaterials(0, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
 		// reg.setModel(catEnt.position, 0, catEnt.rotY, 0, catEnt.scale);
 		// reg.setMaterial(catEnt.material[0]);
 		// catEnt.objs[0]->draw(reg.prog);
-
-		//std::cout << "entity position:" << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << std::endl;
 
 		// material imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -660,10 +685,10 @@ public:
 				curS = shaders[entity->defaultShaderName];
 				curS->prog->bind();
 				glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-				cam.SetView(curS->prog);
+				activeCam->SetView(curS->prog);
 			}
 			if (shaders["skybox"] == curS) {
-				entity->position = cam.cameraPos;
+				entity->position = activeCam->cameraPos;
 				// skybox is always the furthest surface away
 				glDepthFunc(GL_LEQUAL);
 			}
@@ -692,12 +717,12 @@ public:
 
 		curS = shaders["tex"];
 
-		//using texture shader now
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 
-		cam.SetView(curS->prog);
-
+		activeCam->SetView(curS->prog);
+		// directional light
+		glUniform3f(curS->prog->getUniform("lightDir"), -1.0f, 1.0f, -1.0f);
 		drawGround(curS);  //draw ground here
 
 
@@ -790,7 +815,6 @@ int main(int argc, char *argv[]) {
 		lastTime = nextLastTime;
 
 		// Render scene.
-		printf("TESTIN\n");
 		application->render(deltaTime);
 
 		// Swap front and back buffers.
