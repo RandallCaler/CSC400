@@ -123,9 +123,17 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
 
                 break;
                 
-            // case 4:
-            //     //jump
-            //     break;
+            case 4:
+                //jump
+
+                // however, must have space bar on queue, regardless of if its input state is 1 or 0f
+                // if inputStates[4] == 1:
+                //      peguin->position.y += 0.5f;
+                // if inputStates[4] == 0;
+                        // penguin->position.y = -0.1;
+
+
+                break;
         }
         
        // penguin->m.forward = glm::normalize(penguin->m.forward);

@@ -15,6 +15,7 @@ file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp" "${CMAKE_SOURCE_DIR}/e
 # nice to have them show up in IDEs.
 file(GLOB_RECURSE HEADERS "src/*.h" "ext/*/*.h" "ext/glad/*/*.h")
 file(GLOB_RECURSE GLSL "resources/*.glsl")
+# file(GLOB_RECURSE BULLET "ext/bullet3/*.h")
 
 include_directories("ext")
 include_directories("ext/glad/include")

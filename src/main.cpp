@@ -293,7 +293,7 @@ public:
 			cam.angle += (x-cursor_x) * sensitivity;
 			cam.pitch += (y-cursor_y) * sensitivity;
 
-			cam.pitch = (std::min)(M_PI/2 - EPSILON, std::max(-M_PI/2 + EPSILON, (double)cam.pitch));
+			cam.pitch = (std::min)(PI/2 - EPSILON, std::max(-PI/2 + EPSILON, (double)cam.pitch));
 
 			cursor_x = x;
 			cursor_y = y;
