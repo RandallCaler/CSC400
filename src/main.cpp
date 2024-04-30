@@ -70,7 +70,6 @@ public:
 	Entity bf1 = Entity();
 	Entity bf2 = Entity();
 	Entity bf3 = Entity();
-	Entity catEnt = Entity();
 	
   	std::vector<Entity> bf;
 
@@ -79,8 +78,6 @@ public:
 	std::vector<shared_ptr<Shape>> tree1;
 	
 	std::vector<shared_ptr<Shape>> cat;
-
-	std::vector<Entity> gameObjects;
 	
 	std::vector<Entity> trees;
 
@@ -183,11 +180,11 @@ public:
 			}
 		}
 		else {
-			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !catEnt.collider->IsColliding() && bounds < 19){
+			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities[3]->collider->IsColliding() && bounds < 19){
 				ih.inputStates[0] = 1;
 			}
 
-			if (key == GLFW_KEY_A && (action == GLFW_PRESS) && !catEnt.collider->IsColliding()){
+			if (key == GLFW_KEY_A && (action == GLFW_PRESS) && !worldentities[3]->collider->IsColliding()){
 				ih.inputStates[1] = 1;
 			}
 
@@ -195,7 +192,7 @@ public:
 				ih.inputStates[2] = 1;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_PRESS)&& !catEnt.collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_PRESS)&& !worldentities[3]->collider->IsColliding()){
 				ih.inputStates[3] = 1;
 			}
 
@@ -209,11 +206,11 @@ public:
 
 			// KEY RELEASED
 
-			if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !catEnt.collider->IsColliding() && bounds < 19){
+			if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !worldentities[3]->collider->IsColliding() && bounds < 19){
 				ih.inputStates[0] = 0;
 			}
 
-			if (key == GLFW_KEY_A && (action == GLFW_RELEASE) && !catEnt.collider->IsColliding()){
+			if (key == GLFW_KEY_A && (action == GLFW_RELEASE) && !worldentities[3]->collider->IsColliding()){
 				ih.inputStates[1] = 0;
 			}
 
@@ -221,7 +218,7 @@ public:
 				ih.inputStates[2] = 0;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_RELEASE)&& !catEnt.collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_RELEASE)&& !worldentities[3]->collider->IsColliding()){
 				ih.inputStates[3] = 0;
 			}
 
@@ -232,10 +229,10 @@ public:
 			if (key == GLFW_KEY_F1 && action == GLFW_RELEASE) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			}
-		}
 
-		// Entity *catptr = &catEnt;
-		ih.handleInput(&catEnt, &cam);
+			// Entity *catptr = &catEnt;
+			ih.handleInput(worldentities[3].get(), &cam);
+		}
 	}
 
 
@@ -255,9 +252,9 @@ public:
 			cam.angle -= 10 * (deltaX / 57.296);
 
 			// cat entity updated with camera
-			catEnt.m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
-			catEnt.m.forward.y = 0;
-			catEnt.rotY -= 10 * (deltaX / 57.296);
+			worldentities[3]->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
+			worldentities[3]->m.forward.y = 0;
+			worldentities[3]->rotY -= 10 * (deltaX / 57.296);
 		}
 		
 	}
@@ -327,29 +324,12 @@ public:
 
 	void initGeom(const std::string& resourceDirectory)
 	{
-		//EXAMPLE set up to read one shape from one obj file - convert to read several
-		// Initialize mesh
-		// Load geometry
- 		// Some obj files contain material information.We'll ignore them for this assignment.
- 		vector<tinyobj::shape_t> TOshapes;
- 		vector<tinyobj::material_t> objMaterials;
- 		string errStr;
-		//load in the mesh and make the shape(s)
- 		bool rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr, (resourceDirectory + "/sphereWTex.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		} else {
-			sphere = make_shared<Shape>();
-			sphere->createShape(TOshapes[0]);
-			sphere->measure();
-			sphere->init();
-		}
-
+		string errStr;
 		// Initialize cat mesh.
 		vector<tinyobj::shape_t> TOshapesB;
  		vector<tinyobj::material_t> objMaterialsB;
 		//load in the mesh and make the shape(s)
- 		rc = tinyobj::LoadObj(TOshapesB, objMaterialsB, errStr, (resourceDirectory + "/cat.obj").c_str());
+ 		bool rc = tinyobj::LoadObj(TOshapesB, objMaterialsB, errStr, (resourceDirectory + "/cat.obj").c_str());
 		if (!rc) {
 			cerr << errStr << endl;
 		} else {	
@@ -359,22 +339,8 @@ public:
 			cat[0]->init();
 		}
 
-
-		vector<tinyobj::shape_t> TOshapesC;
- 		vector<tinyobj::material_t> objMaterialsC;
-		//load in the mesh and make the shape(s)
- 		rc = tinyobj::LoadObj(TOshapesC, objMaterialsC, errStr, (resourceDirectory + "/bunny.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		} else {	
-			bunny.push_back(make_shared<Shape>());
-			bunny[0]->createShape(TOshapesC[0]);
-			bunny[0]->measure();
-			bunny[0]->init();
-		}
-
 		vector<tinyobj::shape_t> TOshapes3;
-		rc = tinyobj::LoadObj(TOshapes3, objMaterials, errStr, (resourceDirectory + "/butterfly.obj").c_str());
+		rc = tinyobj::LoadObj(TOshapes3, objMaterialsB, errStr, (resourceDirectory + "/butterfly.obj").c_str());
 		if (!rc) {
 			cerr << errStr << endl;
 		} else {
@@ -388,7 +354,7 @@ public:
 		}
 
 		vector<tinyobj::shape_t> TOshapes4;
-		rc = tinyobj::LoadObj(TOshapes4, objMaterials, errStr, (resourceDirectory + "/flower.obj").c_str());
+		rc = tinyobj::LoadObj(TOshapes4, objMaterialsB, errStr, (resourceDirectory + "/flower.obj").c_str());
 		if (!rc) {
 			cerr << errStr << endl;
 		} else {
@@ -403,7 +369,7 @@ public:
 		}
 
 		vector<tinyobj::shape_t> TOshapes5;
-		rc = tinyobj::LoadObj(TOshapes5, objMaterials, errStr, (resourceDirectory + "/trees.obj").c_str());
+		rc = tinyobj::LoadObj(TOshapes5, objMaterialsB, errStr, (resourceDirectory + "/trees.obj").c_str());
 		if (!rc) {
 			cerr << errStr << endl;
 		} else {
@@ -454,32 +420,17 @@ public:
 	
 		// bf3.scale = 0.01;
 
-
-
-		// // init cat entity
-		// catEnt.initEntity(bunny);
-		// catEnt.position = vec3(0, -1, 0);
-		// catEnt.m.forward = vec4(0, 0, 0.1, 1);
-		// catEnt.m.velocity = vec3(0.1) * vec3(catEnt.m.forward);
-		// catEnt.scale = 5.0;
-		// catEnt.rotY = 0.0;
-		// //catEnt.position = cam.player_pos;
-		// //cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
-		// // set forward
-		// // set velocity
-		// catEnt.collider = new Collider(cat, Collider::CAT);
-		// catEnt.collider->SetEntityID(catEnt.id);
-		// gameObjects.push_back(catEnt);
-		
-		// //cout << "cat " << catEnt.id << endl;
-		// catEnt.collider->entityName = 'c';
-
     	// bf.push_back(bf1);
 		// bf.push_back(bf2);
 		// bf.push_back(bf3);
-		// gameObjects.push_back(bf1);
-		// gameObjects.push_back(bf2);
-		// gameObjects.push_back(bf3);
+
+		// IMPORT BUNNY
+		worldentities[3]->m.forward = vec4(0, 0, 0.1, 1);
+		worldentities[3]->m.velocity = vec3(0.1) * vec3(worldentities[3]->m.forward);
+		worldentities[3]->collider = new Collider(cat, Collider::CAT);
+		worldentities[3]->collider->SetEntityID(worldentities[3]->id);
+		//cout << "cat " << worldentities["bunny"]->id << endl;
+		worldentities[3]->collider->entityName = 'c';
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initGround();
@@ -760,7 +711,7 @@ public:
 		drawGround(curS);  //draw ground here
 
 
-		int collided = catEnt.collider->CatCollision(bf, &catEnt);
+		int collided = worldentities[3]->collider->CatCollision(bf, worldentities[3].get());
 
 		if (collided != -1) {
 			bf_flags[collided] = 1;
