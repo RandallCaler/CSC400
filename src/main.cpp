@@ -51,9 +51,9 @@ public:
 	WindowManager * windowManager = nullptr;
 
 	// Our shader program - use this one for Blinn-Phong has diffuse
-	Shader reg;
+	shared_ptr<Shader> reg;
 	//Our shader program for textures
-	Shader tex;
+	// shared_ptr<Shader> tex;
 
 	bool editMode = false;
 
@@ -96,12 +96,6 @@ public:
 	int g_GiboLen;
 	//ground VAO
 	GLuint GroundVertexArrayID;
-
-	//the image to use as a texture (ground)
-	shared_ptr<Texture> texture0;
-	shared_ptr<Texture> texture1;	
-	shared_ptr<Texture> texture2;
-	shared_ptr<Texture> texture3;
 
 	vec3 strafe = vec3(1, 0, 0);
 
@@ -309,7 +303,6 @@ public:
 		}
 	}
 
-
 	void init(const std::string& resourceDirectory)
 	{
 		GLSL::checkVersion();
@@ -319,16 +312,16 @@ public:
 		// Enable z-buffer test.
 		glEnable(GL_DEPTH_TEST);
 
-		// shaders["reg"] = make_shared<Shader>(resourceDirectory + "/simple_vert.glsl", resourceDirectory + "/simple_frag.glsl", false);
-		reg = *(shaders["reg"].get());
-		// tex = Shader(resourceDirectory + "/tex_vert.glsl", resourceDirectory + "/tex_frag0.glsl", true);
-		tex = *(shaders["tex"].get());
-		tex.has_texture = true;
+		reg = shaders["reg"];
+		// tex = shaders["tex"];
+		shaders["skybox"]->has_texture = true;
+		shaders["tex"]->has_texture = true;
 
-		tex.addTexture(resourceDirectory + "/grass_tex.jpg");
-		tex.addTexture(resourceDirectory + "/sky.jpg");
-		tex.addTexture(resourceDirectory + "/cat_tex.jpg");
-		tex.addTexture(resourceDirectory + "/cat_tex_legs.jpg");
+		shaders["skybox"]->addTexture(resourceDirectory + "/sky.jpg");
+		shaders["tex"]->addTexture(resourceDirectory + "/grass_tex.jpg");
+		shaders["tex"]->addTexture(resourceDirectory + "/sky.jpg");
+		shaders["tex"]->addTexture(resourceDirectory + "/cat_tex.jpg");
+		shaders["tex"]->addTexture(resourceDirectory + "/cat_tex_legs.jpg");
 	}
 
 	void initGeom(const std::string& resourceDirectory)
@@ -424,68 +417,68 @@ public:
 			}
 		}
 
-		// init butterfly 1
-		bf1.initEntity(butterfly);
-		bf1.position = vec3(2, -0.3, -1);
-		bf1.m.forward = vec4(0, 0, 1, 1);
-		bf1.m.velocity = vec3(2.0) * vec3(bf1.m.forward);
-		bf1.collider = new Collider(butterfly, Collider::BUTTERFLY);
-		bf1.collider->SetEntityID(bf1.id);
-		//cout << "butterfly 1 " << bf1.id << endl;
-		bf1.collider->entityName = 'b';
-		bf1.scale = 0.01;
+		// // init butterfly 1
+		// bf1.initEntity(butterfly);
+		// bf1.position = vec3(2, -0.3, -1);
+		// bf1.m.forward = vec4(0, 0, 1, 1);
+		// bf1.m.velocity = vec3(2.0) * vec3(bf1.m.forward);
+		// bf1.collider = new Collider(butterfly, Collider::BUTTERFLY);
+		// bf1.collider->SetEntityID(bf1.id);
+		// //cout << "butterfly 1 " << bf1.id << endl;
+		// bf1.collider->entityName = 'b';
+		// bf1.scale = 0.01;
     
-    	// init butterfly 2
-		bf2.initEntity(butterfly);
-		bf2.position = vec3(-2, -0.3, 0.5);
-		bf2.m.forward = vec4(-1, 0, .3, 1);
-		bf2.m.velocity = vec3(9.0) * vec3(bf2.m.forward);
-		bf2.collider = new Collider(butterfly, Collider::BUTTERFLY);
-		bf2.collider->SetEntityID(bf2.id);
-		//cout << "butterfly 2 " << bf2.id << endl;
-		bf2.collider->entityName = 'b';
+    	// // init butterfly 2
+		// bf2.initEntity(butterfly);
+		// bf2.position = vec3(-2, -0.3, 0.5);
+		// bf2.m.forward = vec4(-1, 0, .3, 1);
+		// bf2.m.velocity = vec3(9.0) * vec3(bf2.m.forward);
+		// bf2.collider = new Collider(butterfly, Collider::BUTTERFLY);
+		// bf2.collider->SetEntityID(bf2.id);
+		// //cout << "butterfly 2 " << bf2.id << endl;
+		// bf2.collider->entityName = 'b';
 		
-		bf2.scale = 0.01;
+		// bf2.scale = 0.01;
 
     
-   		 // init butterfly 3
-		bf3.initEntity(butterfly);
-		bf3.position = vec3(4, -0.3, 0.5);
-		bf3.m.forward = vec4(1, 0, 0, 1);
-		bf3.m.velocity = vec3(4.0) * vec3(bf3.m.forward);
-		bf3.collider = new Collider(butterfly, Collider::BUTTERFLY);
-		bf3.collider->SetEntityID(bf3.id);
-		//cout << "butterfly 3 " << bf3.id << endl;
-		bf3.collider->entityName = 'b';
+   		//  // init butterfly 3
+		// bf3.initEntity(butterfly);
+		// bf3.position = vec3(4, -0.3, 0.5);
+		// bf3.m.forward = vec4(1, 0, 0, 1);
+		// bf3.m.velocity = vec3(4.0) * vec3(bf3.m.forward);
+		// bf3.collider = new Collider(butterfly, Collider::BUTTERFLY);
+		// bf3.collider->SetEntityID(bf3.id);
+		// //cout << "butterfly 3 " << bf3.id << endl;
+		// bf3.collider->entityName = 'b';
 	
-		bf3.scale = 0.01;
+		// bf3.scale = 0.01;
 
 
 
-		// init cat entity
-		catEnt.initEntity(bunny);
-		catEnt.position = vec3(0, -1, 0);
-		catEnt.m.forward = vec4(0, 0, 0.1, 1);
-		catEnt.m.velocity = vec3(0.1) * vec3(catEnt.m.forward);
-		catEnt.scale = 5.0;
-		catEnt.rotY = 0.0;
-		//catEnt.position = cam.player_pos;
-		//cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
-		// set forward
-		// set velocity
-		catEnt.collider = new Collider(cat, Collider::CAT);
-		catEnt.collider->SetEntityID(catEnt.id);
-		gameObjects.push_back(catEnt);
+		// // init cat entity
+		// catEnt.initEntity(bunny);
+		// catEnt.position = vec3(0, -1, 0);
+		// catEnt.m.forward = vec4(0, 0, 0.1, 1);
+		// catEnt.m.velocity = vec3(0.1) * vec3(catEnt.m.forward);
+		// catEnt.scale = 5.0;
+		// catEnt.rotY = 0.0;
+		// //catEnt.position = cam.player_pos;
+		// //cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
+		// // set forward
+		// // set velocity
+		// catEnt.collider = new Collider(cat, Collider::CAT);
+		// catEnt.collider->SetEntityID(catEnt.id);
+		// gameObjects.push_back(catEnt);
 		
-		//cout << "cat " << catEnt.id << endl;
-		catEnt.collider->entityName = 'c';
+		// //cout << "cat " << catEnt.id << endl;
+		// catEnt.collider->entityName = 'c';
 
-    	bf.push_back(bf1);
-		bf.push_back(bf2);
-		bf.push_back(bf3);
-		gameObjects.push_back(bf1);
-		gameObjects.push_back(bf2);
-		gameObjects.push_back(bf3);
+    	// bf.push_back(bf1);
+		// bf.push_back(bf2);
+		// bf.push_back(bf3);
+		// gameObjects.push_back(bf1);
+		// gameObjects.push_back(bf2);
+		// gameObjects.push_back(bf3);
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initGround();
@@ -547,8 +540,8 @@ public:
 
 
       //code to draw the ground plane
-     void drawGround(Shader s) {
-     	s.prog->bind();
+     void drawGround(shared_ptr<Shader> curS) {
+     	curS->prog->bind();
      	glBindVertexArray(GroundVertexArrayID);
 
 
@@ -563,12 +556,12 @@ public:
         c.matSpec.g = 3;
         c.matSpec.b = 3;
         c.matShine = 1.0;
-		s.flip(1);
-		s.setMaterial(c);
-		s.setTexture(0);
+		curS->flip(1);
+		curS->setMaterial(c);
+		curS->setTexture(0);
 
 		//draw the ground plane 
-  		s.setModel(vec3(0, -1, 0), 0, 0, 0, 1);
+  		curS->setModel(vec3(0, -1, 0), 0, 0, 0, 1);
   		glEnableVertexAttribArray(0);
   		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
   		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -588,7 +581,7 @@ public:
   		glDisableVertexAttribArray(0);
   		glDisableVertexAttribArray(1);
   		glDisableVertexAttribArray(2);
-  		s.prog->unbind();
+  		curS->prog->unbind();
      }
 
 
@@ -596,6 +589,7 @@ public:
 	void render(float frametime) {
 		// Get current frame buffer size.
 		int width, height;
+		shared_ptr<Shader> curS = reg;
 		glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
 		glViewport(0, 0, width, height);
 
@@ -636,12 +630,12 @@ public:
 		}
 		
 		//material shader first
-		reg.prog->bind();
-		glUniformMatrix4fv(reg.prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-		cam.SetView(reg.prog);
+		curS->prog->bind();
+		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
+		cam.SetView(curS->prog);
 
 		// directional light
-		glUniform3f(reg.prog->getUniform("lightDir"), -1.0f, 1.0f, -1.0f);
+		glUniform3f(curS->prog->getUniform("lightDir"), -1.0f, 1.0f, -1.0f);
 
 		float butterfly_height[3] = {1.1, 1.7, 1.5};
 
@@ -650,91 +644,118 @@ public:
 		butterfly_loc[1] = vec3(-2, -1.2, -3);
 		butterfly_loc[2] = vec3(4, -1, 4);
  
-		bf[0].setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
-		bf[0].setMaterials(1, 0.4, 0.2, 0.2, 0.94, 0.23, 0.20, 0.9, 0.23, 0.20, 0.6);
-		bf[0].setMaterials(2, 0.4, 0.2, 0.2, 0.94, 0.23, 0.20, 0.9, 0.23, 0.20, 0.6);
+		// bf[0].setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
+		// bf[0].setMaterials(1, 0.4, 0.2, 0.2, 0.94, 0.23, 0.20, 0.9, 0.23, 0.20, 0.6);
+		// bf[0].setMaterials(2, 0.4, 0.2, 0.2, 0.94, 0.23, 0.20, 0.9, 0.23, 0.20, 0.6);
 
-		reg.setModel(bf[0].position, -1.1, 4.1, 0, bf[0].scale); //body
+		// reg.setModel(bf[0].position, -1.1, 4.1, 0, bf[0].scale); //body
 
-		for (int i = 0; i < 3; i++) {
-			reg.setMaterial(bf[0].material[i]);
-			bf[0].objs[i]->draw(reg.prog);
-		}
+		// for (int i = 0; i < 3; i++) {
+		// 	reg.setMaterial(bf[0].material[i]);
+		// 	bf[0].objs[i]->draw(reg.prog);
+		// }
 
-		bf[1].setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
-		bf[1].setMaterials(1, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
-		bf[1].setMaterials(2, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
+		// bf[1].setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
+		// bf[1].setMaterials(1, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
+		// bf[1].setMaterials(2, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
 
-		reg.setModel(bf[1].position, -1.1, 4.1, 0, bf[1].scale); //body
-		for (int i = 0; i < 3; i++) {
-			reg.setMaterial(bf[1].material[i]);
-			bf[1].objs[i]->draw(reg.prog);
-		}
+		// reg.setModel(bf[1].position, -1.1, 4.1, 0, bf[1].scale); //body
+		// for (int i = 0; i < 3; i++) {
+		// 	reg.setMaterial(bf[1].material[i]);
+		// 	bf[1].objs[i]->draw(reg.prog);
+		// }
     
-    	bf[2].setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
-		bf[2].setMaterials(1, 0.3, 0.3, 0.2, 0.90, 0.73, 0.20, 0.9, 0.23, 0.20, 0.6);
-		bf[2].setMaterials(2, 0.3, 0.3, 0.2, 0.90, 0.73, 0.20, 0.9, 0.23, 0.20, 0.6);
+    	// bf[2].setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
+		// bf[2].setMaterials(1, 0.3, 0.3, 0.2, 0.90, 0.73, 0.20, 0.9, 0.23, 0.20, 0.6);
+		// bf[2].setMaterials(2, 0.3, 0.3, 0.2, 0.90, 0.73, 0.20, 0.9, 0.23, 0.20, 0.6);
 
-		reg.setModel(bf[2].position, -1.1, 4.1, 0, bf[2].scale); //body
-		for (int i = 0; i < 3; i++) {
-			reg.setMaterial(bf[2].material[i]);
-			bf[2].objs[i]->draw(reg.prog);
-		}
+		// reg.setModel(bf[2].position, -1.1, 4.1, 0, bf[2].scale); //body
+		// for (int i = 0; i < 3; i++) {
+		// 	reg.setMaterial(bf[2].material[i]);
+		// 	bf[2].objs[i]->draw(reg.prog);
+		// }
 
 
-		catEnt.setMaterials(0, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
-		reg.setModel(catEnt.position, 0, catEnt.rotY, 0, catEnt.scale);
-		reg.setMaterial(catEnt.material[0]);
-		catEnt.objs[0]->draw(reg.prog);
+		// catEnt.setMaterials(0, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
+		// reg.setModel(catEnt.position, 0, catEnt.rotY, 0, catEnt.scale);
+		// reg.setMaterial(catEnt.material[0]);
+		// catEnt.objs[0]->draw(reg.prog);
 
 		//std::cout << "entity position:" << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << std::endl;
 
 		// material imported from save file
+		shaders["skybox"]->prog->setVerbose(false);
+
 		for (shared_ptr<Entity> entity : worldentities) {
-			reg.setModel(*entity);
+			if (shaders[entity->defaultShaderName] != curS) {
+				curS->prog->unbind();
+				curS = shaders[entity->defaultShaderName];
+				curS->prog->bind();
+				glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
+				cam.SetView(curS->prog);
+			}
+			if (shaders["skybox"] == curS) {
+				entity->position = -cam.cameraPos;
+				// skybox is always the furthest surface away
+				glDepthFunc(GL_LEQUAL);
+			}
+			mat4 modelMatrix = entity->generateModel();
+			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(modelMatrix));
 			for (int i = 0; i < entity->objs.size(); i++) {
-				reg.setMaterial(entity->material[i]);
-				entity->objs[i]->draw(reg.prog);
+				if (curS->has_texture) {
+					curS->flip(1);
+        			entity->textures[i]->bind(curS->prog->getUniform("Texture0"));
+				}
+				curS->setMaterial(entity->material[i]);
+				entity->objs[i]->draw(curS->prog);
+				if (curS->has_texture) {
+    				entity->textures[i]->unbind();
+					curS->unbindTexture(0);
+				}
+			}
+			if (shaders["skybox"] == curS) {
+				// deactivate skybox backfill
+				glDepthFunc(GL_LESS);
 			}
 		}
 
-		reg.prog->unbind();
+		curS->prog->unbind();
 
-
+		curS = shaders["tex"];
 
 		//using texture shader now
-		tex.prog->bind();
-		glUniformMatrix4fv(tex.prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
+		curS->prog->bind();
+		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 
-		cam.SetView(tex.prog);
+		cam.SetView(curS->prog);
 
 		//sky box!
-		materials sky_box;
-		sky_box.matAmb.r = 0.2;
-        sky_box.matAmb.g = 0.3;
-        sky_box.matAmb.b = 0.65;
-        sky_box.matDif.r = 0;
-        sky_box.matDif.g = 0;
-        sky_box.matDif.b = 0;
-        sky_box.matSpec.r = 0;
-        sky_box.matSpec.g = 0;
-        sky_box.matSpec.b = 0;
-        sky_box.matShine = 100.0;
-		tex.flip(0);
-		tex.setMaterial(sky_box);
-		tex.setTexture(1);
+		// materials sky_box;
+		// sky_box.matAmb.r = 0.2;
+        // sky_box.matAmb.g = 0.3;
+        // sky_box.matAmb.b = 0.65;
+        // sky_box.matDif.r = 0;
+        // sky_box.matDif.g = 0;
+        // sky_box.matDif.b = 0;
+        // sky_box.matSpec.r = 0;
+        // sky_box.matSpec.g = 0;
+        // sky_box.matSpec.b = 0;
+        // sky_box.matShine = 100.0;
+		// tex.flip(0);
+		// tex.setMaterial(sky_box);
+		// // tex.setTexture(1);
 
-		Model->pushMatrix();
-			Model->loadIdentity();
-			Model->scale(vec3(20.0));
-			tex.setModel(Model);
-			sphere->draw(tex.prog);
-		Model->popMatrix();
+		// Model->pushMatrix();
+		// 	Model->loadIdentity();
+		// 	Model->scale(vec3(20.0));
+		// 	tex.setModel(Model);
+		// 	sphere->draw(tex.prog);
+		// Model->popMatrix();
 
-		tex.unbindTexture(1);
+		// tex.unbindTexture(1);
 
 
-		drawGround(tex);  //draw ground here
+		drawGround(curS);  //draw ground here
 
 
 		int collided = catEnt.collider->CatCollision(bf, &catEnt);
@@ -752,17 +773,17 @@ public:
 		// Pop matrix stacks.
 		Projection->popMatrix();
 
-		for (int i = 0; i < 3; i ++){
-			if (bf_flags[i] == 1) {
-				bf[i].scale *= 0.95f;
-				if (bf[i].scale < 0.00001) {
-					bf[i].scale = 0.01;
-					bf_flags[i] = 0;
-					bf[i].position = vec3(0, -0.3, 0);
-				}
-			}
-			bf[i].updateMotion(frametime);
-		}
+		// for (int i = 0; i < 3; i ++){
+		// 	if (bf_flags[i] == 1) {
+		// 		bf[i].scale *= 0.95f;
+		// 		if (bf[i].scale < 0.00001) {
+		// 			bf[i].scale = 0.01;
+		// 			bf_flags[i] = 0;
+		// 			bf[i].position = vec3(0, -0.3, 0);
+		// 		}
+		// 	}
+		// 	bf[i].updateMotion(frametime);
+		// }
 	}
 };
 
@@ -776,6 +797,9 @@ int main(int argc, char *argv[]) {
 	if (argc >= 2) {
 		resourceDir = argv[1];
 	}
+
+	// printf("OpenGL Version: %s\n", glGetString(GL_VERSION));
+	// printf("Renderer: %s\n", glGetString(GL_RENDERER));
 
 	Application *application = new Application();
 

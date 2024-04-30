@@ -22,10 +22,10 @@ void main() {
 	
 	// diffusion coefficient
 	float diffuse = max(0, dot(normal, light));
-	//diffuse = floor(diffuse * 5) / 5.0;
+	diffuse = floor(diffuse * 5) / 5.0;
 	// specular coefficient
 	float specular = pow(max(0, dot(normal, halfway)), MatShine);
-	//specular = floor(specular * 5) / 5.0;
+	specular = floor(specular * 5) / 5.0;
 	
 	// total reflective profile
 	color = vec4(MatAmb + vec3(specular)*MatSpec, 1.0) + vec4(vec3(diffuse)*MatDif, 1.0);

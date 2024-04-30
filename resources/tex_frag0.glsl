@@ -35,7 +35,7 @@ void main() {
   }
 	
 	// total reflective profile
-	color = (vec4(MatAmb + vec3(specular)*MatSpec, 1.0) + vec4(vec3(diffuse)*MatDif, 1.0)) * texColor;
-  if (flip > 0)
-  	color = floor(color * 4 + 4) / 8.7; // using cel shading for cat!
+	color = vec4(MatAmb + specular*MatSpec + diffuse*MatDif, 1.0) * texColor;
+  //if (flip > 0)
+  	//color = floor(color * 4 + 4) / 8.7; // using cel shading for cat!
 }

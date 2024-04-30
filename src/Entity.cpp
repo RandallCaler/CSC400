@@ -16,12 +16,28 @@ Entity::Entity(string const& path) {
     fname = path;
 };
 
-void Entity::initEntity(std::vector<std::shared_ptr<Shape>> ref){
-    objs = ref;
-    for (int i = 0; i < ref.size(); i++) {
+void Entity::initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<std::shared_ptr<Texture>> textures){
+    objs = shapes;
+    this->textures = textures;
+    minBounds = vec3(INFINITY);
+    maxBounds = vec3(-INFINITY);
+    for (int i = 0; i < shapes.size(); i++) {
         materials m;
         material.push_back(m);
-    }
+        // build bounding box
+        if (minBounds.x > objs[i]->min.x)
+            minBounds.x = objs[i]->min.x;
+        if (minBounds.y > objs[i]->min.y)
+            minBounds.y = objs[i]->min.y;
+        if (minBounds.z > objs[i]->min.z)
+            minBounds.z = objs[i]->min.z;
+        if (maxBounds.x < objs[i]->max.x)
+            maxBounds.x = objs[i]->max.x;
+        if (maxBounds.y < objs[i]->max.y)
+            maxBounds.y = objs[i]->max.y;
+        if (maxBounds.z < objs[i]->max.z)
+            maxBounds.z = objs[i]->max.z;
+	}
     id = NEXT_ID;
    // cout << "entity created with id " << id << endl;
     NEXT_ID++;
@@ -44,6 +60,34 @@ void Entity::setMaterials(int i, float r1, float g1, float b1, float r2, float g
 
 void Entity::updateScale(float newScale){
     scale = newScale;
+}
+
+glm::mat4 Entity::generateModel() {
+    MatrixStack* M = new MatrixStack();
+	M->pushMatrix();
+    M->loadIdentity();
+	// move to parent socket / world location 
+	M->translate(position);
+
+	// rotate about origin
+	if (abs(rotX) >= EPSILON)
+		M->rotate(rotX, vec3(1,0,0));
+	if (abs(rotY) >= EPSILON)
+		M->rotate(rotY, vec3(0,1,0));
+	if (abs(rotZ) >= EPSILON)
+		M->rotate(rotZ, vec3(0,0,1));
+
+	// move object to origin and scale to a standard size, then scale to specifications
+    M->scale(scaleVec * 
+        vec3(1.0/std::max(std::max(maxBounds.x - minBounds.x, 
+            maxBounds.y - minBounds.y), 
+            maxBounds.z - minBounds.z)));
+    M->translate(-vec3(0.5)*(minBounds + maxBounds));
+	
+	modelMatrix = M->topMatrix();
+	M->popMatrix();
+
+	return modelMatrix;
 }
 
 // TODO use our "game data structure" to manage all entity updates

@@ -71,6 +71,17 @@ void ImporterExporter::loadShader() {
 	(*shaders)[id] = shader;
 }
 
+void ImporterExporter::loadTexture(map<string, shared_ptr<Texture>>& textures) {
+	string id = readString();
+	string textFile = readString();
+    shared_ptr<Texture> texture = make_shared<Texture>();
+    texture->setFilename(resourceDir + textFile);
+    texture->init();
+    texture->setUnit(0);
+    texture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+    textures[id] = texture;
+}
+
 void ImporterExporter::loadSingleShape(map<string, pair<shared_ptr<Shape>, materials>>& shapes) {
 	// extract a mesh and lighting properties from the savefile entry in the buffer
 	
@@ -126,15 +137,19 @@ void ImporterExporter::loadSingleShape(map<string, pair<shared_ptr<Shape>, mater
 		shapes[id].second.matShine);
 }
 
-void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, materials>>& shapes) {
+void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, materials>>& shapes, map<string, shared_ptr<Texture>>& textures) {
 	// compose an entity from the savefile entry in the buffer
 	
 	string id = readString();
+
+	string shader = readString();
+
 	int numShapes = readInt();
-	printf("%s %i ", id.c_str(), numShapes);
+	printf("%s %s %i ", id.c_str(), shader.c_str(), numShapes);
 
 	// lists of meshes and material properties
 	vector<shared_ptr<Shape>> entityShapes;
+	vector<shared_ptr<Texture>> entityTextures;
 	vector<materials> entityMats;
 	
 	// extract meshes and materials from the shape library
@@ -145,10 +160,20 @@ void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, materials>
 		entityMats.push_back(shapes[shapeID].second);
 	}
 
+	int numTextures = readInt();
+	printf("%i ", numTextures);
+	// extract textures from the texture library
+	for (int i = 0; i < numTextures; i++) {
+		string textID = readString();
+		printf("%s ", textID.c_str());
+		entityTextures.push_back(textures[textID]);
+	}
+
 	// initialize new entity with lists of meshes and materials
 	shared_ptr<Entity> newEntity = make_shared<Entity>();
-	newEntity->initEntity(entityShapes);
+	newEntity->initEntity(entityShapes, entityTextures);
 	newEntity->material = entityMats;
+	newEntity->defaultShaderName = shader;
 
 	// import entity spatial properties
 	newEntity->position.x = readFloat();
@@ -178,6 +203,7 @@ void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, materials>
 void ImporterExporter::loadFromFile(string path) {
 	// ID-indexed library of mesh-material pairs, for building entities from shape data
 	map<string, pair<shared_ptr<Shape>, materials>> shapeLibrary;
+	map<string, shared_ptr<Texture>> textureLibrary;
 
 	printf("begin load from save at %s\n", (resourceDir+path).c_str());
 	ifstream saveFile(resourceDir + path);
@@ -195,8 +221,10 @@ void ImporterExporter::loadFromFile(string path) {
 				loadSingleShape(shapeLibrary);
 				break;
 			case ENTITY_FLAG:
-				loadEntity(shapeLibrary);
+				loadEntity(shapeLibrary, textureLibrary);
 				break;
+			case TEXTURE_FLAG:
+				loadTexture(textureLibrary);
 		}
 	}
 	printf("end load from save\n");

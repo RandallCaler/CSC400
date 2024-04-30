@@ -8,12 +8,14 @@
 #include <fstream>
 #include "Shape.h"
 #include "Entity.h"
+#include "Texture.h"
 #include "ShaderManager.h"
 
 #define DELIMITER ' '
 #define SHADER_FLAG '1'
 #define SHAPE_FLAG '2'
 #define ENTITY_FLAG '3'
+#define TEXTURE_FLAG '4'
 
 // Where the resources are loaded from
 extern string resourceDir;
@@ -28,8 +30,9 @@ class ImporterExporter {
         float readFloat();
 
         void loadShader();
+        void loadTexture(map<string, shared_ptr<Texture>>& textures);
         void loadSingleShape(map<string, pair<shared_ptr<Shape>, materials>>& shapes);
-        void loadEntity(map<string, pair<shared_ptr<Shape>, materials>>& shapes);
+        void loadEntity(map<string, pair<shared_ptr<Shape>, materials>>& shapes, map<string, shared_ptr<Texture>>& textures);
         void loadFromFile(string path);
 
     private:

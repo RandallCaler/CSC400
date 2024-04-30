@@ -7,6 +7,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Components.h"
+#include "MatrixStack.h"
+
+#define EPSILON 0.0001
 
 typedef struct color_vals{
     float r;
@@ -38,7 +41,7 @@ class Entity {
         Entity();
         Entity(string const& path);
         
-        void initEntity(std::vector<std::shared_ptr<Shape>> ref);
+        void initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<std::shared_ptr<Texture>> textures);
 
         void setMaterials(int i, float r1, float g1, float b1, float r2, float g2, float b2, 
             float r3, float g3, float b3, float s);
@@ -47,19 +50,26 @@ class Entity {
 
         void updateScale(float newScale);
 
+        glm::mat4 generateModel();
+
         static int NEXT_ID; // initializes to 0 and increments with every call to initEntity()
         int id;
         std::vector<std::shared_ptr<Shape>> objs;
+        std::vector<std::shared_ptr<Texture>> textures;
         std::vector<materials> material;
+        string defaultShaderName;
         Collider* collider;
         glm::vec3 position = glm::vec3(0);
         glm::vec3 scaleVec = glm::vec3(1);
+        glm::vec3 minBounds;
+        glm::vec3 maxBounds;
         motion m;
         float scale;
         float rotX = 0.0;
         float rotY = 0.0;
         float rotZ = 0.0;
         string fname;
+        glm::mat4 modelMatrix;
     };
 
 #endif
