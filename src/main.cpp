@@ -6,17 +6,16 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <algorithm>
-
 #include "GLSL.h"
 #include "Program.h"
 #include "Shape.h"
-#include "Collider.h"
 #include "MatrixStack.h"
 #include "WindowManager.h"
 #include "Texture.h"
 #include "stb_image.h"
 #include "InputHandler.h"
 #include "Entity.h"
+#include "PhysicalObject.h"
 #include "ShaderManager.h"
 #include "Camera.h"
 
@@ -33,8 +32,6 @@
 using namespace std;
 using namespace glm;
 
-// static/global vars
-int Entity::NEXT_ID = 0;
 
 class Application : public EventCallbacks
 {
@@ -46,7 +43,7 @@ public:
 	// Our shader program - use this one for Blinn-Phong has diffuse
 
 
-	Shader reg;           // 
+	Shader reg;
 
 	//Our shader program for textures
 	Shader tex;
@@ -64,7 +61,7 @@ public:
 	Entity bf1 = Entity();
 	Entity bf2 = Entity();
 	Entity bf3 = Entity();
-	Entity catEnt = Entity();
+	Entity *catEnt = new PhysicalObject();
 	
   	std::vector<Entity> bf;
 
@@ -114,11 +111,11 @@ public:
 
 		// KEY PRESSED
 
-		if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !catEnt.collider->IsColliding() && bounds < 19){
+		if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !catEnt->collider->IsColliding() && bounds < 19){
 			ih.inputStates[0] = 1;
 		}
 
-		if (key == GLFW_KEY_A && (action == GLFW_PRESS) && !catEnt.collider->IsColliding()){
+		if (key == GLFW_KEY_A && (action == GLFW_PRESS) && !catEnt->collider->IsColliding()){
 			ih.inputStates[1] = 1;
 		}
 
@@ -126,7 +123,7 @@ public:
 			ih.inputStates[2] = 1;
 		}
 
-		if (key == GLFW_KEY_D && (action == GLFW_PRESS)&& !catEnt.collider->IsColliding()){
+		if (key == GLFW_KEY_D && (action == GLFW_PRESS)&& !catEnt->collider->IsColliding()){
 			ih.inputStates[3] = 1;
 		}
 
@@ -136,11 +133,11 @@ public:
 
 		// KEY RELEASED
 
-		if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !catEnt.collider->IsColliding() && bounds < 19){
+		if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !catEnt->collider->IsColliding() && bounds < 19){
 			ih.inputStates[0] = 0;
 		}
 
-		if (key == GLFW_KEY_A && (action == GLFW_RELEASE) && !catEnt.collider->IsColliding()){
+		if (key == GLFW_KEY_A && (action == GLFW_RELEASE) && !catEnt->collider->IsColliding()){
 			ih.inputStates[1] = 0;
 		}
 
@@ -148,7 +145,7 @@ public:
 			ih.inputStates[2] = 0;
 		}
 
-		if (key == GLFW_KEY_D && (action == GLFW_RELEASE)&& !catEnt.collider->IsColliding()){
+		if (key == GLFW_KEY_D && (action == GLFW_RELEASE)&& !catEnt->collider->IsColliding()){
 			ih.inputStates[3] = 0;
 		}
 
@@ -157,22 +154,21 @@ public:
 		}
 	
 		if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
-			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
 
 		// Entity *catptr = &catEnt;
-		ih.handleInput(&catEnt, &cam);
+		ih.handleInput(catEnt, &cam);
 	}
-
 
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
 		//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
 		cam.angle -= 10 * (deltaX / 57.296);
 
 		// cat entity updated with camera
-		catEnt.m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
-		catEnt.m.forward.y = 0;
-		catEnt.rotate -= 10 * (deltaX / 57.296);
+		catEnt->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
+		catEnt->m.forward.y = 0;
+		catEnt->rotate -= 10 * (deltaX / 57.296);
 		
 	}
 
@@ -188,12 +184,11 @@ public:
 		}
 	}
 
-
-	void resizeCallback(GLFWwindow *window, int width, int height)
+	void resizeCallback(GLFWwindow* window, int width, int height)
 	{
 		glViewport(0, 0, width, height);
 	}
-
+#pragma endregion
 
 	void init(const std::string& resourceDirectory)
 	{
@@ -310,9 +305,9 @@ public:
 		// init butterfly 1
 		bf1.initEntity(butterfly);
 		bf1.position = vec3(2, -0.3, -1);
-		bf1.m.forward = vec4(0, 0, 1, 1);
-		bf1.m.velocity = 2.0;
-		bf1.collider = new Collider(butterfly, Collider::BUTTERFLY);
+		bf1.m.forward = vec4(1, 0, 0, 0);
+		bf1.m.velocity = 2;
+		bf1.collider = new Collider(&bf1);
 		bf1.collider->SetEntityID(bf1.id);
 		//cout << "butterfly 1 " << bf1.id << endl;
 		bf1.collider->entityName = 'b';
@@ -321,9 +316,9 @@ public:
     	// init butterfly 2
 		bf2.initEntity(butterfly);
 		bf2.position = vec3(-2, -0.3, 0.5);
-		bf2.m.forward = vec4(-1, 0, .3, 1);
-		bf2.m.velocity = 9.0;
-		bf2.collider = new Collider(butterfly, Collider::BUTTERFLY);
+		bf2.m.forward = vec4(1, 0, 0, 0);
+		bf2.m.velocity = .4;
+		bf2.collider = new Collider(&bf2);
 		bf2.collider->SetEntityID(bf2.id);
 		//cout << "butterfly 2 " << bf2.id << endl;
 		bf2.collider->entityName = 'b';
@@ -334,9 +329,9 @@ public:
    		 // init butterfly 3
 		bf3.initEntity(butterfly);
 		bf3.position = vec3(4, -0.3, 0.5);
-		bf3.m.forward = vec4(1, 0, 0, 1);
-		bf3.m.velocity = 4.0;
-		bf3.collider = new Collider(butterfly, Collider::BUTTERFLY);
+		bf3.m.forward = vec4(1, 0, 0, 0);
+		bf3.m.velocity = .2;
+		bf3.collider = new Collider(&bf3);
 		bf3.collider->SetEntityID(bf3.id);
 		//cout << "butterfly 3 " << bf3.id << endl;
 		bf3.collider->entityName = 'b';
@@ -346,22 +341,22 @@ public:
 
 
 		// init cat entity
-		catEnt.initEntity(bunny);
-		catEnt.position = vec3(0, -1, 0);
-		catEnt.m.forward = vec4(0, 0, 0.1, 1);
-		catEnt.m.velocity = 0.1;
-		catEnt.scale = 5.0;
-		catEnt.rotate = 0.0;
+		catEnt->initEntity(bunny);
+		catEnt->position = vec3(0, -1, 0);
+		catEnt->m.forward = vec4(0, 0, 0.1, 1);
+		catEnt->m.velocity = 0.1;
+		catEnt->scale = 5.0;
+		catEnt->rotate = 0.0;
 		//catEnt.position = cam.player_pos;
 		//cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
 		// set forward
 		// set velocity
-		catEnt.collider = new Collider(cat, Collider::CAT);
-		catEnt.collider->SetEntityID(catEnt.id);
-		gameObjects.push_back(catEnt);
+		catEnt->collider = new Collider(catEnt);
+		catEnt->collider->SetEntityID(catEnt->id);
+		gameObjects.push_back(*dynamic_cast<Entity *>(catEnt));
 		
 		//cout << "cat " << catEnt.id << endl;
-		catEnt.collider->entityName = 'c';
+		catEnt->collider->entityName = 'c';
 
     	bf.push_back(bf1);
 		bf.push_back(bf2);
@@ -426,26 +421,23 @@ public:
      	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
       	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(idx), idx, GL_STATIC_DRAW);
       }
-
-
-
       //code to draw the ground plane
-     void drawGround(Shader s) {
+     void drawGround(Shader& s) {
      	s.prog->bind();
      	glBindVertexArray(GroundVertexArrayID);
 
 
-		materials c;
-		c.matAmb.r = 0.05;
-        c.matAmb.g = 0.22;
-        c.matAmb.b = 0.05;
-        c.matDif.r = 0;
-        c.matDif.g = 0;
-        c.matDif.b = 0;
-        c.matSpec.r = 3;
-        c.matSpec.g = 3;
-        c.matSpec.b = 3;
-        c.matShine = 1.0;
+		material c;
+		c.amb.r = 0.05;
+        c.amb.g = 0.22;
+        c.amb.b = 0.05;
+        c.dif.r = 0;
+        c.dif.g = 0;
+        c.dif.b = 0;
+        c.spec.r = 3;
+        c.spec.g = 3;
+        c.spec.b = 3;
+        c.shine = 1.0;
 		s.flip(1);
 		s.setMaterial(c);
 		s.setTexture(0);
@@ -473,8 +465,6 @@ public:
   		glDisableVertexAttribArray(2);
   		s.prog->unbind();
      }
-
-
 
 	void render(float frametime) {
 		// Get current frame buffer size.
@@ -517,10 +507,18 @@ public:
 		bf[0].setMaterials(1, 0.4, 0.2, 0.2, 0.94, 0.23, 0.20, 0.9, 0.23, 0.20, 0.6);
 		bf[0].setMaterials(2, 0.4, 0.2, 0.2, 0.94, 0.23, 0.20, 0.9, 0.23, 0.20, 0.6);
 
-		reg.setModel(bf[0].position, -1.1, 4.1, 0, bf[0].scale); //body
+		mat4 Trans = glm::translate(glm::mat4(1.0f), bf[0].position);
+		mat4 RotX = glm::rotate(glm::mat4(1.0f), -1.1f, vec3(1, 0, 0));
+		mat4 RotY = glm::rotate(glm::mat4(1.0f), 4.1f, vec3(0, 1, 0));
+		mat4 RotZ = glm::rotate(glm::mat4(1.0f), 0.0f, vec3(0, 0, 1));
+		mat4 ScaleS = glm::scale(glm::mat4(1.0f), vec3(bf[0].scale));
+		mat4 ctm = Trans * RotX * RotY * RotZ * ScaleS;
+
+		reg.setModel(ctm); //body
+		bf[0].collider->CalculateBoundingBox(ctm);
 
 		for (int i = 0; i < 3; i++) {
-			reg.setMaterial(bf[0].material[i]);
+			reg.setMaterial(bf[0].materials[i]);
 			bf[0].objs[i]->draw(reg.prog);
 		}
 
@@ -528,9 +526,18 @@ public:
 		bf[1].setMaterials(1, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
 		bf[1].setMaterials(2, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
 
-		reg.setModel(bf[1].position, -1.1, 4.1, 0, bf[1].scale); //body
+		Trans = glm::translate(glm::mat4(1.0f), bf[1].position);
+		RotX = glm::rotate(glm::mat4(1.0f), -1.1f, vec3(1, 0, 0));
+		RotY = glm::rotate(glm::mat4(1.0f), 4.1f, vec3(0, 1, 0));
+		RotZ = glm::rotate(glm::mat4(1.0f), 0.0f, vec3(0, 0, 1));
+		ScaleS = glm::scale(glm::mat4(1.0f), vec3(bf[1].scale));
+		ctm = Trans * RotX * RotY * RotZ * ScaleS;
+
+		reg.setModel(ctm); //body
+		bf[1].collider->CalculateBoundingBox(ctm);
+
 		for (int i = 0; i < 3; i++) {
-			reg.setMaterial(bf[1].material[i]);
+			reg.setMaterial(bf[1].materials[i]);
 			bf[1].objs[i]->draw(reg.prog);
 		}
     
@@ -538,19 +545,34 @@ public:
 		bf[2].setMaterials(1, 0.3, 0.3, 0.2, 0.90, 0.73, 0.20, 0.9, 0.23, 0.20, 0.6);
 		bf[2].setMaterials(2, 0.3, 0.3, 0.2, 0.90, 0.73, 0.20, 0.9, 0.23, 0.20, 0.6);
 
-		reg.setModel(bf[2].position, -1.1, 4.1, 0, bf[2].scale); //body
+		Trans = glm::translate(glm::mat4(1.0f), bf[2].position);
+		RotX = glm::rotate(glm::mat4(1.0f), -1.1f, vec3(1, 0, 0));
+		RotY = glm::rotate(glm::mat4(1.0f), 4.1f, vec3(0, 1, 0));
+		RotZ = glm::rotate(glm::mat4(1.0f), 0.0f, vec3(0, 0, 1));
+		ScaleS = glm::scale(glm::mat4(1.0f), vec3(bf[2].scale));
+		ctm = Trans * RotX * RotY * RotZ * ScaleS;
+
+		reg.setModel(ctm); //body
+		bf[2].collider->CalculateBoundingBox(ctm);
+
 		for (int i = 0; i < 3; i++) {
-			reg.setMaterial(bf[2].material[i]);
+			reg.setMaterial(bf[2].materials[i]);
 			bf[2].objs[i]->draw(reg.prog);
 		}
 
 
-		catEnt.setMaterials(0, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
-		reg.setModel(catEnt.position, 0, catEnt.rotate, 0, catEnt.scale);
-		reg.setMaterial(catEnt.material[0]);
-		catEnt.objs[0]->draw(reg.prog);
+		catEnt->setMaterials(0, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
+		Trans = glm::translate(glm::mat4(1.0f), catEnt->position);
+		RotY = glm::rotate(glm::mat4(1.0f), catEnt->rotate, vec3(0, 1, 0));
+		ScaleS = glm::scale(glm::mat4(1.0f), vec3(catEnt->scale));
+		ctm = Trans * RotY * ScaleS;
 
-		std::cout << "entity position:" << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << std::endl;
+		reg.setModel(ctm); //body
+		catEnt->collider->CalculateBoundingBox(ctm);
+		reg.setMaterial(catEnt->materials[0]);
+		catEnt->objs[0]->draw(reg.prog);
+
+		std::cout << "entity position:" << catEnt->position.x << ", " << catEnt->position.y << ", " << catEnt->position.z << std::endl;
 
 		reg.prog->unbind();
 
@@ -563,18 +585,20 @@ public:
 		cam.SetView(tex.prog);
 
 		//sky box!
-		materials sky_box;
-		sky_box.matAmb.r = 0.2;
-        sky_box.matAmb.g = 0.3;
-        sky_box.matAmb.b = 0.65;
-        sky_box.matDif.r = 0;
-        sky_box.matDif.g = 0;
-        sky_box.matDif.b = 0;
-        sky_box.matSpec.r = 0;
-        sky_box.matSpec.g = 0;
-        sky_box.matSpec.b = 0;
-        sky_box.matShine = 100.0;
+
+		material sky_box;
+		sky_box.amb.r = 0.2;
+        sky_box.amb.g = 0.3;
+        sky_box.amb.b = 0.65;
+        sky_box.dif.r = 0;
+        sky_box.dif.g = 0;
+        sky_box.dif.b = 0;
+        sky_box.spec.r = 0;
+        sky_box.spec.g = 0;
+        sky_box.spec.b = 0;
+        sky_box.shine = 100.0;
 		tex.flip(0);
+		tex.setMaterial(sky_box);
 		tex.setMaterial(sky_box);
 		tex.setTexture(1);
 
@@ -582,7 +606,9 @@ public:
 			Model->loadIdentity();
 			Model->scale(vec3(20.0));
 			tex.setModel(Model);
+
 			sphere->draw(tex.prog);
+
 		Model->popMatrix();
 
 		tex.unbindTexture(1);
@@ -591,7 +617,13 @@ public:
 		drawGround(tex);  //draw ground here
 
 
-		int collided = catEnt.collider->CatCollision(bf, &catEnt);
+		catEnt->position = cam.player_pos;
+
+		//halt animations if cat collides with flower or tree
+//		cout << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << endl;
+//		cout << "before calling check collision, catID = " << catEnt.id << endl;
+
+		int collided = catEnt->collider->CheckCollision(bf);
 
 		if (collided != -1) {
 			bf_flags[collided] = 1;
@@ -621,8 +653,6 @@ public:
 
 	}
 };
-
-
 
 
 int main(int argc, char *argv[])
@@ -670,7 +700,7 @@ int main(int argc, char *argv[])
 		// convert microseconds (weird) to seconds (less weird)
 		deltaTime *= 0.000001;
 
-		deltaTime = glm::min(deltaTime, dt);
+		//deltaTime = glm::min(deltaTime, dt);
 
 		// reset lastTime so that we can calculate the deltaTime
 		// on the next frame
