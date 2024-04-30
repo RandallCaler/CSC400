@@ -28,7 +28,7 @@ typedef struct material {
 
 struct motion {
     // the velocity of the obstacles will be a constant speed in the forward direction
-    float velocity;
+    glm::vec3 velocity;
     // a vector to inform which direction the object is facing
     glm::vec4 forward; 
 };
@@ -53,6 +53,7 @@ public:
     static int NEXT_ID; // initializes to 0 and increments with every call to initEntity()
     int id;
     std::vector<std::shared_ptr<Shape>> objs;
+    std::vector<std::shared_ptr<Texture>> textures;
     std::vector<material> materials;
     Collider* collider;
     glm::vec3 position = glm::vec3(0);

@@ -32,7 +32,7 @@ void Entity::initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<
     }
 
     id = NEXT_ID++;
-    shaderName = "";
+    defaultShaderName = "";
 }
 
 void Entity::setMaterials(int i, float r1, float g1, float b1, float r2, float g2, float b2, 
@@ -74,10 +74,10 @@ glm::mat4 Entity::generateModel() {
 
 	// move object to origin and scale to a standard size, then scale to specifications
     M->scale(scaleVec * 
-        vec3(1.0/std::max(std::max(maxBounds.x - minBounds.x, 
-            maxBounds.y - minBounds.y), 
-            maxBounds.z - minBounds.z)));
-    M->translate(-vec3(0.5)*(minBounds + maxBounds));
+        vec3(1.0/std::max(std::max(maxBB.x - minBB.x, 
+            maxBB.y - minBB.y), 
+            maxBB.z - minBB.z)));
+    M->translate(-vec3(0.5)*(minBB + maxBB));
 	
 	modelMatrix = M->topMatrix();
 	M->popMatrix();

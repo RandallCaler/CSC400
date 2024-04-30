@@ -103,7 +103,7 @@ public:
 	double bounds;
 
 	// temp variables, should be incorporated into controller
-	map<string, shared_ptr<Entity>>::iterator activeEntity = worldentities.begin();
+	map<string, shared_ptr<Entity>>::iterator activeEntity;
 	float editSpeed = 2.0;
 	int editSRT = 0; // 0 - translation, 1 - rotation, 2 - scale
 	vec3 mobileVel = vec3(0);
@@ -443,7 +443,7 @@ public:
 		// IMPORT BUNNY
 		worldentities["bunny"]->m.forward = vec4(0, 0, 0.1, 1);
 		worldentities["bunny"]->m.velocity = vec3(0.1) * vec3(worldentities["bunny"]->m.forward);
-		worldentities["bunny"]->collider = new Collider(cat, Collider::CAT);
+		worldentities["bunny"]->collider = new Collider(worldentities["bunny"].get());
 		worldentities["bunny"]->collider->SetEntityID(worldentities["bunny"]->id);
 		//cout << "cat " << worldentities["bunny"]->id << endl;
 		worldentities["bunny"]->collider->entityName = 'c';
@@ -510,17 +510,17 @@ public:
      	glBindVertexArray(GroundVertexArrayID);
 
 
-		materials c;
-		c.matAmb.r = 0.05;
-        c.matAmb.g = 0.22;
-        c.matAmb.b = 0.05;
-        c.matDif.r = 0;
-        c.matDif.g = 0;
-        c.matDif.b = 0;
-        c.matSpec.r = 3;
-        c.matSpec.g = 3;
-        c.matSpec.b = 3;
-        c.matShine = 1.0;
+		material c;
+		c.amb.r = 0.05;
+        c.amb.g = 0.22;
+        c.amb.b = 0.05;
+        c.dif.r = 0;
+        c.dif.g = 0;
+        c.dif.b = 0;
+        c.spec.r = 3;
+        c.spec.g = 3;
+        c.spec.b = 3;
+        c.shine = 1.0;
 		curS->flip(1);
 		curS->setMaterial(c);
 		curS->setTexture(0);
@@ -578,7 +578,10 @@ public:
 		if (editMode) {
 			switch (editSRT) {
 				case 0:
+					printf("TESTOUT\n");
+					printf("%lu\n", activeEntity);
 					activeEntity->second->position += mobileVel * frametime;
+					printf("TESTOUT\n");
 					break;
 				case 1:
 					activeEntity->second->rotX += mobileVel.x * frametime;
@@ -649,7 +652,6 @@ public:
 
 		// material imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
-
 		map<string, shared_ptr<Entity>>::iterator i;
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
@@ -673,7 +675,7 @@ public:
 					curS->flip(1);
         			entity->textures[i]->bind(curS->prog->getUniform("Texture0"));
 				}
-				curS->setMaterial(entity->material[i]);
+				curS->setMaterial(entity->materials[i]);
 				entity->objs[i]->draw(curS->prog);
 				if (curS->has_texture) {
     				entity->textures[i]->unbind();
@@ -699,7 +701,7 @@ public:
 		drawGround(curS);  //draw ground here
 
 
-		int collided = worldentities["bunny"]->collider->CatCollision(bf);
+		int collided = worldentities["bunny"]->collider->CheckCollision(bf);
 
 		//catEnt->position = cam.player_pos;
 
@@ -765,6 +767,7 @@ int main(int argc, char *argv[]) {
 	float dt = 1 / 60.0;
 
 	auto lastTime = chrono::high_resolution_clock::now();
+	application->activeEntity = worldentities.begin();
 
 	// Loop until the user closes the window.
 	while (!glfwWindowShouldClose(windowManager->getHandle()))
@@ -787,6 +790,7 @@ int main(int argc, char *argv[]) {
 		lastTime = nextLastTime;
 
 		// Render scene.
+		printf("TESTIN\n");
 		application->render(deltaTime);
 
 		// Swap front and back buffers.

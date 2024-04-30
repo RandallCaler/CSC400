@@ -60,18 +60,18 @@ void Shader::addTexture(const std::string &f) {
     textures.push_back(texture0);
 }
 
-void Shader::setMaterial(materials material) {
+void Shader::setMaterial(material material) {
     if (prog->getUniform("MatAmb") > 0) {
-        glUniform3f(prog->getUniform("MatAmb"), material.matAmb.r, material.matAmb.g, material.matAmb.b);
+        glUniform3f(prog->getUniform("MatAmb"), material.amb.r, material.amb.g, material.amb.b);
     }
     if (prog->getUniform("MatDif") > 0) {
-        glUniform3f(prog->getUniform("MatDif"), material.matDif.r, material.matDif.g, material.matDif.b);
+        glUniform3f(prog->getUniform("MatDif"), material.dif.r, material.dif.g, material.dif.b);
     }
     if (prog->getUniform("MatSpec") > 0) {
-        glUniform3f(prog->getUniform("MatSpec"), material.matSpec.r, material.matSpec.g, material.matSpec.b);
+        glUniform3f(prog->getUniform("MatSpec"), material.spec.r, material.spec.g, material.spec.b);
     }
     if (prog->getUniform("MatShine") > 0) {
-        glUniform1f(prog->getUniform("MatShine"), material.matShine);
+        glUniform1f(prog->getUniform("MatShine"), material.shine);
     }
 }
 
@@ -119,5 +119,5 @@ void ShaderManager::AddShader(shared_ptr<Shader> shader) {
     shaderTable[shader->name] = ID++;
 }
 void ShaderManager::Draw(Entity& entity) {
-    auto shaderptr = shaderList[shaderTable[entity.shaderName]];
+    auto shaderptr = shaderList[shaderTable[entity.defaultShaderName]];
 }

@@ -31,8 +31,8 @@ class ImporterExporter {
 
         void loadShader();
         void loadTexture(map<string, shared_ptr<Texture>>& textures);
-        void loadSingleShape(map<string, pair<shared_ptr<Shape>, materials>>& shapes);
-        void loadEntity(map<string, pair<shared_ptr<Shape>, materials>>& shapes, map<string, shared_ptr<Texture>>& textures);
+        void loadSingleShape(map<string, pair<shared_ptr<Shape>, material>>& shapes);
+        void loadEntity(map<string, pair<shared_ptr<Shape>, material>>& shapes, map<string, shared_ptr<Texture>>& textures);
         void loadFromFile(string path);
 
     private:

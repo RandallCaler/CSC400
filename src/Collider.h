@@ -25,7 +25,7 @@ public:
     Collider();
     Collider(Entity *owner);
     void UpdateColliderSize();
-    int Collider::CheckCollision(std::vector<Entity>& entities);
+    int CheckCollision(std::vector<Entity>& entities);
     void SetEntityID(int ID);
     bool IsColliding();
     void ExitCollision();

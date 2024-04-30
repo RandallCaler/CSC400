@@ -82,7 +82,7 @@ void ImporterExporter::loadTexture(map<string, shared_ptr<Texture>>& textures) {
     textures[id] = texture;
 }
 
-void ImporterExporter::loadSingleShape(map<string, pair<shared_ptr<Shape>, materials>>& shapes) {
+void ImporterExporter::loadSingleShape(map<string, pair<shared_ptr<Shape>, material>>& shapes) {
 	// extract a mesh and lighting properties from the savefile entry in the buffer
 	
 	// tinyObj overhead
@@ -106,7 +106,7 @@ void ImporterExporter::loadSingleShape(map<string, pair<shared_ptr<Shape>, mater
 				newShape->createShape(shape);
 				newShape->measure();
 				newShape->init();
-				materials newMat = materials();
+				material newMat = material();
 				shapes[id] = make_pair(newShape, newMat);
 				break;
 			}
@@ -115,29 +115,29 @@ void ImporterExporter::loadSingleShape(map<string, pair<shared_ptr<Shape>, mater
 	}
 
 	// import lighting properties
-	shapes[id].second.matAmb.r = readFloat();
-	shapes[id].second.matAmb.g = readFloat();
-	shapes[id].second.matAmb.b = readFloat();
+	shapes[id].second.amb.r = readFloat();
+	shapes[id].second.amb.g = readFloat();
+	shapes[id].second.amb.b = readFloat();
 	
-	shapes[id].second.matDif.r = readFloat();
-	shapes[id].second.matDif.g = readFloat();
-	shapes[id].second.matDif.b = readFloat();
+	shapes[id].second.dif.r = readFloat();
+	shapes[id].second.dif.g = readFloat();
+	shapes[id].second.dif.b = readFloat();
 
-	shapes[id].second.matSpec.r = readFloat();
-	shapes[id].second.matSpec.g = readFloat();
-	shapes[id].second.matSpec.b = readFloat();
+	shapes[id].second.spec.r = readFloat();
+	shapes[id].second.spec.g = readFloat();
+	shapes[id].second.spec.b = readFloat();
 	
-	shapes[id].second.matShine = readFloat();
+	shapes[id].second.shine = readFloat();
 
 	printf("%s %s %s %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n", 
 		id.c_str(), meshFile.c_str(), shapeName.c_str(),
-		shapes[id].second.matAmb.r, shapes[id].second.matAmb.g, shapes[id].second.matAmb.b,
-		shapes[id].second.matDif.r, shapes[id].second.matDif.g, shapes[id].second.matDif.b,
-		shapes[id].second.matSpec.r, shapes[id].second.matSpec.g, shapes[id].second.matSpec.b,
-		shapes[id].second.matShine);
+		shapes[id].second.amb.r, shapes[id].second.amb.g, shapes[id].second.amb.b,
+		shapes[id].second.dif.r, shapes[id].second.dif.g, shapes[id].second.dif.b,
+		shapes[id].second.spec.r, shapes[id].second.spec.g, shapes[id].second.spec.b,
+		shapes[id].second.shine);
 }
 
-void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, materials>>& shapes, map<string, shared_ptr<Texture>>& textures) {
+void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, material>>& shapes, map<string, shared_ptr<Texture>>& textures) {
 	// compose an entity from the savefile entry in the buffer
 	
 	string id = readString();
@@ -150,7 +150,7 @@ void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, materials>
 	// lists of meshes and material properties
 	vector<shared_ptr<Shape>> entityShapes;
 	vector<shared_ptr<Texture>> entityTextures;
-	vector<materials> entityMats;
+	vector<material> entityMats;
 	
 	// extract meshes and materials from the shape library
 	for (int i = 0; i < numShapes; i++) {
@@ -172,7 +172,7 @@ void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, materials>
 	// initialize new entity with lists of meshes and materials
 	shared_ptr<Entity> newEntity = make_shared<Entity>();
 	newEntity->initEntity(entityShapes, entityTextures);
-	newEntity->material = entityMats;
+	newEntity->materials = entityMats;
 	newEntity->defaultShaderName = shader;
 
 	// import entity spatial properties
@@ -202,7 +202,7 @@ void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, materials>
 
 void ImporterExporter::loadFromFile(string path) {
 	// ID-indexed library of mesh-material pairs, for building entities from shape data
-	map<string, pair<shared_ptr<Shape>, materials>> shapeLibrary;
+	map<string, pair<shared_ptr<Shape>, material>> shapeLibrary;
 	map<string, shared_ptr<Texture>> textureLibrary;
 
 	printf("begin load from save at %s\n", (resourceDir+path).c_str());
