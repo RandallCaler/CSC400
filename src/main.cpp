@@ -96,6 +96,8 @@ public:
 
 	// 	view pitch dist angle playerpos playerrot animate g_eye
 	Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
+	Camera freeCam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5), true);
+	Camera* activeCam = &cam;
 	double cursor_x = 0;
 	double cursor_y = 0;
   
@@ -121,17 +123,21 @@ public:
 			editMode = !editMode;
 			editSRT = 0;
 			editSpeed = 2.0;
+			if (editMode) {
+				activeCam = &freeCam;
+			}
+			else {
+				activeCam = &cam;
+			}
 		}
 
 		if (editMode) {
 			if (action == GLFW_PRESS) {
 				switch (key) {
 					case GLFW_KEY_TAB:
+						activeEntity++;
 						if (activeEntity == worldentities.end()) {
 							activeEntity = worldentities.begin();
-						}
-						else {
-							activeEntity++;
 						}
 						break;
 					case GLFW_KEY_W:
@@ -161,7 +167,18 @@ public:
 					case GLFW_KEY_C:
 						editSRT = 0;
 						break;
-
+					case GLFW_KEY_UP:
+						freeCam.vel.z = editSpeed/10;
+						break;
+					case GLFW_KEY_DOWN:
+						freeCam.vel.z = -editSpeed/10;
+						break;
+					case GLFW_KEY_LEFT:
+						freeCam.vel.x = -editSpeed/10;
+						break;
+					case GLFW_KEY_RIGHT:
+						freeCam.vel.x = editSpeed/10;
+						break;
 				}
 			}
 			if (action == GLFW_RELEASE) {
@@ -178,8 +195,18 @@ public:
 					case GLFW_KEY_Q:
 						mobileVel.y = 0.0;
 						break;
+					case GLFW_KEY_UP:
+					case GLFW_KEY_DOWN:
+						freeCam.vel.z = 0.0;
+						break;
+					case GLFW_KEY_LEFT:
+					case GLFW_KEY_RIGHT:
+						freeCam.vel.x = 0.0;
+						break;
 				}
 			}
+			
+			ih.handleInput(NULL, &freeCam);
 		}
 		else {
 			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding() && bounds < 19){
@@ -242,10 +269,12 @@ public:
 			if (deltaY>0) {
 				mobileVel *= 0.9;
 				editSpeed *= 0.9;
+				freeCam.vel *= vec3(0.9);
 			}
 			else {
 				mobileVel *= 1.1;
 				editSpeed *= 1.1;
+				freeCam.vel *= vec3(1.1);
 			}
 		}
 		else {
@@ -288,16 +317,18 @@ public:
 	}
 
 	void cursorPosCallback(GLFWwindow* window, double x, double y) {
-		if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
-			float sensitivity = 0.001f;
+		if (editMode) {
+			if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
+				float sensitivity = 0.001f;
 
-			cam.angle += (x-cursor_x) * sensitivity;
-			cam.pitch += (y-cursor_y) * sensitivity;
+				freeCam.angle += (x-cursor_x) * sensitivity;
+				freeCam.pitch += (y-cursor_y) * sensitivity;
 
-			cam.pitch = std::min(PI/2 - EPSILON, std::max(-PI/2 + EPSILON, (double)cam.pitch));
+				freeCam.pitch = std::min(PI/2 - EPSILON, std::max(-PI/2 + EPSILON, (double)freeCam.pitch));
 
-			cursor_x = x;
-			cursor_y = y;
+				cursor_x = x;
+				cursor_y = y;
+			}
 		}
   }
 
@@ -595,7 +626,7 @@ public:
 		//material shader first
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-		cam.SetView(curS->prog);
+		activeCam->SetView(curS->prog);
 
 		// directional light
 		glUniform3f(curS->prog->getUniform("lightDir"), -1.0f, 1.0f, -1.0f);
@@ -655,10 +686,10 @@ public:
 				curS = shaders[entity->defaultShaderName];
 				curS->prog->bind();
 				glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-				cam.SetView(curS->prog);
+				activeCam->SetView(curS->prog);
 			}
 			if (shaders["skybox"] == curS) {
-				entity->position = cam.cameraPos;
+				entity->position = activeCam->cameraPos;
 				// skybox is always the furthest surface away
 				glDepthFunc(GL_LEQUAL);
 			}
@@ -690,7 +721,7 @@ public:
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 
-		cam.SetView(curS->prog);
+		activeCam->SetView(curS->prog);
 		// directional light
 		glUniform3f(curS->prog->getUniform("lightDir"), -1.0f, 1.0f, -1.0f);
 		drawGround(curS);  //draw ground here
