@@ -1,3 +1,6 @@
+
+#pragma once
+
 #ifndef CAMERA_H
 #define CAMERA_H
 
@@ -31,6 +34,5 @@ class Camera
         // float pitch;
         // float yaw;
 };
-
 
 #endif

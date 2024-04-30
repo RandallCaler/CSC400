@@ -8,6 +8,7 @@
 
 using namespace std;
 
+int h_pos, h_nor, h_tex;
 
 // copy the data from the shape to this object
 void Shape::createShape(tinyobj::shape_t & shape)
@@ -47,6 +48,54 @@ void Shape::measure()
 	max.z = maxZ;
 }
 
+void Shape::generateNormals() {
+	// fit normals to match positions
+	norBuf.resize(posBuf.size());
+
+	// zero-fill normals
+	for (int i = 0; i < norBuf.size(); i++)
+		norBuf[i] = 0.0f;
+	
+	// calculate a normal for each face and accumulate for the respective vertices
+	for (int i = 0; i < eleBuf.size(); i += 3) {
+		int vA_index = eleBuf[i];
+		int vB_index = eleBuf[i+1];
+		int vC_index = eleBuf[i+2];
+
+		// edges from vA to vB and from vA to vC
+		glm::vec3 edge1 = glm::vec3(
+			posBuf[vB_index*3] - posBuf[vA_index*3], 
+			posBuf[vB_index*3 + 1] - posBuf[vA_index*3 + 1], 
+			posBuf[vB_index*3 + 2] - posBuf[vA_index*3 + 2]);
+
+		glm::vec3 edge2 = glm::vec3(
+			posBuf[vC_index*3] - posBuf[vA_index*3], 
+			posBuf[vC_index*3 + 1] - posBuf[vA_index*3 + 1], 
+			posBuf[vC_index*3 + 2] - posBuf[vA_index*3 + 2]);
+
+		// get cross product of these edges
+		glm::vec3 cross = glm::cross(edge1, edge2);
+		
+		norBuf[vA_index*3] += cross.x;
+		norBuf[vA_index*3 + 1] += cross.y;
+		norBuf[vA_index*3 + 2] += cross.z;
+		norBuf[vB_index*3] += cross.x;
+		norBuf[vB_index*3 + 1] += cross.y;
+		norBuf[vB_index*3 + 2] += cross.z;
+		norBuf[vC_index*3] += cross.x;
+		norBuf[vC_index*3 + 1] += cross.y;
+		norBuf[vC_index*3 + 2] += cross.z;
+	}
+
+	// normalize sum of face normals
+	for (int i = 0; i < norBuf.size(); i += 3) {
+		glm::vec3 normal = glm::normalize(glm::vec3(norBuf[i], norBuf[i+1], norBuf[i+2]));
+		norBuf[i] = normal.x;
+		norBuf[i+1] = normal.y;
+		norBuf[i+2] = normal.z;
+	}
+}
+
 void Shape::init()
 {
 	// Initialize the vertex array object
@@ -60,21 +109,16 @@ void Shape::init()
 
 	// Send the normal array to the GPU
 	if (norBuf.empty())
-	{
-		norBufID = 0;
-	}
-	else
-	{
-		CHECKED_GL_CALL(glGenBuffers(1, &norBufID));
-		CHECKED_GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, norBufID));
-		CHECKED_GL_CALL(glBufferData(GL_ARRAY_BUFFER, norBuf.size()*sizeof(float), &norBuf[0], GL_STATIC_DRAW));
-	}
+		generateNormals();
+	
+	CHECKED_GL_CALL(glGenBuffers(1, &norBufID));
+	CHECKED_GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, norBufID));
+	CHECKED_GL_CALL(glBufferData(GL_ARRAY_BUFFER, norBuf.size()*sizeof(float), &norBuf[0], GL_STATIC_DRAW));
 
 	// Send the texture array to the GPU
 	if (texBuf.empty())
 	{
 		texBufID = 0;
-		cout << "warning no textures!" << endl;
 	}
 	else
 	{
@@ -93,9 +137,7 @@ void Shape::init()
 	CHECKED_GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
-void Shape::draw(const shared_ptr<Program> prog) const
-{
-	int h_pos, h_nor, h_tex;
+void Shape::drawInit(const shared_ptr<Program> prog) const {
 	h_pos = h_nor = h_tex = -1;
 
 	CHECKED_GL_CALL(glBindVertexArray(vaoID));
@@ -130,10 +172,9 @@ void Shape::draw(const shared_ptr<Program> prog) const
 
 	// Bind element buffer
 	CHECKED_GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eleBufID));
+}
 
-	// Draw
-	CHECKED_GL_CALL(glDrawElements(GL_TRIANGLES, (int)eleBuf.size(), GL_UNSIGNED_INT, (const void *)0));
-
+void Shape::drawClean() const {
 	// Disable and unbind
 	if (h_tex != -1)
 	{
@@ -146,4 +187,20 @@ void Shape::draw(const shared_ptr<Program> prog) const
 	GLSL::disableVertexAttribArray(h_pos);
 	CHECKED_GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	CHECKED_GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+}
+
+void Shape::draw(const shared_ptr<Program> prog) const
+{
+	drawInit(prog);
+	// Draw
+	CHECKED_GL_CALL(glDrawElements(GL_TRIANGLES, (int)eleBuf.size(), GL_UNSIGNED_INT, (const void *)0));
+	drawClean();
+}
+
+void Shape::drawInstanced(const shared_ptr<Program> prog, int count) const
+{
+	drawInit(prog);
+	// Draw
+	CHECKED_GL_CALL(glDrawElementsInstanced(GL_TRIANGLES, (int)eleBuf.size(), GL_UNSIGNED_INT, (const void *)0, count));
+	drawClean();
 }

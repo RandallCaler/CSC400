@@ -1,27 +1,36 @@
-#version  330 core
-layout(location = 0) in vec3 vertPos;
+#version 330 core
+
+layout(location = 0) in vec4 vertPos;
 layout(location = 1) in vec3 vertNor;
 layout(location = 2) in vec2 vertTex;
+
 uniform mat4 P;
-uniform mat4 M;
 uniform mat4 V;
-uniform vec3 lightPos;
+uniform mat4 M;
+
+uniform vec3 lightDir; // position of light source in model space
 
 out vec3 fragNor;
-out vec3 lightDir;
-out vec3 EPos;
+out vec3 LDir;
 out vec2 vTexCoord;
+out vec3 EPos;
 
 void main() {
+  // translate model to view space
+  vec4 viewPos = V * M * vertPos;
 
-  /* First model transforms */
-  vec3 wPos = vec3(M * vec4(vertPos.xyz, 1.0));
-  gl_Position = P * V *M * vec4(vertPos.xyz, 1.0);
+  // vertex normal in view space
+  fragNor = (transpose(inverse(V * M)) * vec4(vertNor, 0.0)).xyz;
 
-  fragNor = (V*M * vec4(vertNor, 0.0)).xyz;
-  lightDir = (V*(vec4(lightPos - wPos, 0.0))).xyz;
-  EPos = vec3(1); //PULLED for release
-  
-  /* pass through the texture coordinates to be interpolated */
+  // direction of light source in view space
+  LDir = mat3(V) * lightDir;
+
+  // pass through texture
   vTexCoord = vertTex;
+
+  // vertex position in view space
+  EPos = vec3(viewPos);
+
+  // complete vertex shading
+  gl_Position = P * viewPos;
 }

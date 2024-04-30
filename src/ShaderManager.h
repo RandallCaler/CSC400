@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef SHADER_MANAGER_H_INCLUDED
+#define SHADER_MANAGER_H_INCLUDED
+
 #include "Components.h"
 
 struct materials;
@@ -10,7 +15,8 @@ class Shader {
     public:
         void setModel(vec3 trans, float rotZ, float rotY, float rotX, float sc);
         void setModel(std::shared_ptr<MatrixStack> M);
-        void Shader::setModel(glm::mat4& M);
+        void setModel(Entity entity);
+        void setModel(glm::mat4& M);
 
         void initShader(const std::string &v, const std::string &f);
         void initTexVars();
@@ -23,6 +29,9 @@ class Shader {
 
         void setTexture(int i);
         void unbindTexture(int i);
+
+        void setUniform(std::string uniformName);
+        void setAttribute(std::string attributeName);
 
         
         Shader(const std::string &v, const std::string &f, bool has_tex);
@@ -47,3 +56,5 @@ private:
     std::unordered_map<std::string, unsigned int> shaderTable;
     static unsigned int ID;
 };
+
+#endif

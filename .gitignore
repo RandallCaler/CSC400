@@ -1,5 +1,6 @@
 build/
 x64/
 .vs/
+.vscode/settings.json
 .idea/
 cmake-build-debug/
