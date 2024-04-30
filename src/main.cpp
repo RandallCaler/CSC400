@@ -42,7 +42,7 @@ int Entity::NEXT_ID = 0;
 std::string resourceDir = "../resources";
 
 map<string, shared_ptr<Shader>> shaders;
-vector<shared_ptr<Entity>> worldentities;
+map<string, shared_ptr<Entity>> worldentities;
 
 class Application : public EventCallbacks
 {
@@ -106,7 +106,7 @@ public:
 	double bounds;
 
 	// temp variables, should be incorporated into controller
-	int activeEntity = 0;
+	map<string, shared_ptr<Entity>>::iterator activeEntity = worldentities.begin();
 	float editSpeed = 2.0;
 	int editSRT = 0; // 0 - translation, 1 - rotation, 2 - scale
 	vec3 mobileVel = vec3(0);
@@ -130,7 +130,12 @@ public:
 			if (action == GLFW_PRESS) {
 				switch (key) {
 					case GLFW_KEY_TAB:
-						activeEntity = (activeEntity + 1)%worldentities.size();
+						if (activeEntity == worldentities.end()) {
+							activeEntity = worldentities.begin();
+						}
+						else {
+							activeEntity++;
+						}
 						break;
 					case GLFW_KEY_W:
 						mobileVel.z = editSpeed;
@@ -180,11 +185,11 @@ public:
 			}
 		}
 		else {
-			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities[3]->collider->IsColliding() && bounds < 19){
+			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding() && bounds < 19){
 				ih.inputStates[0] = 1;
 			}
 
-			if (key == GLFW_KEY_A && (action == GLFW_PRESS) && !worldentities[3]->collider->IsColliding()){
+			if (key == GLFW_KEY_A && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding()){
 				ih.inputStates[1] = 1;
 			}
 
@@ -192,7 +197,7 @@ public:
 				ih.inputStates[2] = 1;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_PRESS)&& !worldentities[3]->collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_PRESS)&& !worldentities["bunny"]->collider->IsColliding()){
 				ih.inputStates[3] = 1;
 			}
 
@@ -206,11 +211,11 @@ public:
 
 			// KEY RELEASED
 
-			if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !worldentities[3]->collider->IsColliding() && bounds < 19){
+			if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding() && bounds < 19){
 				ih.inputStates[0] = 0;
 			}
 
-			if (key == GLFW_KEY_A && (action == GLFW_RELEASE) && !worldentities[3]->collider->IsColliding()){
+			if (key == GLFW_KEY_A && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding()){
 				ih.inputStates[1] = 0;
 			}
 
@@ -218,7 +223,7 @@ public:
 				ih.inputStates[2] = 0;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_RELEASE)&& !worldentities[3]->collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_RELEASE)&& !worldentities["bunny"]->collider->IsColliding()){
 				ih.inputStates[3] = 0;
 			}
 
@@ -231,7 +236,7 @@ public:
 			}
 
 			// Entity *catptr = &catEnt;
-			ih.handleInput(worldentities[3].get(), &cam);
+			ih.handleInput(worldentities["bunny"].get(), &cam);
 		}
 	}
 
@@ -252,9 +257,9 @@ public:
 			cam.angle -= 10 * (deltaX / 57.296);
 
 			// cat entity updated with camera
-			worldentities[3]->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
-			worldentities[3]->m.forward.y = 0;
-			worldentities[3]->rotY -= 10 * (deltaX / 57.296);
+			worldentities["bunny"]->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
+			worldentities["bunny"]->m.forward.y = 0;
+			worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
 		}
 		
 	}
@@ -425,12 +430,12 @@ public:
 		// bf.push_back(bf3);
 
 		// IMPORT BUNNY
-		worldentities[3]->m.forward = vec4(0, 0, 0.1, 1);
-		worldentities[3]->m.velocity = vec3(0.1) * vec3(worldentities[3]->m.forward);
-		worldentities[3]->collider = new Collider(cat, Collider::CAT);
-		worldentities[3]->collider->SetEntityID(worldentities[3]->id);
+		worldentities["bunny"]->m.forward = vec4(0, 0, 0.1, 1);
+		worldentities["bunny"]->m.velocity = vec3(0.1) * vec3(worldentities["bunny"]->m.forward);
+		worldentities["bunny"]->collider = new Collider(cat, Collider::CAT);
+		worldentities["bunny"]->collider->SetEntityID(worldentities["bunny"]->id);
 		//cout << "cat " << worldentities["bunny"]->id << endl;
-		worldentities[3]->collider->entityName = 'c';
+		worldentities["bunny"]->collider->entityName = 'c';
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initGround();
@@ -567,16 +572,16 @@ public:
 		if (editMode) {
 			switch (editSRT) {
 				case 0:
-					worldentities[activeEntity]->position += mobileVel * frametime;
+					activeEntity->second->position += mobileVel * frametime;
 					break;
 				case 1:
-					worldentities[activeEntity]->rotX += mobileVel.x * frametime;
-					worldentities[activeEntity]->rotY += mobileVel.y * frametime;
-					worldentities[activeEntity]->rotZ += mobileVel.z * frametime;
+					activeEntity->second->rotX += mobileVel.x * frametime;
+					activeEntity->second->rotY += mobileVel.y * frametime;
+					activeEntity->second->rotZ += mobileVel.z * frametime;
 					break;
 				case 2:
-					worldentities[activeEntity]->scale += mobileVel.x * frametime;
-					worldentities[activeEntity]->scaleVec += mobileVel * frametime;
+					activeEntity->second->scale += mobileVel.x * frametime;
+					activeEntity->second->scaleVec += mobileVel * frametime;
 					break;
 			}
 		}
@@ -638,7 +643,9 @@ public:
 		// material imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
 
-		for (shared_ptr<Entity> entity : worldentities) {
+		map<string, shared_ptr<Entity>>::iterator i;
+		for (i = worldentities.begin(); i != worldentities.end(); i++) {
+			shared_ptr<Entity> entity = i->second;
 			if (shaders[entity->defaultShaderName] != curS) {
 				curS->prog->unbind();
 				curS = shaders[entity->defaultShaderName];
@@ -711,7 +718,7 @@ public:
 		drawGround(curS);  //draw ground here
 
 
-		int collided = worldentities[3]->collider->CatCollision(bf, worldentities[3].get());
+		int collided = worldentities["bunny"]->collider->CatCollision(bf, worldentities["bunny"].get());
 
 		if (collided != -1) {
 			bf_flags[collided] = 1;

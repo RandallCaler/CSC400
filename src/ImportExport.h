@@ -22,7 +22,7 @@ extern string resourceDir;
 
 class ImporterExporter {
     public:
-        ImporterExporter(map<string, shared_ptr<Shader>>* shaders, vector<shared_ptr<Entity>>* worldentities);
+        ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities);
         ~ImporterExporter();
         
         string readString();
@@ -37,7 +37,7 @@ class ImporterExporter {
 
     private:
         map<string, shared_ptr<Shader>>* shaders; // reference to main shader list
-        vector<shared_ptr<Entity>>* worldentities; // reference to main entity list
+        map<string, shared_ptr<Entity>>* worldentities; // reference to main entity list
 	    string buffer; // input data stream
         size_t delimit; // reusable tracker for delimiter locations
 };

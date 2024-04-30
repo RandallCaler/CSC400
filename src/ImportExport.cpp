@@ -1,6 +1,6 @@
 #include "ImportExport.h"
 
-ImporterExporter::ImporterExporter(map<string, shared_ptr<Shader>>* shaders, vector<shared_ptr<Entity>>* worldentities) {
+ImporterExporter::ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities) {
 	// mutable references to main's shaders and entities
 	this->shaders = shaders;
 	this->worldentities = worldentities;
@@ -197,7 +197,7 @@ void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, materials>
 		newEntity->scaleVec.x, newEntity->scaleVec.y, newEntity->scaleVec.z);
 	
 	// commit new entity to main
-	(*worldentities).push_back(newEntity);
+	(*worldentities)[id] = newEntity;
 }
 
 void ImporterExporter::loadFromFile(string path) {
