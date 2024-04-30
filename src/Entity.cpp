@@ -16,8 +16,8 @@ Entity::Entity(){};
 void Entity::initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<std::shared_ptr<Texture>> textures){
     objs = shapes;
     this->textures = textures;
-    minBB = vec3(std::numeric_limits<float>::max());
-    maxBB = vec3(std::numeric_limits<float>::min());
+    minBB = vec3((std::numeric_limits<float>::max)());
+    maxBB = vec3((std::numeric_limits<float>::min)());
 
     for (int i = 0; i < shapes.size(); i++) {
         material m;
