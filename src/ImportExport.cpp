@@ -71,7 +71,7 @@ void ImporterExporter::loadShader() {
 	(*shaders)[id] = shader;
 }
 
-void ImporterExporter::loadTexture(map<string, shared_ptr<Texture>>& textures) {
+void ImporterExporter::loadTexture() {
 	string id = readString();
 	string textFile = readString();
     shared_ptr<Texture> texture = make_shared<Texture>();
@@ -79,10 +79,10 @@ void ImporterExporter::loadTexture(map<string, shared_ptr<Texture>>& textures) {
     texture->init();
     texture->setUnit(0);
     texture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
-    textures[id] = texture;
+    textureLibrary[id] = texture;
 }
 
-void ImporterExporter::loadSingleShape(map<string, pair<shared_ptr<Shape>, material>>& shapes) {
+void ImporterExporter::loadSingleShape() {
 	// extract a mesh and lighting properties from the savefile entry in the buffer
 	
 	// tinyObj overhead
@@ -107,7 +107,7 @@ void ImporterExporter::loadSingleShape(map<string, pair<shared_ptr<Shape>, mater
 				newShape->measure();
 				newShape->init();
 				material newMat = material();
-				shapes[id] = make_pair(newShape, newMat);
+				shapeLibrary[id] = make_pair(newShape, newMat);
 				break;
 			}
 		}
@@ -115,29 +115,29 @@ void ImporterExporter::loadSingleShape(map<string, pair<shared_ptr<Shape>, mater
 	}
 
 	// import lighting properties
-	shapes[id].second.amb.r = readFloat();
-	shapes[id].second.amb.g = readFloat();
-	shapes[id].second.amb.b = readFloat();
+	shapeLibrary[id].second.amb.r = readFloat();
+	shapeLibrary[id].second.amb.g = readFloat();
+	shapeLibrary[id].second.amb.b = readFloat();
 	
-	shapes[id].second.dif.r = readFloat();
-	shapes[id].second.dif.g = readFloat();
-	shapes[id].second.dif.b = readFloat();
+	shapeLibrary[id].second.dif.r = readFloat();
+	shapeLibrary[id].second.dif.g = readFloat();
+	shapeLibrary[id].second.dif.b = readFloat();
 
-	shapes[id].second.spec.r = readFloat();
-	shapes[id].second.spec.g = readFloat();
-	shapes[id].second.spec.b = readFloat();
+	shapeLibrary[id].second.spec.r = readFloat();
+	shapeLibrary[id].second.spec.g = readFloat();
+	shapeLibrary[id].second.spec.b = readFloat();
 	
-	shapes[id].second.shine = readFloat();
+	shapeLibrary[id].second.shine = readFloat();
 
 	printf("%s %s %s %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n", 
 		id.c_str(), meshFile.c_str(), shapeName.c_str(),
-		shapes[id].second.amb.r, shapes[id].second.amb.g, shapes[id].second.amb.b,
-		shapes[id].second.dif.r, shapes[id].second.dif.g, shapes[id].second.dif.b,
-		shapes[id].second.spec.r, shapes[id].second.spec.g, shapes[id].second.spec.b,
-		shapes[id].second.shine);
+		shapeLibrary[id].second.amb.r, shapeLibrary[id].second.amb.g, shapeLibrary[id].second.amb.b,
+		shapeLibrary[id].second.dif.r, shapeLibrary[id].second.dif.g, shapeLibrary[id].second.dif.b,
+		shapeLibrary[id].second.spec.r, shapeLibrary[id].second.spec.g, shapeLibrary[id].second.spec.b,
+		shapeLibrary[id].second.shine);
 }
 
-void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, material>>& shapes, map<string, shared_ptr<Texture>>& textures) {
+void ImporterExporter::loadEntity() {
 	// compose an entity from the savefile entry in the buffer
 	
 	string id = readString();
@@ -156,8 +156,8 @@ void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, material>>
 	for (int i = 0; i < numShapes; i++) {
 		string shapeID = readString();
 		printf("%s ", shapeID.c_str());
-		entityShapes.push_back(shapes[shapeID].first);
-		entityMats.push_back(shapes[shapeID].second);
+		entityShapes.push_back(shapeLibrary[shapeID].first);
+		entityMats.push_back(shapeLibrary[shapeID].second);
 	}
 
 	int numTextures = readInt();
@@ -166,7 +166,7 @@ void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, material>>
 	for (int i = 0; i < numTextures; i++) {
 		string textID = readString();
 		printf("%s ", textID.c_str());
-		entityTextures.push_back(textures[textID]);
+		entityTextures.push_back(textureLibrary[textID]);
 	}
 
 	// initialize new entity with lists of meshes and materials
@@ -202,8 +202,6 @@ void ImporterExporter::loadEntity(map<string, pair<shared_ptr<Shape>, material>>
 
 void ImporterExporter::loadFromFile(string path) {
 	// ID-indexed library of mesh-material pairs, for building entities from shape data
-	map<string, pair<shared_ptr<Shape>, material>> shapeLibrary;
-	map<string, shared_ptr<Texture>> textureLibrary;
 
 	printf("begin load from save at %s\n", (resourceDir+path).c_str());
 	ifstream saveFile(resourceDir + path);
@@ -218,13 +216,13 @@ void ImporterExporter::loadFromFile(string path) {
 				loadShader();
 				break;
 			case SHAPE_FLAG:
-				loadSingleShape(shapeLibrary);
+				loadSingleShape();
 				break;
 			case ENTITY_FLAG:
-				loadEntity(shapeLibrary, textureLibrary);
+				loadEntity();
 				break;
 			case TEXTURE_FLAG:
-				loadTexture(textureLibrary);
+				loadTexture();
 		}
 	}
 	printf("end load from save\n");

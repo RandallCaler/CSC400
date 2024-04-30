@@ -30,12 +30,14 @@ class ImporterExporter {
         float readFloat();
 
         void loadShader();
-        void loadTexture(map<string, shared_ptr<Texture>>& textures);
-        void loadSingleShape(map<string, pair<shared_ptr<Shape>, material>>& shapes);
-        void loadEntity(map<string, pair<shared_ptr<Shape>, material>>& shapes, map<string, shared_ptr<Texture>>& textures);
+        void loadTexture();
+        void loadSingleShape();
+        void loadEntity();
         void loadFromFile(string path);
 
     private:
+        map<string, pair<shared_ptr<Shape>, material>> shapeLibrary;
+        map<string, shared_ptr<Texture>> textureLibrary;
         map<string, shared_ptr<Shader>>* shaders; // reference to main shader list
         map<string, shared_ptr<Entity>>* worldentities; // reference to main entity list
 	    string buffer; // input data stream
