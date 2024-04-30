@@ -293,7 +293,7 @@ public:
 			cam.angle += (x-cursor_x) * sensitivity;
 			cam.pitch += (y-cursor_y) * sensitivity;
 
-			cam.pitch = std::min(M_PI/2 - EPSILON, std::max(-M_PI/2 + EPSILON, (double)cam.pitch));
+			cam.pitch = std::min(PI/2 - EPSILON, std::max(-PI/2 + EPSILON, (double)cam.pitch));
 
 			cursor_x = x;
 			cursor_y = y;
@@ -310,7 +310,7 @@ public:
 		glClearColor(.72f, .84f, 1.06f, 1.0f);
 		// Enable z-buffer test.
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CLIP_DISTANCE0);
+		// glEnable(GL_CLIP_DISTANCE0);
 
 		reg = shaders["reg"];
 		// tex = shaders["tex"];
@@ -506,20 +506,19 @@ public:
       }
       //code to draw the ground plane
      void drawGround(shared_ptr<Shader> curS) {
-     	curS->prog->bind();
      	glBindVertexArray(GroundVertexArrayID);
 
 
 		material c;
-		c.amb.r = 0.05;
-        c.amb.g = 0.22;
-        c.amb.b = 0.05;
-        c.dif.r = 0;
-        c.dif.g = 0;
-        c.dif.b = 0;
-        c.spec.r = 3;
-        c.spec.g = 3;
-        c.spec.b = 3;
+		c.amb.r = 0.0;
+        c.amb.g = 0.0;
+        c.amb.b = 0.0;
+        c.dif.r = 1;
+        c.dif.g = 1;
+        c.dif.b = 1;
+        c.spec.r = 1;
+        c.spec.g = 1;
+        c.spec.b = 1;
         c.shine = 1.0;
 		curS->flip(1);
 		curS->setMaterial(c);
@@ -578,10 +577,7 @@ public:
 		if (editMode) {
 			switch (editSRT) {
 				case 0:
-					printf("TESTOUT\n");
-					printf("%lu\n", activeEntity);
 					activeEntity->second->position += mobileVel * frametime;
-					printf("TESTOUT\n");
 					break;
 				case 1:
 					activeEntity->second->rotX += mobileVel.x * frametime;
@@ -641,14 +637,12 @@ public:
 		// 	bf[2].objs[i]->draw(reg.prog);
 		// }
 
-		std::cout << "entity position:" << catEnt->position.x << ", " << catEnt->position.y << ", " << catEnt->position.z << std::endl;
+		// std::cout << "entity position:" << catEnt->position.x << ", " << catEnt->position.y << ", " << catEnt->position.z << std::endl;
 
 		// catEnt.setMaterials(0, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
 		// reg.setModel(catEnt.position, 0, catEnt.rotY, 0, catEnt.scale);
 		// reg.setMaterial(catEnt.material[0]);
 		// catEnt.objs[0]->draw(reg.prog);
-
-		//std::cout << "entity position:" << catEnt.position.x << ", " << catEnt.position.y << ", " << catEnt.position.z << std::endl;
 
 		// material imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -692,12 +686,12 @@ public:
 
 		curS = shaders["tex"];
 
-		//using texture shader now
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 
 		cam.SetView(curS->prog);
-
+		// directional light
+		glUniform3f(curS->prog->getUniform("lightDir"), -1.0f, 1.0f, -1.0f);
 		drawGround(curS);  //draw ground here
 
 
@@ -790,7 +784,6 @@ int main(int argc, char *argv[]) {
 		lastTime = nextLastTime;
 
 		// Render scene.
-		printf("TESTIN\n");
 		application->render(deltaTime);
 
 		// Swap front and back buffers.
