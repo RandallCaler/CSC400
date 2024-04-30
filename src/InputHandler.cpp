@@ -52,6 +52,7 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
                 // penguin.position +=  vec3(sin(cam.player_rot) * 0.1, 0, cos(cam.player_rot) * 0.1);
                 norm = glm::normalize(penguin->m.forward);
                 penguin->position += vec3(norm);
+                
                 cam->player_pos = penguin->position;
 
                 break;
@@ -71,6 +72,8 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
                 else{
                     penguin->position += vec3(glm::normalize(penguin->m.forward));
                 }
+
+
         
                 cam->player_pos = penguin->position;
 
@@ -124,6 +127,8 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
             //     //jump
             //     break;
         }
+        
+       // penguin->m.forward = glm::normalize(penguin->m.forward);
        // q.push(x);
     }
 
