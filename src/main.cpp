@@ -249,6 +249,7 @@ public:
 			}
 		}
 		else {
+			// cout << "INSIDE SCROLL CALLBACK BUNNY MOVEMENT" << endl;
 			//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
 			cam.angle -= 10 * (deltaX / 57.296);
 
@@ -257,7 +258,7 @@ public:
 			worldentities["bunny"]->m.forward.y = 0;
 			worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
 		}
-	
+
 	}
 
 
