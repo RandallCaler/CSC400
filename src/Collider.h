@@ -23,14 +23,19 @@ public:
     char entityName;
 
     Collider();
-    Collider(std::vector<std::shared_ptr<Shape>> mesh, entityType type);
+    Collider(Entity *owner);
     void UpdateColliderSize();
-    void CheckCollision(std::vector<Entity> entities, int thisID);
-    int CatCollision(std::vector<Entity> entities, Entity *cat);
+    int Collider::CheckCollision(std::vector<Entity>& entities);
     void SetEntityID(int ID);
     bool IsColliding();
     void ExitCollision();
     float GetRadial();
+
+    // AABB
+    void CalculateBoundingBox(glm::mat4 modelMatrix);
+
+    glm::vec3 worldMin;
+    glm::vec3 worldMax;
 
 private:
 

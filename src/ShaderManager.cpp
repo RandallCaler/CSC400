@@ -1,7 +1,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
+#include "Entity.h"
 
 #include "ShaderManager.h"
 
@@ -45,6 +45,10 @@ void Shader::setModel(Entity entity) {
 
 void Shader::setModel(std::shared_ptr<MatrixStack> M) {
     glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M->topMatrix()));
+}
+
+void Shader::setModel(glm::mat4& M) {
+    glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M));
 }
 
 void Shader::addTexture(const std::string &f) {
@@ -104,4 +108,16 @@ Shader::Shader() {
 
 Shader::~Shader() {
     ;
+}
+
+
+unsigned int ShaderManager::ID = 0;
+
+ShaderManager::ShaderManager() : shaderList{}, shaderTable{} {}
+void ShaderManager::AddShader(shared_ptr<Shader> shader) {
+    shaderList.push_back(shader);
+    shaderTable[shader->name] = ID++;
+}
+void ShaderManager::Draw(Entity& entity) {
+    auto shaderptr = shaderList[shaderTable[entity.shaderName]];
 }

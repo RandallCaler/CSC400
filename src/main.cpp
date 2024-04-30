@@ -6,17 +6,16 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <algorithm>
-
 #include "GLSL.h"
 #include "Program.h"
 #include "Shape.h"
-#include "Collider.h"
 #include "MatrixStack.h"
 #include "WindowManager.h"
 #include "Texture.h"
 #include "stb_image.h"
 #include "InputHandler.h"
 #include "Entity.h"
+#include "PhysicalObject.h"
 #include "ShaderManager.h"
 #include "ImportExport.h"
 #include "Camera.h"
@@ -35,8 +34,6 @@
 using namespace std;
 using namespace glm;
 
-// static/global vars
-int Entity::NEXT_ID = 0;
 
 // Where the resources are loaded from
 std::string resourceDir = "../resources";
@@ -70,6 +67,7 @@ public:
 	Entity bf1 = Entity();
 	Entity bf2 = Entity();
 	Entity bf3 = Entity();
+	Entity *catEnt = new PhysicalObject();
 	
   	std::vector<Entity> bf;
 
@@ -93,15 +91,14 @@ public:
 	int g_GiboLen;
 	//ground VAO
 	GLuint GroundVertexArrayID;
-
+  
 	vec3 strafe = vec3(1, 0, 0);
 
 	// 	view pitch dist angle playerpos playerrot animate g_eye
 	Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
 	double cursor_x = 0;
 	double cursor_y = 0;
-
-
+  
 	//bounds for world
 	double bounds;
 
@@ -240,7 +237,6 @@ public:
 		}
 	}
 
-
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
 		if (editMode) {
 			if (deltaY>0) {
@@ -261,7 +257,7 @@ public:
 			worldentities["bunny"]->m.forward.y = 0;
 			worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
 		}
-		
+	
 	}
 
 
@@ -286,7 +282,6 @@ public:
 		}
 	}
 
-
 	void resizeCallback(GLFWwindow *window, int width, int height) {
 		glViewport(0, 0, width, height);
 	}
@@ -303,7 +298,9 @@ public:
 			cursor_x = x;
 			cursor_y = y;
 		}
-	}
+  }
+
+#pragma endregion
 
 	void init(const std::string& resourceDirectory)
 	{
@@ -342,6 +339,20 @@ public:
 			cat[0]->createShape(TOshapesB[0]);
 			cat[0]->measure();
 			cat[0]->init();
+		}
+
+
+		vector<tinyobj::shape_t> TOshapesC;
+ 		vector<tinyobj::material_t> objMaterialsC;
+		//load in the mesh and make the shape(s)
+ 		rc = tinyobj::LoadObj(TOshapesC, objMaterialsC, errStr, (resourceDirectory + "/bunny.obj").c_str());
+		if (!rc) {
+			cerr << errStr << endl;
+		} else {	
+			bunny.push_back(make_shared<Shape>());
+			bunny[0]->createShape(TOshapesC[0]);
+			bunny[0]->measure();
+			bunny[0]->init();
 		}
 
 		vector<tinyobj::shape_t> TOshapes3;
@@ -493,9 +504,6 @@ public:
      	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
       	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(idx), idx, GL_STATIC_DRAW);
       }
-
-
-
       //code to draw the ground plane
      void drawGround(shared_ptr<Shader> curS) {
      	curS->prog->bind();
@@ -540,8 +548,6 @@ public:
   		glDisableVertexAttribArray(2);
   		curS->prog->unbind();
      }
-
-
 
 	void render(float frametime) {
 		// Get current frame buffer size.
@@ -632,6 +638,7 @@ public:
 		// 	bf[2].objs[i]->draw(reg.prog);
 		// }
 
+		std::cout << "entity position:" << catEnt->position.x << ", " << catEnt->position.y << ", " << catEnt->position.z << std::endl;
 
 		// catEnt.setMaterials(0, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
 		// reg.setModel(catEnt.position, 0, catEnt.rotY, 0, catEnt.scale);
@@ -689,36 +696,12 @@ public:
 
 		cam.SetView(curS->prog);
 
-		//sky box!
-		// materials sky_box;
-		// sky_box.matAmb.r = 0.2;
-        // sky_box.matAmb.g = 0.3;
-        // sky_box.matAmb.b = 0.65;
-        // sky_box.matDif.r = 0;
-        // sky_box.matDif.g = 0;
-        // sky_box.matDif.b = 0;
-        // sky_box.matSpec.r = 0;
-        // sky_box.matSpec.g = 0;
-        // sky_box.matSpec.b = 0;
-        // sky_box.matShine = 100.0;
-		// tex.flip(0);
-		// tex.setMaterial(sky_box);
-		// // tex.setTexture(1);
-
-		// Model->pushMatrix();
-		// 	Model->loadIdentity();
-		// 	Model->scale(vec3(20.0));
-		// 	tex.setModel(Model);
-		// 	sphere->draw(tex.prog);
-		// Model->popMatrix();
-
-		// tex.unbindTexture(1);
-
-
 		drawGround(curS);  //draw ground here
 
 
-		int collided = worldentities["bunny"]->collider->CatCollision(bf, worldentities["bunny"].get());
+		int collided = worldentities["bunny"]->collider->CatCollision(bf);
+
+		//catEnt->position = cam.player_pos;
 
 		if (collided != -1) {
 			bf_flags[collided] = 1;
@@ -746,8 +729,6 @@ public:
 		// }
 	}
 };
-
-
 
 
 int main(int argc, char *argv[]) {
@@ -799,7 +780,7 @@ int main(int argc, char *argv[]) {
 		// convert microseconds (weird) to seconds (less weird)
 		deltaTime *= 0.000001;
 
-		deltaTime = glm::min(deltaTime, dt);
+		//deltaTime = glm::min(deltaTime, dt);
 
 		// reset lastTime so that we can calculate the deltaTime
 		// on the next frame
