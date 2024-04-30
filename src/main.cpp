@@ -123,7 +123,7 @@ public:
 			editMode = !editMode;
 			editSRT = 0;
 			editSpeed = 2.0;
-			if (activeCam = &cam) {
+			if (editMode) {
 				activeCam = &freeCam;
 			}
 			else {
@@ -269,10 +269,12 @@ public:
 			if (deltaY>0) {
 				mobileVel *= 0.9;
 				editSpeed *= 0.9;
+				freeCam.vel *= vec3(0.9);
 			}
 			else {
 				mobileVel *= 1.1;
 				editSpeed *= 1.1;
+				freeCam.vel *= vec3(1.1);
 			}
 		}
 		else {
