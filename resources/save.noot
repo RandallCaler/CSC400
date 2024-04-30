@@ -12,4 +12,4 @@
 3 cube1 reg 1 cubeB 0 1.0 1.0 3.0 0.0 1.0 0.0 1.0 1.0 1.0
 3 cube2 reg 1 cubeR 0 -1.0 -1.0 1.0 0.0 0.0 0.0 1.0 1.0 0.5
 3 cube3 reg 1 cubeR 0 1.0 0.5 1.0 0.0 0.0 1.0 1.0 5.0 0.5
-3 skybox skybox 1 sphereSky 1 sky 0.0 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0
+3 skybox skybox 1 sphereSky 1 sky 0.0 0.0 0.0 0.0 0.0 0.0 1000.0 1000.0 1000.0

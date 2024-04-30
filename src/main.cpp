@@ -311,6 +311,7 @@ public:
 		glClearColor(.72f, .84f, 1.06f, 1.0f);
 		// Enable z-buffer test.
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CLIP_DISTANCE0);
 
 		reg = shaders["reg"];
 		// tex = shaders["tex"];
@@ -695,12 +696,13 @@ public:
 				cam.SetView(curS->prog);
 			}
 			if (shaders["skybox"] == curS) {
-				entity->position = -cam.cameraPos;
+				entity->position = cam.cameraPos;
 				// skybox is always the furthest surface away
 				glDepthFunc(GL_LEQUAL);
 			}
 			mat4 modelMatrix = entity->generateModel();
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(modelMatrix));
+			// curS->setModel(*entity);
 			for (int i = 0; i < entity->objs.size(); i++) {
 				if (curS->has_texture) {
 					curS->flip(1);

@@ -27,10 +27,10 @@ Camera::~Camera()
 }
 
 void Camera::SetView(std::shared_ptr<Program> shader) {
-    vec3 v_eye = player_pos + vec3(0,2,-3);
-    vec3 v_dir = -vec3(sin(-angle) * cos(pitch), sin(pitch), cos(angle) * cos(pitch)) + v_eye;
+    cameraPos = player_pos + vec3(0,2,-3);
+    vec3 v_dir = -vec3(sin(-angle) * cos(pitch), sin(pitch), cos(angle) * cos(pitch)) + cameraPos;
     // mat4 scale = glm::scale(glm::mat4(1.0f), view->scale);
-	mat4 v_mat = lookAt(v_eye, v_dir, vec3(0,1,0));
+	mat4 v_mat = lookAt(cameraPos, v_dir, vec3(0,1,0));
 
 	glUniformMatrix4fv(shader->getUniform("V"), 1, GL_FALSE, value_ptr(v_mat));
 }
