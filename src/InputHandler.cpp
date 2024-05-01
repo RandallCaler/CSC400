@@ -9,29 +9,32 @@ InputHandler::InputHandler(){
 InputHandler::~InputHandler(){
 };
 
-void InputHandler::handleInput(PhysicalObject *penguin, Camera *cam, float deltaTime){
+// trying method in ex video
+
+void InputHandler::handleInput(Entity *penguin, Camera *cam, float deltaTime){
+    float distance;
     if (inputStates[0] == 1){
         // w
-        penguin->motion.curSpeed = 3.0;
-        penguin->rotY = curTurnSpeed * deltaTime;
-        penguin->move();
-
+        penguin->m.curSpeed = 3.0;
     } else if(inputStates[2] == 1){
         // s
-        penguin->motion.curSpeed = -3.0;
+        penguin->m.curSpeed = -3.0;
     } else{
-        penguin->motion.curSpeed = 0.0;
+        penguin->m.curSpeed = 0.0;
     }
+
 
     if (inputStates[3] == 1){
         // d
-        penguin->motion.curTurnSpeed = -20.0;
+        penguin->m.curTurnSpeed = -20.0;
     } else if (inputStates[1] == 1){
         // a
-        penguin->motion.curTurnSpeed = 20.0;
+        penguin->m.curTurnSpeed = 20.0;
     } else{
-        penguin->motion.curTurnSpeed = 0.0;
+        penguin->m.curTurnSpeed = 0.0;
     }
+
+    
 }
 
 // void InputHandler::handleInput(Entity *penguin, Camera *cam){

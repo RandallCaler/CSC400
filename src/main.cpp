@@ -69,7 +69,7 @@ public:
 	Entity bf1 = Entity();
 	Entity bf2 = Entity();
 	Entity bf3 = Entity();
-	Entity *catEnt = new Manchot();
+	// Entity *catEnt = new Manchot();
 	
   	std::vector<Entity> bf;
 
@@ -276,10 +276,10 @@ public:
 			// cat entity updated with camera
 			worldentities["bunny"]->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
 			worldentities["bunny"]->m.forward.y = 0;
-			worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
+			// worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
 
 
-			worldentities["bunny"]->motion.
+			// worldentities["bunny"]->motion.
 			// if (deltaY>0) {
 			// 	mobileVel *= 0.9;
 			// 	editSpeed *= 0.9;
@@ -637,6 +637,8 @@ public:
 					break;
 			}
 		}
+
+		worldentities["bunny"]->updateMotion(frametime);
 		
 		//material shader first
 		curS->prog->bind();

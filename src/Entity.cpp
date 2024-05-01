@@ -12,8 +12,8 @@ using namespace glm;
 int Entity::NEXT_ID = 0;
 
 Entity::Entity(){
-    curSpeed = 0.0;
-    curTurnSpeed = 0.0;
+    m.curSpeed = 0.0;
+    m.curTurnSpeed = 0.0;
 };
 
 void Entity::initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<std::shared_ptr<Texture>> textures){
@@ -93,8 +93,12 @@ glm::mat4 Entity::generateModel() {
 // velocity upon collision (bounds of world, or obstacle) and will rotate the model/"flip" the forward vector
 void Entity::updateMotion(float deltaTime) {
     // if entity == player
-
-    
+        rotY = m.curTurnSpeed * deltaTime;
+        float distance = m.curSpeed * deltaTime;
+        
+        float deltaX = distance * sin(rotY);
+        float deltaZ = distance * cos(rotY);
+        position += vec3(deltaX, 0.0f, deltaZ);
 
         // float distance = sqrt((position.x * position.x) + (position.y * position.y) + (position.z * position.z));
         // if(distance >= 19.5){

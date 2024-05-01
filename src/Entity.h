@@ -50,7 +50,7 @@ public:
 
     void updateMotion(float deltaTime);
     void updateScale(float newScale);
-    
+
   
     glm::mat4 generateModel();
 
