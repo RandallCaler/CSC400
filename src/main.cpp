@@ -42,6 +42,8 @@ std::string resourceDir = "../resources";
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Entity>> worldentities;
 
+float deltaTime;
+
 class Application : public EventCallbacks
 {
 
@@ -69,7 +71,7 @@ public:
 	Entity bf1 = Entity();
 	Entity bf2 = Entity();
 	Entity bf3 = Entity();
-	Entity *catEnt = new PhysicalObject();
+	// Entity *catEnt = new Manchot();
 	
   	std::vector<Entity> bf;
 
@@ -211,7 +213,7 @@ public:
 				}
 			}
 			
-			ih.handleInput(NULL, &freeCam);
+			// ih.handleInput(NULL, &freeCam);
 		}
 		else {
 			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding() && bounds < 19){
@@ -265,33 +267,46 @@ public:
 			}
 
 			// Entity *catptr = &catEnt;
-			ih.handleInput(worldentities["bunny"].get(), &cam);
+			ih.handleInput(worldentities["bunny"].get(), &cam, deltaTime);
 		}
 	}
 
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
 		if (editMode) {
-			if (deltaY>0) {
-				mobileVel *= 0.9;
-				editSpeed *= 0.9;
-				freeCam.vel *= vec3(0.9);
-			}
-			else {
-				mobileVel *= 1.1;
-				editSpeed *= 1.1;
-				freeCam.vel *= vec3(1.1);
-			}
-		}
-		else {
+
+			// cout << "INSIDE SCROLL CALLBACK BUNNY MOVEMENT" << endl;
 			//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
 			cam.angle -= 10 * (deltaX / 57.296);
 
 			// cat entity updated with camera
 			worldentities["bunny"]->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
 			worldentities["bunny"]->m.forward.y = 0;
-			worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
+			// worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
+
+
+			// worldentities["bunny"]->motion.
+			// if (deltaY>0) {
+			// 	mobileVel *= 0.9;
+			// 	editSpeed *= 0.9;
+			// 	freeCam.vel *= vec3(0.9);
+			// }
+			// else {
+			// 	mobileVel *= 1.1;
+			// 	editSpeed *= 1.1;
+			// 	freeCam.vel *= vec3(1.1);
+			// }
 		}
-	
+		else {
+			// cout << "INSIDE SCROLL CALLBACK BUNNY MOVEMENT" << endl;
+			//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
+			cam.angle -= 10 * (deltaX / 57.296);
+
+			// cat entity updated with camera
+			worldentities["bunny"]->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
+			worldentities["bunny"]->m.forward.y = 0;
+			// worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
+		}
+
 	}
 
 
@@ -444,6 +459,7 @@ public:
 		// IMPORT BUNNY
 		worldentities["bunny"]->m.forward = vec4(0, 0, 0.1, 1);
 		worldentities["bunny"]->m.velocity = vec3(0.1) * vec3(worldentities["bunny"]->m.forward);
+
 		worldentities["bunny"]->collider = new Collider(worldentities["bunny"].get());
 		worldentities["bunny"]->collider->SetEntityID(worldentities["bunny"]->id);
 		//cout << "cat " << worldentities["bunny"]->id << endl;
@@ -566,6 +582,9 @@ public:
 					break;
 			}
 		}
+
+		// updates player motion
+		worldentities["bunny"]->updateMotion(frametime);
 		
 		//material shader first
 		curS->prog->bind();
@@ -743,7 +762,7 @@ int main(int argc, char *argv[]) {
 		auto nextLastTime = chrono::high_resolution_clock::now();
 
 		// get time since last frame
-		float deltaTime =
+		deltaTime = 
 			chrono::duration_cast<std::chrono::microseconds>(
 				chrono::high_resolution_clock::now() - lastTime)
 				.count();

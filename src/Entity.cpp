@@ -6,12 +6,23 @@
 #include "Shape.h"
 #include "Collider.h"
 
+#define GRAVITY -10.0
+#define TERRAIN_HEIGHT -0.1
+
 using namespace std;
 using namespace glm;
 
 int Entity::NEXT_ID = 0;
 
-Entity::Entity(){};
+Entity::Entity(){
+    m.curSpeed = 0.0;
+    m.curTurnSpeed = 0.0;
+    m.upwardSpeed = 0.0;
+    rotX = 0.0;
+    rotY = 0.0;
+    rotZ = 0.0;
+    grounded = true;
+};
 
 void Entity::initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<std::shared_ptr<Texture>> textures){
     objs = shapes;
@@ -85,22 +96,37 @@ glm::mat4 Entity::generateModel() {
 	return modelMatrix;
 }
 
-// TODO use our "game data structure" to manage all entity updates
 
-// velocity upon collision (bounds of world, or obstacle) and will rotate the model/"flip" the forward vector
 void Entity::updateMotion(float deltaTime) {
+    // this method does not use the forward vector (simpler math)
+    // if entity == player
+        rotY = m.curTurnSpeed * deltaTime;
+        float distance = m.curSpeed * deltaTime;
 
-        float distance = sqrt((position.x * position.x) + (position.y * position.y) + (position.z * position.z));
-        if(distance >= 19.5){
-            m.velocity *= -1;
+        // movement and rotation
+        float deltaX = distance * sin(rotY);
+        float deltaZ = distance * cos(rotY);
+        position += vec3(deltaX, 0.0f, deltaZ);
+
+        // FALLING physics
+        m.upwardSpeed += GRAVITY * deltaTime;
+        position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
+
+        // uses the terrain height to prevent character from indefinitely falling, will obviously have to be updated with 
+        // the height value at the corresponding location
+        if (position.y < TERRAIN_HEIGHT){
+            grounded = true;
+            m.upwardSpeed = 0.0;
+            position.y = TERRAIN_HEIGHT;
         }
-        
-        position += m.velocity * vec3(normalize(m.forward)) * deltaTime;
-    
-       // std::cout << "deltaTime: " << deltaTime << "entity position:" << position.x << ", " << position.y << ", " << position.z << std::endl;
-        
-        // TODO add collision component
 
+        // float distance = sqrt((position.x * position.x) + (position.y * position.y) + (position.z * position.z));
+        // if(distance >= 19.5){
+        //     m.velocity *= -1;
+        // }
+        
+        // position += m.velocity * vec3(normalize(m.forward)) * deltaTime;
+    
 }
 
 
