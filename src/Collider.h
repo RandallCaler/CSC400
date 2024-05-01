@@ -25,7 +25,7 @@ public:
     Collider();
     Collider(Entity *owner);
     void UpdateColliderSize();
-    int CheckCollision(std::vector<Entity>& entities);
+    int CheckCollision(std::vector<std::shared_ptr<Entity>>& entities);
     void SetEntityID(int ID);
     bool IsColliding();
     void ExitCollision();
@@ -36,10 +36,10 @@ public:
 
     glm::vec3 worldMin;
     glm::vec3 worldMax;
+    int entityId;
 
 private:
 
-    int entityId;
     float radial;
     bool colliding = false;
 

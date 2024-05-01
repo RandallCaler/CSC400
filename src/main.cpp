@@ -169,10 +169,10 @@ public:
 					case GLFW_KEY_D:
 						freeCam.vel.x = editSpeed;
 						break;
-					case GLFW_KEY_LEFT_SHIFT:
+					case GLFW_KEY_SPACE:
 						freeCam.vel.y = -editSpeed;
 						break;
-					case GLFW_KEY_LEFT_CONTROL:
+					case GLFW_KEY_LEFT_SHIFT:
 						freeCam.vel.y = editSpeed;
 						break;
 				}
@@ -199,8 +199,8 @@ public:
 					case GLFW_KEY_D:
 						freeCam.vel.x = 0.0;
 						break;
+					case GLFW_KEY_SPACE:
 					case GLFW_KEY_LEFT_SHIFT:
-					case GLFW_KEY_LEFT_CONTROL:
 						freeCam.vel.y = 0.0;
 						break;
 				}
@@ -414,12 +414,10 @@ public:
 		}
 
 		// // init butterfly 1
-		// bf1.initEntity(butterfly);
-		// bf1.position = vec3(2, -0.3, -1);
-		// bf1.m.forward = vec4(0, 0, 1, 1);
-		// bf1.m.velocity = vec3(2.0) * vec3(bf1.m.forward);
-		// bf1.collider = new Collider(butterfly, Collider::BUTTERFLY);
-		// bf1.collider->SetEntityID(bf1.id);
+		worldentities["butterfly1"]->m.forward = vec4(0, 0, 1, 1);
+		worldentities["butterfly1"]->m.velocity = vec3(2.0) * vec3(worldentities["butterfly1"]->m.forward);
+		worldentities["butterfly1"]->collider = new Collider(worldentities["butterfly1"].get());
+		worldentities["butterfly1"]->collider->SetEntityID(worldentities["butterfly1"]->id);
 		// //cout << "butterfly 1 " << bf1.id << endl;
 		// bf1.collider->entityName = 'b';
 		// bf1.scale = 0.01;
@@ -651,15 +649,22 @@ public:
 		// }
 
 		// std::cout << "entity position:" << catEnt->position.x << ", " << catEnt->position.y << ", " << catEnt->position.z << std::endl;
-
-		// catEnt.setMaterials(0, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
-		// reg.setModel(catEnt.position, 0, catEnt.rotY, 0, catEnt.scale);
-		// reg.setMaterial(catEnt.material[0]);
-		// catEnt.objs[0]->draw(reg.prog);
-
+		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["butterfly1"], worldentities["bunny"]};
 		// material imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
 		map<string, shared_ptr<Entity>>::iterator i;
+
+		for (i = worldentities.begin(); i != worldentities.end(); i++) {
+			shared_ptr<Entity> entity = i->second;
+			entity->generateModel();
+		}
+		// for (i = worldentities.begin(); i != worldentities.end(); i++) {
+		// 	shared_ptr<Entity> entity = i->second;
+		// 	if (entity->collider) {
+		// 		entity->collider->CalculateBoundingBox(entity->modelMatrix);
+		// 	}
+		// }
+
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 			if (shaders[entity->defaultShaderName] != curS) {
@@ -674,8 +679,18 @@ public:
 				// skybox is always the furthest surface away
 				glDepthFunc(GL_LEQUAL);
 			}
-			mat4 modelMatrix = entity->generateModel();
-			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(modelMatrix));
+
+			// if (entity->collider) {
+			// 	int col =entity->collider->CheckCollision(tempCollisionList);
+			// 	if (col == -1) {
+			// 		entity->updateMotion(frametime);
+			// 	}
+			// 	else {
+			// 		printf("entity %u colliding with %u\n", entity->id, col);
+			// 	}
+			// }
+			
+			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
 			// curS->setModel(*entity);
 			for (int i = 0; i < entity->objs.size(); i++) {
 				if (curS->has_texture) {
@@ -708,13 +723,7 @@ public:
 		drawGround(curS);  //draw ground here
 
 
-		int collided = worldentities["bunny"]->collider->CheckCollision(bf);
-
-		//catEnt->position = cam.player_pos;
-
-		if (collided != -1) {
-			bf_flags[collided] = 1;
-		}
+		// int collided = worldentities["bunny"]->collider->CheckCollision(tempCollisionList);
 
 
 		bounds = std::sqrt(   //update cat's distance from skybox
@@ -724,18 +733,6 @@ public:
 
 		// Pop matrix stacks.
 		Projection->popMatrix();
-
-		// for (int i = 0; i < 3; i ++){
-		// 	if (bf_flags[i] == 1) {
-		// 		bf[i].scale *= 0.95f;
-		// 		if (bf[i].scale < 0.00001) {
-		// 			bf[i].scale = 0.01;
-		// 			bf_flags[i] = 0;
-		// 			bf[i].position = vec3(0, -0.3, 0);
-		// 		}
-		// 	}
-		// 	bf[i].updateMotion(frametime);
-		// }
 	}
 };
 

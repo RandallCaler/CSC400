@@ -13,7 +13,7 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam){
     for (int i = 0; i < IN_SIZE; i++) {
         if(inputStates[i] == 1){
             q.push(i);
-            std::cout << "key pressed: " << i << std::endl;
+            // std::cout << "key pressed: " << i << std::endl;
         }
     }
 
