@@ -585,6 +585,7 @@ public:
 
 		// updates player motion
 		worldentities["bunny"]->updateMotion(frametime);
+		cam.player_pos = worldentities["bunny"]->position;
 		
 		//material shader first
 		curS->prog->bind();

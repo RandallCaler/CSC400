@@ -1,8 +1,8 @@
 #include "InputHandler.h"
 
-#define WALK_SPEED 4.0
-#define TURN_SPEED 20.0
-#define JUMP_HEIGHT 4.0
+#define WALK_SPEED 7.0
+#define TURN_SPEED 25.0
+#define JUMP_HEIGHT 6.0
 
 InputHandler::InputHandler(){
     for (int i = 0; i < IN_SIZE; i++) {
