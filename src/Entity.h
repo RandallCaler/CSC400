@@ -25,7 +25,8 @@ typedef struct material {
     float shine;
 } material;
 
-
+// to avoid making a separate player class, I added a few extra variables to the motion struct for the player specifically
+// however, I think they could be useful for obstacle movement as well - Claire 
 struct motion {
     // the velocity of the obstacles will be a constant speed in the forward direction
     glm::vec3 velocity;

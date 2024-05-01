@@ -638,6 +638,7 @@ public:
 			}
 		}
 
+		// updates player motion
 		worldentities["bunny"]->updateMotion(frametime);
 		
 		//material shader first
