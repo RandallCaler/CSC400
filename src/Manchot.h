@@ -7,13 +7,17 @@
 #include "PhysicalObject.h"
 
 struct playerMotion{
+    vec4 forward;
     float curSpeed;
     float curTurnSpeed;
-}
+};
 
 class Manchot : public PhysicalObject {
     Manchot();
-    handleInputs();
+    void handleInputs(Camera *cam, float deltaTime);
+    int inputStates[5];
+    playerMotion motion;
+   
 }
 
 

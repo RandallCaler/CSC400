@@ -24,7 +24,7 @@ public:
     ~InputHandler();
     // void handleMotionPlayer();
     // void handleMotionCamera();
-    void handleInput(Entity *penguin, Camera *cam);
+    void handleInput(Entity *penguin, Camera *cam, float deltaTime);
 };
 
 #endif

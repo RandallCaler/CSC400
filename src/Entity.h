@@ -31,6 +31,9 @@ struct motion {
     glm::vec3 velocity;
     // a vector to inform which direction the object is facing
     glm::vec4 forward; 
+
+    float curSpeed;
+    float curTurnSpeed;
 };
 
 class Collider; // forward declaration to enable use of this class in Collider class
@@ -47,6 +50,7 @@ public:
 
     void updateMotion(float deltaTime);
     void updateScale(float newScale);
+    
   
     glm::mat4 generateModel();
 
