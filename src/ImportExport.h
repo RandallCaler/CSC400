@@ -21,11 +21,6 @@
 // Where the resources are loaded from
 extern string resourceDir;
 
-typedef struct shapewmat {
-    std::shared_ptr<Shape> shape;
-    materials mats;
-} shapewmat;
-
 class ImporterExporter {
     public:
         ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities);
@@ -47,8 +42,6 @@ class ImporterExporter {
         void saveToFile(string path);
 
     private:
-        map<string, pair<shared_ptr<Shape>, material>> shapeLibrary;
-        map<string, shared_ptr<Texture>> textureLibrary;
         map<string, shared_ptr<Shader>>* shaders; // reference to main shader list
         map<string, shared_ptr<Entity>>* worldentities; // reference to main entity list
         map<string, pair<shared_ptr<Shape>, material>> shapeLibrary;

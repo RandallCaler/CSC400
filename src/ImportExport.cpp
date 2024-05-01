@@ -103,7 +103,7 @@ void ImporterExporter::loadSingleShape() {
 		for(tinyobj::shape_t shape: TOshapes) {
 			if (shape.name == shapeName) {
 				shared_ptr<Shape> newShape = make_shared<Shape>();
-				newShape->createShape(shape);
+				newShape->createShape(shape, resourceDir + meshFile);
 				newShape->measure();
 				newShape->init();
 				material newMat = material();
@@ -264,9 +264,16 @@ string ImporterExporter::shapesToText(){
 	string result = "";
 
 	//create set of shapes w/ materials from entities
-	set<shapewmat> shapes;
-	for(int i = 0; i < worldentities->size(); i++){
+	for(auto iter = shapeLibrary.begin(); iter != shapeLibrary.end(); iter++){ // map<string, pair<shared_ptr<Shape>, material>>
+		string tag = "2 " + iter->first + ' ' + iter->second.first.get()->getFilePath() + ' ' + iter->second.first.get()->getShapeName() + ' ';
 		
+		material shapeMat = iter->second.second;
+		string mats = to_string(shapeMat.amb.r) + ' ' + to_string(shapeMat.amb.g) + ' ' + to_string(shapeMat.amb.b) + ' ' +
+					  to_string(shapeMat.dif.r) + ' ' + to_string(shapeMat.dif.g) + ' ' + to_string(shapeMat.dif.b) + ' ' +
+					  to_string(shapeMat.spec.r) + ' ' + to_string(shapeMat.spec.g) + ' ' + to_string(shapeMat.spec.b) + ' ' + 
+					  to_string(shapeMat.shine) + '\n';
+		
+		result = result + tag + mats;
 	}
 
 	return result;
@@ -285,7 +292,7 @@ void ImporterExporter::saveToFile(string outFileName){
 	std::ofstream outFile(outFileName);
 
 	if(outFile.is_open()){
-		outFile << shadersToText();
+		outFile << shadersToText() << shapesToText();
 		outFile.close();
 		cout << "outFile has been written and closed." << endl;
 	}

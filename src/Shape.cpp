@@ -11,6 +11,16 @@ using namespace std;
 int h_pos, h_nor, h_tex;
 
 // copy the data from the shape to this object
+void Shape::createShape(tinyobj::shape_t & shape, std::string filePath)
+{
+	posBuf = shape.mesh.positions;
+	norBuf = shape.mesh.normals;
+	texBuf = shape.mesh.texcoords;
+	eleBuf = shape.mesh.indices;
+	this->filePath = filePath;
+	shapeName = shape.name;
+}
+
 void Shape::createShape(tinyobj::shape_t & shape)
 {
 	posBuf = shape.mesh.positions;
@@ -203,4 +213,12 @@ void Shape::drawInstanced(const shared_ptr<Program> prog, int count) const
 	// Draw
 	CHECKED_GL_CALL(glDrawElementsInstanced(GL_TRIANGLES, (int)eleBuf.size(), GL_UNSIGNED_INT, (const void *)0, count));
 	drawClean();
+}
+
+std::string Shape::getShapeName(){
+	return shapeName;
+}
+
+std::string Shape::getFilePath(){
+	return filePath;
 }
