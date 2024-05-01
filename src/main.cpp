@@ -41,6 +41,8 @@ std::string resourceDir = "../resources";
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Entity>> worldentities;
 
+float deltaTime;
+
 class Application : public EventCallbacks
 {
 
@@ -266,16 +268,25 @@ public:
 
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
 		if (editMode) {
-			if (deltaY>0) {
-				mobileVel *= 0.9;
-				editSpeed *= 0.9;
-				freeCam.vel *= vec3(0.9);
-			}
-			else {
-				mobileVel *= 1.1;
-				editSpeed *= 1.1;
-				freeCam.vel *= vec3(1.1);
-			}
+
+			// cout << "INSIDE SCROLL CALLBACK BUNNY MOVEMENT" << endl;
+			//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
+			cam.angle -= 10 * (deltaX / 57.296);
+
+			// cat entity updated with camera
+			worldentities["bunny"]->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
+			worldentities["bunny"]->m.forward.y = 0;
+			worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
+			// if (deltaY>0) {
+			// 	mobileVel *= 0.9;
+			// 	editSpeed *= 0.9;
+			// 	freeCam.vel *= vec3(0.9);
+			// }
+			// else {
+			// 	mobileVel *= 1.1;
+			// 	editSpeed *= 1.1;
+			// 	freeCam.vel *= vec3(1.1);
+			// }
 		}
 		else {
 			// cout << "INSIDE SCROLL CALLBACK BUNNY MOVEMENT" << endl;
@@ -802,7 +813,7 @@ int main(int argc, char *argv[]) {
 		auto nextLastTime = chrono::high_resolution_clock::now();
 
 		// get time since last frame
-		float deltaTime =
+		deltaTime = 
 			chrono::duration_cast<std::chrono::microseconds>(
 				chrono::high_resolution_clock::now() - lastTime)
 				.count();
