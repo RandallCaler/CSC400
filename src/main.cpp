@@ -21,6 +21,7 @@
 #include "Camera.h"
 
 #include <chrono>
+#include <array>
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
@@ -49,6 +50,7 @@ public:
 
 	// Our shader program - use this one for Blinn-Phong has diffuse
 	shared_ptr<Shader> reg;
+	shared_ptr<Shader> proghmap;
 	//Our shader program for textures
 	// shared_ptr<Shader> tex;
 
@@ -109,6 +111,9 @@ public:
 	float editSpeed = 2.0;
 	int editSRT = 0; // 0 - translation, 1 - rotation, 2 - scale
 	vec3 mobileVel = vec3(0);
+
+	// hmap for terrain
+	shared_ptr<Texture> hmap;
 	
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -347,12 +352,17 @@ public:
 		// tex = shaders["tex"];
 		shaders["skybox"]->has_texture = true;
 		shaders["tex"]->has_texture = true;
+		shaders["hmap"]->has_texture = false;
 
 		shaders["skybox"]->addTexture(resourceDirectory + "/sky.jpg");
 		shaders["tex"]->addTexture(resourceDirectory + "/grass_tex.jpg");
 		shaders["tex"]->addTexture(resourceDirectory + "/sky.jpg");
 		shaders["tex"]->addTexture(resourceDirectory + "/cat_tex.jpg");
 		shaders["tex"]->addTexture(resourceDirectory + "/cat_tex_legs.jpg");
+
+		hmap = make_shared<Texture>();
+		hmap->setFilename(resourceDirectory + "/hmap.jpg");
+		hmap->initHmap();
 	}
 
 	void initGeom(const std::string& resourceDirectory)
@@ -431,46 +441,6 @@ public:
 			}
 		}
 
-		// // init butterfly 1
-		// bf1.initEntity(butterfly);
-		// bf1.position = vec3(2, -0.3, -1);
-		// bf1.m.forward = vec4(0, 0, 1, 1);
-		// bf1.m.velocity = vec3(2.0) * vec3(bf1.m.forward);
-		// bf1.collider = new Collider(butterfly, Collider::BUTTERFLY);
-		// bf1.collider->SetEntityID(bf1.id);
-		// //cout << "butterfly 1 " << bf1.id << endl;
-		// bf1.collider->entityName = 'b';
-		// bf1.scale = 0.01;
-    
-    	// // init butterfly 2
-		// bf2.initEntity(butterfly);
-		// bf2.position = vec3(-2, -0.3, 0.5);
-		// bf2.m.forward = vec4(-1, 0, .3, 1);
-		// bf2.m.velocity = vec3(9.0) * vec3(bf2.m.forward);
-		// bf2.collider = new Collider(butterfly, Collider::BUTTERFLY);
-		// bf2.collider->SetEntityID(bf2.id);
-		// //cout << "butterfly 2 " << bf2.id << endl;
-		// bf2.collider->entityName = 'b';
-		
-		// bf2.scale = 0.01;
-
-    
-   		//  // init butterfly 3
-		// bf3.initEntity(butterfly);
-		// bf3.position = vec3(4, -0.3, 0.5);
-		// bf3.m.forward = vec4(1, 0, 0, 1);
-		// bf3.m.velocity = vec3(4.0) * vec3(bf3.m.forward);
-		// bf3.collider = new Collider(butterfly, Collider::BUTTERFLY);
-		// bf3.collider->SetEntityID(bf3.id);
-		// //cout << "butterfly 3 " << bf3.id << endl;
-		// bf3.collider->entityName = 'b';
-	
-		// bf3.scale = 0.01;
-
-    	// bf.push_back(bf1);
-		// bf.push_back(bf2);
-		// bf.push_back(bf3);
-
 		// IMPORT BUNNY
 		worldentities["bunny"]->m.forward = vec4(0, 0, 0.1, 1);
 		worldentities["bunny"]->m.velocity = vec3(0.1) * vec3(worldentities["bunny"]->m.forward);
@@ -480,102 +450,77 @@ public:
 		worldentities["bunny"]->collider->entityName = 'c';
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
-		initGround();
+		initHMapGround();
 	}
 
 	//directly pass quad for the ground to the GPU
-	void initGround() {
+	void initHMapGround() {
+		const float Y_MAX = 1;
+		const float Y_MIN = -Y_MAX;
 
-		float g_groundSize = 60;
-		float g_groundY = -0.25;
+		vector<float> vertices;
+		auto hmap_dim = hmap->getDim();
+		auto hmap_data = hmap->getData();
+		for (unsigned int i = 0; i < hmap_dim.second; i++) {
+			for (unsigned int j = 0; j < hmap_dim.first; j++) {
+				unsigned char hval = *(hmap_data + 3 * (i * hmap_dim.first + j));
 
-  		// A x-z plane at y = g_groundY of dimension [-g_groundSize, g_groundSize]^2
-		float GrndPos[] = {
-			-g_groundSize, g_groundY, -g_groundSize,
-			-g_groundSize, g_groundY,  g_groundSize,
-			g_groundSize, g_groundY,  g_groundSize,
-			g_groundSize, g_groundY, -g_groundSize
-		};
+				vertices.push_back(j - hmap_dim.first / 2.0f);
+				vertices.push_back(hval / 255.0f * (Y_MAX - Y_MIN) + Y_MIN);
+				vertices.push_back(i - hmap_dim.second / 2.0f);
+			}
+		}
+		hmap->freeData();
 
-		float GrndNorm[] = {
-			0, 1, 0,
-			0, 1, 0,
-			0, 1, 0,
-			0, 1, 0,
-			0, 1, 0,
-			0, 1, 0
-		};
+		vector<unsigned int> indices;
+		for (unsigned int i = 0; i < hmap_dim.second; i++) {
+			for (unsigned int j = 0; j < hmap_dim.first; j++) {
+				int v0 = i * hmap_dim.first + j;
+				int v1 = (i + 1) * hmap_dim.first + j;
+				int v2 = (i + 1) * hmap_dim.first + j + 1;
+				int v3 = i * hmap_dim.first + j + 1;
 
-		static GLfloat GrndTex[] = {
-      		0, 0, // back
-      		0, 1,
-      		1, 1,
-      		1, 0 };
+				indices.push_back(v0);
+				indices.push_back(v3);
+				indices.push_back(v1);
+				indices.push_back(v3);
+				indices.push_back(v2);
+				indices.push_back(v1);
+			}
+		}
 
-      	unsigned short idx[] = {0, 1, 2, 0, 2, 3};
+		std::cout << "vert size : " << vertices.size() << " ind size: " << indices.size() << std::endl;
 
 		//generate the ground VAO
       	glGenVertexArrays(1, &GroundVertexArrayID);
       	glBindVertexArray(GroundVertexArrayID);
 
-      	g_GiboLen = 6;
       	glGenBuffers(1, &GrndBuffObj);
       	glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
-      	glBufferData(GL_ARRAY_BUFFER, sizeof(GrndPos), GrndPos, GL_STATIC_DRAW);
-
-      	glGenBuffers(1, &GrndNorBuffObj);
-      	glBindBuffer(GL_ARRAY_BUFFER, GrndNorBuffObj);
-      	glBufferData(GL_ARRAY_BUFFER, sizeof(GrndNorm), GrndNorm, GL_STATIC_DRAW);
-
-      	glGenBuffers(1, &GrndTexBuffObj);
-      	glBindBuffer(GL_ARRAY_BUFFER, GrndTexBuffObj);
-      	glBufferData(GL_ARRAY_BUFFER, sizeof(GrndTex), GrndTex, GL_STATIC_DRAW);
+      	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
       	glGenBuffers(1, &GIndxBuffObj);
      	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
-      	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(idx), idx, GL_STATIC_DRAW);
+      	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+
+		g_GiboLen = indices.size();
       }
+	
       //code to draw the ground plane
      void drawGround(shared_ptr<Shader> curS) {
      	glBindVertexArray(GroundVertexArrayID);
 
-
-		material c;
-		c.amb.r = 0.0;
-        c.amb.g = 0.0;
-        c.amb.b = 0.0;
-        c.dif.r = 1;
-        c.dif.g = 1;
-        c.dif.b = 1;
-        c.spec.r = 1;
-        c.spec.g = 1;
-        c.spec.b = 1;
-        c.shine = 1.0;
-		curS->flip(1);
-		curS->setMaterial(c);
-		curS->setTexture(0);
-
 		//draw the ground plane 
-  		curS->setModel(vec3(0, -1, 0), 0, 0, 0, 1);
+  		curS->setModel(vec3(0, -2.5f, 0), 0, 0, 0, 1);
   		glEnableVertexAttribArray(0);
   		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
   		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-  		glEnableVertexAttribArray(1);
-  		glBindBuffer(GL_ARRAY_BUFFER, GrndNorBuffObj);
-  		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-  		glEnableVertexAttribArray(2);
-  		glBindBuffer(GL_ARRAY_BUFFER, GrndTexBuffObj);
-  		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
    		// draw!
   		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
-  		glDrawElements(GL_TRIANGLES, g_GiboLen, GL_UNSIGNED_SHORT, 0);
+  		glDrawElements(GL_TRIANGLES, g_GiboLen, GL_UNSIGNED_INT, 0);
 
   		glDisableVertexAttribArray(0);
-  		glDisableVertexAttribArray(1);
-  		glDisableVertexAttribArray(2);
   		curS->prog->unbind();
      }
 
@@ -715,14 +660,11 @@ public:
 
 		curS->prog->unbind();
 
-		curS = shaders["tex"];
+		curS = shaders["hmap"];
 
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-
 		activeCam->SetView(curS->prog);
-		// directional light
-		glUniform3f(curS->prog->getUniform("lightDir"), -1.0f, 1.0f, -1.0f);
 		drawGround(curS);  //draw ground here
 
 

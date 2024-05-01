@@ -59,6 +59,31 @@ void Texture::init()
 	stbi_image_free(data);
 }
 
+void Texture::initHmap()
+{
+	// Load texture
+	int w, h, ncomps;
+	stbi_set_flip_vertically_on_load(false);
+	unsigned char* data = stbi_load(filename.c_str(), &w, &h, &ncomps, 0);
+	if (!data) {
+		cerr << filename << " not found" << endl;
+	}
+	if (ncomps != 3) {
+		cerr << filename << " must have 3 components (RGB)" << endl;
+	}
+	if ((w & (w - 1)) != 0 || (h & (h - 1)) != 0) {
+		cerr << filename << " must be a power of 2" << endl;
+	}
+	width = w;
+	height = h;
+
+	this->data = data;
+}
+
+void Texture::freeData() const {
+	stbi_image_free(data);
+}
+
 void Texture::setWrapModes(GLint wrapS, GLint wrapT)
 {
 	// Must be called after init()
