@@ -89,18 +89,16 @@ glm::mat4 Entity::generateModel() {
 
 // velocity upon collision (bounds of world, or obstacle) and will rotate the model/"flip" the forward vector
 void Entity::updateMotion(float deltaTime) {
-
-        float distance = sqrt((position.x * position.x) + (position.y * position.y) + (position.z * position.z));
-        if(distance >= 19.5){
-            m.velocity *= -1;
-        }
-        
-        position += m.velocity * vec3(normalize(m.forward)) * deltaTime;
+    float distance = sqrt((position.x * position.x) + (position.y * position.y) + (position.z * position.z));
+    if(distance >= 19.5){
+        m.velocity *= -1;
+    }
     
-       // std::cout << "deltaTime: " << deltaTime << "entity position:" << position.x << ", " << position.y << ", " << position.z << std::endl;
-        
-        // TODO add collision component
+    position += m.velocity * vec3(normalize(m.forward)) * deltaTime;
 
+    // std::cout << "deltaTime: " << deltaTime << "entity position:" << position.x << ", " << position.y << ", " << position.z << std::endl;
+    
+    // TODO add collision component
 }
 
 
