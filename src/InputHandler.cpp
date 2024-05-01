@@ -1,5 +1,9 @@
 #include "InputHandler.h"
 
+#define WALK_SPEED 4.0
+#define TURN_SPEED 20.0
+#define JUMP_HEIGHT 4.0
+
 InputHandler::InputHandler(){
     for (int i = 0; i < IN_SIZE; i++) {
         inputStates[i] = 0;
@@ -15,10 +19,10 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam, float deltaTime){
     float distance;
     if (inputStates[0] == 1){
         // w
-        penguin->m.curSpeed = 3.0;
+        penguin->m.curSpeed = WALK_SPEED;
     } else if(inputStates[2] == 1){
         // s
-        penguin->m.curSpeed = -3.0;
+        penguin->m.curSpeed = -WALK_SPEED;
     } else{
         penguin->m.curSpeed = 0.0;
     }
@@ -26,12 +30,20 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam, float deltaTime){
 
     if (inputStates[3] == 1){
         // d
-        penguin->m.curTurnSpeed = -20.0;
+        penguin->m.curTurnSpeed = -TURN_SPEED;
     } else if (inputStates[1] == 1){
         // a
-        penguin->m.curTurnSpeed = 20.0;
+        penguin->m.curTurnSpeed = TURN_SPEED;
     } else{
         penguin->m.curTurnSpeed = 0.0;
+    }
+
+    if (inputStates[4] == 1){
+        // space bar
+        if(penguin->grounded){
+            penguin->m.upwardSpeed = JUMP_HEIGHT;
+            penguin->grounded = false;
+        }
     }
 
     

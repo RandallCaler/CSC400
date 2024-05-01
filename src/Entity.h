@@ -34,6 +34,7 @@ struct motion {
 
     float curSpeed;
     float curTurnSpeed;
+    float upwardSpeed;
 };
 
 class Collider; // forward declaration to enable use of this class in Collider class
@@ -64,9 +65,10 @@ public:
     glm::vec3 scaleVec = glm::vec3(1);
     float scale;
     motion m;
-    float rotX = 0.0;
-    float rotY = 0.0;
-    float rotZ = 0.0;
+    float rotX;
+    float rotY;
+    float rotZ;
+    bool grounded;
     string defaultShaderName;
     glm::mat4 modelMatrix;
 

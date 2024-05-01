@@ -299,7 +299,7 @@ public:
 			// cat entity updated with camera
 			worldentities["bunny"]->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
 			worldentities["bunny"]->m.forward.y = 0;
-			worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
+			// worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
 		}
 
 	}
