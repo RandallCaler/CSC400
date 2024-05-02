@@ -38,9 +38,9 @@ public:
 
     glm::vec3 worldMin;
     glm::vec3 worldMax;
+    int entityId;
 
 private:
-
     int entityId;
     Entity* owner;
     float radial;

@@ -43,13 +43,16 @@ map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Entity>> worldentities;
 
 float deltaTime;
+// 	view pitch dist angle playerpos playerrot animate g_eye
+Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
+Camera freeCam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5), true);
+Camera* activeCam = &cam;
 
 class Application : public EventCallbacks
 {
 
 public:
 	WindowManager * windowManager = nullptr;
-
 	// Our shader program - use this one for Blinn-Phong has diffuse
 	shared_ptr<Shader> reg;
 	shared_ptr<Shader> proghmap;
@@ -58,10 +61,6 @@ public:
 
 	bool editMode = false;
 
-	//our geometry
-	shared_ptr<Shape> sphere;
-
-	std::vector<shared_ptr<Shape>> bunny;
 
 	std::vector<shared_ptr<Shape>> butterfly;
 
@@ -98,10 +97,6 @@ public:
   
 	vec3 strafe = vec3(1, 0, 0);
 
-	// 	view pitch dist angle playerpos playerrot animate g_eye
-	Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
-	Camera freeCam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5), true);
-	Camera* activeCam = &cam;
 	double cursor_x = 0;
 	double cursor_y = 0;
   
@@ -124,9 +119,7 @@ public:
 			glfwSetWindowShouldClose(window, GL_TRUE);
 		}
 
-		// KEY PRESSED
-
-		if (key == GLFW_KEY_CAPS_LOCK && (action == GLFW_PRESS)){
+		if (key == GLFW_KEY_CAPS_LOCK && action == GLFW_PRESS) {
 			editMode = !editMode;
 			editSRT = 0;
 			editSpeed = 2.0;
@@ -137,6 +130,7 @@ public:
 				activeCam = &cam;
 			}
 		}
+		// KEY PRESSED
 
 		if (editMode) {
 			if (action == GLFW_PRESS) {
@@ -147,16 +141,16 @@ public:
 							activeEntity = worldentities.begin();
 						}
 						break;
-					case GLFW_KEY_W:
+					case GLFW_KEY_UP:
 						mobileVel.z = editSpeed;
 						break;
-					case GLFW_KEY_S:
+					case GLFW_KEY_DOWN:
 						mobileVel.z = -editSpeed;
 						break;
-					case GLFW_KEY_A:
+					case GLFW_KEY_LEFT:
 						mobileVel.x = editSpeed;
 						break;
-					case GLFW_KEY_D:
+					case GLFW_KEY_RIGHT:
 						mobileVel.x = -editSpeed;
 						break;
 					case GLFW_KEY_E:
@@ -174,46 +168,54 @@ public:
 					case GLFW_KEY_C:
 						editSRT = 0;
 						break;
-					case GLFW_KEY_UP:
-						freeCam.vel.z = editSpeed/10;
+					case GLFW_KEY_W:
+						freeCam.vel.z = editSpeed;
 						break;
-					case GLFW_KEY_DOWN:
-						freeCam.vel.z = -editSpeed/10;
+					case GLFW_KEY_S:
+						freeCam.vel.z = -editSpeed;
 						break;
-					case GLFW_KEY_LEFT:
-						freeCam.vel.x = -editSpeed/10;
+					case GLFW_KEY_A:
+						freeCam.vel.x = -editSpeed;
 						break;
-					case GLFW_KEY_RIGHT:
-						freeCam.vel.x = editSpeed/10;
+					case GLFW_KEY_D:
+						freeCam.vel.x = editSpeed;
+						break;
+					case GLFW_KEY_SPACE:
+						freeCam.vel.y = -editSpeed;
+						break;
+					case GLFW_KEY_LEFT_SHIFT:
+						freeCam.vel.y = editSpeed;
 						break;
 				}
 			}
 			if (action == GLFW_RELEASE) {
 				switch (key) {
-					case GLFW_KEY_W:
-					case GLFW_KEY_S:
+					case GLFW_KEY_UP:
+					case GLFW_KEY_DOWN:
 						mobileVel.z = 0.0;
 						break;
-					case GLFW_KEY_A:
-					case GLFW_KEY_D:
+					case GLFW_KEY_LEFT:
+					case GLFW_KEY_RIGHT:
 						mobileVel.x = 0.0;
 						break;
 					case GLFW_KEY_E:
 					case GLFW_KEY_Q:
 						mobileVel.y = 0.0;
 						break;
-					case GLFW_KEY_UP:
-					case GLFW_KEY_DOWN:
+					case GLFW_KEY_W:
+					case GLFW_KEY_S:
 						freeCam.vel.z = 0.0;
 						break;
-					case GLFW_KEY_LEFT:
-					case GLFW_KEY_RIGHT:
+					case GLFW_KEY_A:
+					case GLFW_KEY_D:
 						freeCam.vel.x = 0.0;
+						break;
+					case GLFW_KEY_SPACE:
+					case GLFW_KEY_LEFT_SHIFT:
+						freeCam.vel.y = 0.0;
 						break;
 				}
 			}
-			
-			// ih.handleInput(NULL, &freeCam);
 		}
 		else {
 			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding() && bounds < 19){
@@ -363,8 +365,6 @@ public:
 		glEnable(GL_DEPTH_TEST);
 		// glEnable(GL_CLIP_DISTANCE0);
 
-		reg = shaders["reg"];
-		// tex = shaders["tex"];
 		shaders["skybox"]->has_texture = true;
 		shaders["tex"]->has_texture = true;
 		shaders["hmap"]->has_texture = false;
@@ -395,20 +395,6 @@ public:
 			cat[0]->createShape(TOshapesB[0]);
 			cat[0]->measure();
 			cat[0]->init();
-		}
-
-
-		vector<tinyobj::shape_t> TOshapesC;
- 		vector<tinyobj::material_t> objMaterialsC;
-		//load in the mesh and make the shape(s)
- 		rc = tinyobj::LoadObj(TOshapesC, objMaterialsC, errStr, (resourceDirectory + "/bunny.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		} else {	
-			bunny.push_back(make_shared<Shape>());
-			bunny[0]->createShape(TOshapesC[0]);
-			bunny[0]->measure();
-			bunny[0]->init();
 		}
 
 		vector<tinyobj::shape_t> TOshapes3;
@@ -455,7 +441,7 @@ public:
 				tree1[i]->init();
 			}
 		}
-
+    
 		// IMPORT BUNNY
 		worldentities["bunny"]->m.forward = vec4(0, 0, 0.1, 1);
 		worldentities["bunny"]->m.velocity = vec3(0.1) * vec3(worldentities["bunny"]->m.forward);
@@ -543,7 +529,7 @@ public:
 	void render(float frametime) {
 		// Get current frame buffer size.
 		int width, height;
-		shared_ptr<Shader> curS = reg;
+		shared_ptr<Shader> curS = shaders["reg"];
 		glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
 		glViewport(0, 0, width, height);
 
@@ -563,7 +549,7 @@ public:
 
 		// Apply perspective projection.
 		Projection->pushMatrix();
-		Projection->perspective(45.0f, aspect, 0.01f, 100.0f);
+		Projection->perspective(45.0f, aspect, 0.01f, 1000.0f);
 
 		// editor mode updates
 		if (editMode) {
@@ -634,15 +620,22 @@ public:
 		// }
 
 		// std::cout << "entity position:" << catEnt->position.x << ", " << catEnt->position.y << ", " << catEnt->position.z << std::endl;
-
-		// catEnt.setMaterials(0, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
-		// reg.setModel(catEnt.position, 0, catEnt.rotY, 0, catEnt.scale);
-		// reg.setMaterial(catEnt.material[0]);
-		// catEnt.objs[0]->draw(reg.prog);
-
+		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["butterfly1"], worldentities["bunny"]};
 		// material imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
 		map<string, shared_ptr<Entity>>::iterator i;
+
+		for (i = worldentities.begin(); i != worldentities.end(); i++) {
+			shared_ptr<Entity> entity = i->second;
+			entity->generateModel();
+		}
+		// for (i = worldentities.begin(); i != worldentities.end(); i++) {
+		// 	shared_ptr<Entity> entity = i->second;
+		// 	if (entity->collider) {
+		// 		entity->collider->CalculateBoundingBox(entity->modelMatrix);
+		// 	}
+		// }
+
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 			if (shaders[entity->defaultShaderName] != curS) {
@@ -657,8 +650,18 @@ public:
 				// skybox is always the furthest surface away
 				glDepthFunc(GL_LEQUAL);
 			}
-			mat4 modelMatrix = entity->generateModel();
-			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(modelMatrix));
+
+			// if (entity->collider) {
+			// 	int col =entity->collider->CheckCollision(tempCollisionList);
+			// 	if (col == -1) {
+			// 		entity->updateMotion(frametime);
+			// 	}
+			// 	else {
+			// 		printf("entity %u colliding with %u\n", entity->id, col);
+			// 	}
+			// }
+			
+			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
 			// curS->setModel(*entity);
 			for (int i = 0; i < entity->objs.size(); i++) {
 				if (curS->has_texture) {
@@ -688,13 +691,7 @@ public:
 		drawGround(curS);  //draw ground here
 
 
-		int collided = worldentities["bunny"]->collider->CheckCollision(bf);
-
-		//catEnt->position = cam.player_pos;
-
-		if (collided != -1) {
-			bf_flags[collided] = 1;
-		}
+		// int collided = worldentities["bunny"]->collider->CheckCollision(tempCollisionList);
 
 
 		bounds = std::sqrt(   //update cat's distance from skybox
@@ -704,18 +701,6 @@ public:
 
 		// Pop matrix stacks.
 		Projection->popMatrix();
-
-		// for (int i = 0; i < 3; i ++){
-		// 	if (bf_flags[i] == 1) {
-		// 		bf[i].scale *= 0.95f;
-		// 		if (bf[i].scale < 0.00001) {
-		// 			bf[i].scale = 0.01;
-		// 			bf_flags[i] = 0;
-		// 			bf[i].position = vec3(0, -0.3, 0);
-		// 		}
-		// 	}
-		// 	bf[i].updateMotion(frametime);
-		// }
 	}
 };
 
@@ -742,6 +727,7 @@ int main(int argc, char *argv[]) {
 	windowManager->init(640, 480);
 	windowManager->setEventCallbacks(application);
 	application->windowManager = windowManager;
+	glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	// This is the code that will likely change program to program as you
 	// may need to initialize or set up different data and state
@@ -776,6 +762,7 @@ int main(int argc, char *argv[]) {
 		// on the next frame
 		lastTime = nextLastTime;
 
+		activeCam->updateCamera(deltaTime);
 		// Render scene.
 		application->render(deltaTime);
 
@@ -785,7 +772,9 @@ int main(int argc, char *argv[]) {
 		glfwPollEvents();
 	}
 
-	// Quit program.
-	windowManager->shutdown();
+	if (levelEditor->saveToFile("../resources/testOut.txt")) {
+		// Quit program.
+		windowManager->shutdown();
+	}
 	return 0;
 }
