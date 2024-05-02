@@ -209,6 +209,7 @@ void ImporterExporter::loadFromFile(string path) {
 
 	// parse each line in the savefile
 	while (getline(saveFile, buffer)) {
+		cout << "this happened" << endl;
 		// interpret line according to syntax designator at the start of the line
 		char type = buffer[0];
 		buffer = buffer.substr(2);
@@ -333,12 +334,12 @@ string ImporterExporter::findFilename(string path) {
 }
 
 int ImporterExporter::saveToFile(string outFileName){
-	std::ofstream outFile(outFileName);
+	std::ofstream outFile(resourceDir + outFileName);
 
 	if(outFile.is_open()){
 		outFile << shadersToText() << texturesToText() << shapesToText() << entitiesToText();
 		outFile.close();
-		cout << "outFile has been written and closed." << endl;
+		cout << "World saved to file " << outFileName << endl;
 	}
 	else {
 		std::cerr << "Error opening file from exporter." << endl;

@@ -38,6 +38,7 @@ using namespace glm;
 
 // Where the resources are loaded from
 std::string resourceDir = "../resources";
+std::string WORLD_FILE_NAME = "/world.txt";
 
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Entity>> worldentities;
@@ -61,11 +62,11 @@ public:
 
 	bool editMode = false;
 
+	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities);
 
 	std::vector<shared_ptr<Shape>> butterfly;
 
 	InputHandler ih;
-
 
 	Entity bf1 = Entity();
 	Entity bf2 = Entity();
@@ -186,6 +187,8 @@ public:
 					case GLFW_KEY_LEFT_SHIFT:
 						freeCam.vel.y = editSpeed;
 						break;
+					case GLFW_KEY_V:
+						levelEditor->saveToFile(WORLD_FILE_NAME);
 				}
 			}
 			if (action == GLFW_RELEASE) {
@@ -673,7 +676,6 @@ int main(int argc, char *argv[]) {
 	// and GL context, etc.
 
 	WindowManager *windowManager = new WindowManager();
-	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities);
 
 	windowManager->init(640, 480);
 	windowManager->setEventCallbacks(application);
@@ -683,7 +685,7 @@ int main(int argc, char *argv[]) {
 	// This is the code that will likely change program to program as you
 	// may need to initialize or set up different data and state
 
-	levelEditor->loadFromFile("/save.noot");
+	application->levelEditor->loadFromFile(WORLD_FILE_NAME);
 
 	application->init(resourceDir);
 	application->initGeom(resourceDir);
@@ -722,9 +724,7 @@ int main(int argc, char *argv[]) {
 		glfwPollEvents();
 	}
 
-	if (levelEditor->saveToFile("../resources/testOut.txt")) {
-		// Quit program.
-		windowManager->shutdown();
-	}
+	windowManager->shutdown();
+
 	return 0;
 }
