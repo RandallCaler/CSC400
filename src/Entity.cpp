@@ -15,6 +15,7 @@ Entity::Entity(){
     m.curSpeed = 0.0;
     m.curTurnSpeed = 0.0;
     m.upwardSpeed = 0.0;
+    m.forward = vec4(0, 0, -5, 0);
     rotX = 0.0;
     rotY = 0.0;
     rotZ = 0.0;
@@ -97,7 +98,7 @@ glm::mat4 Entity::generateModel() {
 void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap) {
     // this method does not use the forward vector (simpler math)
     // if entity == player
-        rotY = m.curTurnSpeed * deltaTime;
+        //rotY = m.curTurnSpeed * deltaTime;
         float distance = m.curSpeed * deltaTime;
 
         // movement and rotation
@@ -138,13 +139,25 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap) {
             }
         }
 
+        // std::cout << "position in entity " << position.x << " " << position.y << " " << position.z << endl;
+
+
         // float distance = sqrt((position.x * position.x) + (position.y * position.y) + (position.z * position.z));
         // if(distance >= 19.5){
         //     m.velocity *= -1;
         // }
         
         // position += m.velocity * vec3(normalize(m.forward)) * deltaTime;
+//     float distance = sqrt((position.x * position.x) + (position.y * position.y) + (position.z * position.z));
+//     if(distance >= 19.5){
+//         m.velocity *= -1;
+//     }
     
+//     position += m.velocity * vec3(normalize(m.forward)) * deltaTime;
+
+    // std::cout << "deltaTime: " << deltaTime << "entity position:" << position.x << ", " << position.y << ", " << position.z << std::endl;
+    
+    // TODO add collision component
 }
 
 

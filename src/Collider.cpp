@@ -47,7 +47,7 @@ float Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap, glm::vec3 hM
     return -1;
 }
 
-int Collider::CheckCollision(std::vector<Entity>& entities)
+int Collider::CheckCollision(std::vector<std::shared_ptr<Entity>>& entities)
 {
     for(int i = 0; i < entities.size(); i++){
         // cout << "this id = " << cat->id << " and checking id " << entities[i].id << endl;
@@ -81,14 +81,15 @@ int Collider::CheckCollision(std::vector<Entity>& entities)
             //}
         //} 
 
-        Entity e = entities[i];
-        bool iscolliding =
-            (worldMax.x >= e.collider->worldMin.x &&
-             worldMax.y >= e.collider->worldMin.y &&
-             worldMax.z >= e.collider->worldMin.z) ||
-            (worldMin.x >= e.collider->worldMax.x &&
-             worldMin.y >= e.collider->worldMax.y &&
-             worldMin.z >= e.collider->worldMax.z);
+        shared_ptr<Entity> e = entities[i];
+        if (entityId != e->id) {
+            bool iscolliding =
+                (worldMax.x >= e->collider->worldMin.x &&
+                worldMax.y >= e->collider->worldMin.y &&
+                worldMax.z >= e->collider->worldMin.z) ||
+                (worldMin.x >= e->collider->worldMax.x &&
+                worldMin.y >= e->collider->worldMax.y &&
+                worldMin.z >= e->collider->worldMax.z);
 
         if (iscolliding) {
             colliding = true;
