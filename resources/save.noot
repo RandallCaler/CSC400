@@ -13,6 +13,9 @@
 2 flowerA /flowernoNorm.obj flower 0.2 0.1 0.1 0.94 0.42 0.64 0.7 0.23 0.60 100
 2 flowerB /flowernoNorm.obj flower 0.1 0.1 0.1 0.94 0.72 0.22 0.23 0.23 0.20 100
 2 flowerC /flowernoNorm.obj flower 0.05 0.15 0.05 0.24 0.92 0.41 1 1 1 1
+2 butterflyBody /butterfly.obj obj1 0.1 0.1 0.1 0.02 0.02 0.02 0.25 0.23 0.30 9
+2 butterflyW1_A /butterfly.obj obj2 0.4 0.2 0.2 0.94 0.23 0.20 0.9 0.23 0.20 0.6
+2 butterflyW2_A /butterfly.obj obj3 0.4 0.2 0.2 0.94 0.23 0.20 0.9 0.23 0.20 0.6
 // Entities: 3 entityID numShapes [shapeID1...] numTextures [textID1...] transX transY transZ rotX rotY rotZ scaleX scaleY scaleZ
 3 cube1 reg 1 cubeB 0 1.0 1.0 3.0 0.0 1.0 0.0 1.0 1.0 1.0
 3 cube2 reg 1 cubeR 0 -1.0 -1.0 1.0 0.0 0.0 0.0 1.0 1.0 0.5
@@ -26,3 +29,4 @@
 3 flower5 reg 1 flowerB 0 4.0 -1 -3.2 0.0 -0.2 0.0 1.0 1.0 1.0
 3 flower6 reg 1 flowerC 0 1.0 -1.2 -1.7 0.0 0.7 0.0 1.0 1.0 1.0
 3 flower7 reg 1 flowerA 0 3.0 -1 -2.0 0.0 1.6 0.0 1.0 1.0 1.0
+3 butterfly1 reg 3 butterflyBody butterflyW1_A butterflyW2_A 0 2.0 -0.3 -4.0 0.0 0.0 0.0 1.0 1.0 1.0
