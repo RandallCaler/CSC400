@@ -279,34 +279,11 @@ public:
 			cam.angle -= 10 * (deltaX / 57.296);
 			ih.setRotation(worldentities["bunny"].get(), -10 * (deltaX / 57.296));
 
-			// cat entity updated with camera
-			//worldentities["bunny"]->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
-			//worldentities["bunny"]->m.forward.y = 0;
-			// worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
-
-
-			// worldentities["bunny"]->motion.
-			// if (deltaY>0) {
-			// 	mobileVel *= 0.9;
-			// 	editSpeed *= 0.9;
-			// 	freeCam.vel *= vec3(0.9);
-			// }
-			// else {
-			// 	mobileVel *= 1.1;
-			// 	editSpeed *= 1.1;
-			// 	freeCam.vel *= vec3(1.1);
-			// }
 		}
 		else {
-			// cout << "INSIDE SCROLL CALLBACK BUNNY MOVEMENT" << endl;
-			//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
 			cam.angle -= 10 * (deltaX / 57.296);
 			ih.setRotation(worldentities["bunny"].get(), -10 * (deltaX / 57.296));
 
-			// cat entity updated with camera
-			//worldentities["bunny"]->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
-			//worldentities["bunny"]->m.forward.y = 0;
-			// worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
 		}
 
 	}
@@ -604,43 +581,6 @@ public:
 		butterfly_loc[1] = vec3(-2, -1.2, -3);
 		butterfly_loc[2] = vec3(4, -1, 4);
  
-		// bf[0].setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
-		// bf[0].setMaterials(1, 0.4, 0.2, 0.2, 0.94, 0.23, 0.20, 0.9, 0.23, 0.20, 0.6);
-		// bf[0].setMaterials(2, 0.4, 0.2, 0.2, 0.94, 0.23, 0.20, 0.9, 0.23, 0.20, 0.6);
-
-		// reg.setModel(bf[0].position, -1.1, 4.1, 0, bf[0].scale); //body
-
-		// for (int i = 0; i < 3; i++) {
-		// 	reg.setMaterial(bf[0].material[i]);
-		// 	bf[0].objs[i]->draw(reg.prog);
-		// }
-
-		// bf[1].setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
-		// bf[1].setMaterials(1, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
-		// bf[1].setMaterials(2, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
-
-		// reg.setModel(bf[1].position, -1.1, 4.1, 0, bf[1].scale); //body
-		// for (int i = 0; i < 3; i++) {
-		// 	reg.setMaterial(bf[1].material[i]);
-		// 	bf[1].objs[i]->draw(reg.prog);
-		// }
-    
-    	// bf[2].setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
-		// bf[2].setMaterials(1, 0.3, 0.3, 0.2, 0.90, 0.73, 0.20, 0.9, 0.23, 0.20, 0.6);
-		// bf[2].setMaterials(2, 0.3, 0.3, 0.2, 0.90, 0.73, 0.20, 0.9, 0.23, 0.20, 0.6);
-
-		// reg.setModel(bf[2].position, -1.1, 4.1, 0, bf[2].scale); //body
-		// for (int i = 0; i < 3; i++) {
-		// 	reg.setMaterial(bf[2].material[i]);
-		// 	bf[2].objs[i]->draw(reg.prog);
-		// }
-
-		// std::cout << "entity position:" << catEnt->position.x << ", " << catEnt->position.y << ", " << catEnt->position.z << std::endl;
-
-		// catEnt.setMaterials(0, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
-		// reg.setModel(catEnt.position, 0, catEnt.rotY, 0, catEnt.scale);
-		// reg.setMaterial(catEnt.material[0]);
-		// catEnt.objs[0]->draw(reg.prog);
 
 		// material imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -706,18 +646,6 @@ public:
 
 		// Pop matrix stacks.
 		Projection->popMatrix();
-
-		// for (int i = 0; i < 3; i ++){
-		// 	if (bf_flags[i] == 1) {
-		// 		bf[i].scale *= 0.95f;
-		// 		if (bf[i].scale < 0.00001) {
-		// 			bf[i].scale = 0.01;
-		// 			bf_flags[i] = 0;
-		// 			bf[i].position = vec3(0, -0.3, 0);
-		// 		}
-		// 	}
-		// 	bf[i].updateMotion(frametime);
-		// }
 	}
 };
 
