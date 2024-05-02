@@ -242,7 +242,7 @@ public:
 
 			// KEY RELEASED
 
-			if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding() && bounds < 19){
+			if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding() && bounds >= 19){
 				ih.inputStates[0] = 0;
 			}
 
@@ -250,7 +250,7 @@ public:
 				ih.inputStates[1] = 0;
 			}
 
-			if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 19){	
+			if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds >= 19){	
 				ih.inputStates[2] = 0;
 			}
 
