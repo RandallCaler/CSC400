@@ -6,9 +6,6 @@
 #include "Shape.h"
 #include "Collider.h"
 
-#define GRAVITY -10.0
-#define TERRAIN_HEIGHT -0.1
-
 using namespace std;
 using namespace glm;
 
@@ -97,7 +94,7 @@ glm::mat4 Entity::generateModel() {
 }
 
 
-void Entity::updateMotion(float deltaTime) {
+void Entity::updateMotion(float deltaTime, float groundHeight) {
     // this method does not use the forward vector (simpler math)
     // if entity == player
         rotY = m.curTurnSpeed * deltaTime;
@@ -114,10 +111,10 @@ void Entity::updateMotion(float deltaTime) {
 
         // uses the terrain height to prevent character from indefinitely falling, will obviously have to be updated with 
         // the height value at the corresponding location
-        if (position.y < TERRAIN_HEIGHT){
+        if (position.y < groundHeight){
             grounded = true;
             m.upwardSpeed = 0.0;
-            position.y = TERRAIN_HEIGHT;
+            position.y = groundHeight;
         }
 
         // float distance = sqrt((position.x * position.x) + (position.y * position.y) + (position.z * position.z));

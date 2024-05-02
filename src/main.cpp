@@ -376,7 +376,7 @@ public:
 		shaders["tex"]->addTexture(resourceDirectory + "/cat_tex_legs.jpg");
 
 		hmap = make_shared<Texture>();
-		hmap->setFilename(resourceDirectory + "/hmap.jpg");
+		hmap->setFilename(resourceDirectory + "/hmap.png");
 		hmap->initHmap();
 	}
 
@@ -486,7 +486,7 @@ public:
 				vertices.push_back(i - hmap_dim.second / 2.0f);
 			}
 		}
-		hmap->freeData();
+		// hmap->freeData();
 
 		vector<unsigned int> indices;
 		for (unsigned int i = 0; i < hmap_dim.second; i++) {
@@ -584,7 +584,8 @@ public:
 		}
 
 		// updates player motion
-		worldentities["bunny"]->updateMotion(frametime);
+		float groundHeight = worldentities["bunny"]->collider->CheckGroundCollision(hmap, vec3(0,-1.5,0), vec3(1,2,1));
+		worldentities["bunny"]->updateMotion(frametime, groundHeight);
 		cam.player_pos = worldentities["bunny"]->position;
 		
 		//material shader first
@@ -752,7 +753,6 @@ int main(int argc, char *argv[]) {
 	application->initGeom(resourceDir);
 
 	float dt = 1 / 60.0;
-
 	auto lastTime = chrono::high_resolution_clock::now();
 	application->activeEntity = worldentities.begin();
 

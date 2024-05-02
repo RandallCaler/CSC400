@@ -10,6 +10,8 @@
 #include "MatrixStack.h"
 
 #define EPSILON 0.0001
+#define GRAVITY -10.0
+#define TERRAIN_HEIGHT -0.1
 
 typedef struct color {
     float r;
@@ -50,7 +52,7 @@ public:
         float r3, float g3, float b3, float s);
     void setMaterials(int i, material& mat);
 
-    void updateMotion(float deltaTime);
+    void updateMotion(float deltaTime, float groundHeight = TERRAIN_HEIGHT);
     void updateScale(float newScale);
 
   
