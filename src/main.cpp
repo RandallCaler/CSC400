@@ -216,7 +216,7 @@ public:
 			// ih.handleInput(NULL, &freeCam);
 		}
 		else {
-			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding() && bounds < 19){
+			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding()){
 				ih.inputStates[0] = 1;
 			}
 
@@ -224,11 +224,11 @@ public:
 				ih.inputStates[1] = 1;
 			}
 
-			if (key == GLFW_KEY_S && (action == GLFW_PRESS) && bounds < 19){	
+			if (key == GLFW_KEY_S && (action == GLFW_PRESS)){	
 				ih.inputStates[2] = 1;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_PRESS)&& !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding()){
 				ih.inputStates[3] = 1;
 			}
 
@@ -242,7 +242,7 @@ public:
 
 			// KEY RELEASED
 
-			if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding() && bounds < 19){
+			if (key == GLFW_KEY_W && (action == GLFW_RELEASE)){
 				ih.inputStates[0] = 0;
 			}
 
@@ -250,11 +250,11 @@ public:
 				ih.inputStates[1] = 0;
 			}
 
-			if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 19){	
+			if (key == GLFW_KEY_S && (action == GLFW_RELEASE)){	
 				ih.inputStates[2] = 0;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_RELEASE)&& !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding()){
 				ih.inputStates[3] = 0;
 			}
 
@@ -584,8 +584,7 @@ public:
 		}
 
 		// updates player motion
-		float groundHeight = worldentities["bunny"]->collider->CheckGroundCollision(hmap, vec3(0,-1.5,0), vec3(1,2,1));
-		worldentities["bunny"]->updateMotion(frametime, groundHeight);
+		worldentities["bunny"]->updateMotion(frametime, hmap);
 		cam.player_pos = worldentities["bunny"]->position;
 		
 		//material shader first

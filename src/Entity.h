@@ -12,6 +12,7 @@
 #define EPSILON 0.0001
 #define GRAVITY -10.0
 #define TERRAIN_HEIGHT -0.1
+#define SLOPE_TOLERANCE 0.3
 
 typedef struct color {
     float r;
@@ -52,7 +53,7 @@ public:
         float r3, float g3, float b3, float s);
     void setMaterials(int i, material& mat);
 
-    void updateMotion(float deltaTime, float groundHeight = TERRAIN_HEIGHT);
+    void updateMotion(float deltaTime, shared_ptr<Texture> hmap);
     void updateScale(float newScale);
 
   
@@ -71,7 +72,7 @@ public:
     float rotX;
     float rotY;
     float rotZ;
-    bool grounded;
+    bool grounded = false;
     string defaultShaderName;
     glm::mat4 modelMatrix;
 

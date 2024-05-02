@@ -15,32 +15,31 @@ InputHandler::~InputHandler(){
 
 // trying method in ex video
 
-void InputHandler::handleInput(Entity *penguin, Camera *cam, float deltaTime){
-    float distance;
-    if (inputStates[0] == 1){
+void InputHandler::handleInput(Entity *penguin, Camera *cam, float deltaTime) {
+    if (inputStates[0] == 1) {
         // w
         penguin->m.curSpeed = WALK_SPEED;
-    } else if(inputStates[2] == 1){
+    } else if (inputStates[2] == 1){
         // s
         penguin->m.curSpeed = -WALK_SPEED;
-    } else{
+    } else {
         penguin->m.curSpeed = 0.0;
     }
 
 
-    if (inputStates[3] == 1){
+    if (inputStates[3] == 1) {
         // d
         penguin->m.curTurnSpeed = -TURN_SPEED;
-    } else if (inputStates[1] == 1){
+    } else if (inputStates[1] == 1) {
         // a
         penguin->m.curTurnSpeed = TURN_SPEED;
-    } else{
+    } else {
         penguin->m.curTurnSpeed = 0.0;
     }
 
-    if (inputStates[4] == 1){
+    if (inputStates[4] == 1) {
         // space bar
-        if(penguin->grounded){
+        if(penguin->grounded) {
             penguin->m.upwardSpeed = JUMP_HEIGHT;
             penguin->grounded = false;
         }

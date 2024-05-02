@@ -90,13 +90,13 @@ int Collider::CheckCollision(std::vector<Entity>& entities)
              worldMin.y >= e.collider->worldMax.y &&
              worldMin.z >= e.collider->worldMax.z);
 
-            if (iscolliding) {
-                colliding = true;
-                return i;
-            }
-            else {
-                colliding = false;
-            }
+        if (iscolliding) {
+            colliding = true;
+            return i;
+        }
+        else {
+            colliding = false;
+        }
     }
     return -1;
 }

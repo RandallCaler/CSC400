@@ -94,7 +94,7 @@ glm::mat4 Entity::generateModel() {
 }
 
 
-void Entity::updateMotion(float deltaTime, float groundHeight) {
+void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap) {
     // this method does not use the forward vector (simpler math)
     // if entity == player
         rotY = m.curTurnSpeed * deltaTime;
@@ -103,18 +103,39 @@ void Entity::updateMotion(float deltaTime, float groundHeight) {
         // movement and rotation
         float deltaX = distance * sin(rotY);
         float deltaZ = distance * cos(rotY);
-        position += vec3(deltaX, 0.0f, deltaZ);
+        vec3 oldPosition = position;
+        vec3 newPosition = position + vec3(deltaX, 0, deltaZ);
+        vec3 groundCheckPos = newPosition + vec3((distance + scale) * sin(rotY), 0, (distance + scale) * cos(rotY));
+
+        position = groundCheckPos;
+        
+		float groundHeight = collider->CheckGroundCollision(hmap, vec3(0,-1.5,0), vec3(1,2,1));
+        float deltaY = groundHeight - position.y;
+
+        if (deltaY < 0) {
+            grounded = false;
+        }
+        bool climbable = deltaY < SLOPE_TOLERANCE + EPSILON;
+        // printf("ground: %.4f, bunny: %.4f, climb? %u\n", groundHeight, position.y, climbable);
+        if (climbable) {
+            position = newPosition;
+        }
+        else {
+            position = oldPosition;
+        }
 
         // FALLING physics
-        m.upwardSpeed += GRAVITY * deltaTime;
-        position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
+        if (!grounded) {
+            m.upwardSpeed += GRAVITY * deltaTime;
+            position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
 
-        // uses the terrain height to prevent character from indefinitely falling, will obviously have to be updated with 
-        // the height value at the corresponding location
-        if (position.y < groundHeight){
-            grounded = true;
-            m.upwardSpeed = 0.0;
-            position.y = groundHeight;
+            // uses the terrain height to prevent character from indefinitely falling, will obviously have to be updated with 
+            // the height value at the corresponding location
+            if (position.y < groundHeight) {
+                grounded = true;
+                m.upwardSpeed = 0.0;
+                position.y = groundHeight;
+            }
         }
 
         // float distance = sqrt((position.x * position.x) + (position.y * position.y) + (position.z * position.z));
