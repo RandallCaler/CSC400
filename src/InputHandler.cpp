@@ -100,7 +100,6 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam, float deltaTime){
 void InputHandler::setRotation(Entity *penguin, float inc) {
     camRot += inc;
     penguin->rotY = camRot;
-    cout << camRot << endl;
 }
 
 // void InputHandler::handleInput(Entity *penguin, Camera *cam){
