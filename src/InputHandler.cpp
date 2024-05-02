@@ -17,7 +17,6 @@ InputHandler::~InputHandler(){
 // trying method in ex video
 
 void InputHandler::handleInput(Entity *penguin, Camera *cam, float deltaTime) {
-
     float distance;
     penguin->m.curSpeed = 0.0;
     std::queue<int> q;

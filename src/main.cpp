@@ -230,7 +230,7 @@ public:
 				ih.inputStates[2] = 1;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_PRESS)&& !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding()){
 				ih.inputStates[3] = 1;
 			}
 
@@ -252,11 +252,11 @@ public:
 				ih.inputStates[1] = 0;
 			}
 
-			if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 1000){	
+			if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 1000){
 				ih.inputStates[2] = 0;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_RELEASE)&& !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding()){
 				ih.inputStates[3] = 0;
 			}
 
@@ -355,7 +355,7 @@ public:
 		shaders["tex"]->addTexture(resourceDirectory + "/cat_tex_legs.jpg");
 
 		hmap = make_shared<Texture>();
-		hmap->setFilename(resourceDirectory + "/hmap.jpg");
+		hmap->setFilename(resourceDirectory + "/hmap.png");
 		hmap->initHmap();
 	}
 
@@ -451,7 +451,7 @@ public:
 				vertices.push_back(i - hmap_dim.second / 2.0f);
 			}
 		}
-		hmap->freeData();
+		// hmap->freeData();
 
 		vector<unsigned int> indices;
 		for (unsigned int i = 0; i < hmap_dim.second; i++) {
@@ -549,7 +549,7 @@ public:
 		}
 
 		// updates player motion
-		worldentities["bunny"]->updateMotion(frametime);
+		worldentities["bunny"]->updateMotion(frametime, hmap);
 		cam.player_pos = worldentities["bunny"]->position;
 		
 		//material shader first
@@ -687,7 +687,6 @@ int main(int argc, char *argv[]) {
 	application->initGeom(resourceDir);
 
 	float dt = 1 / 60.0;
-
 	auto lastTime = chrono::high_resolution_clock::now();
 	application->activeEntity = worldentities.begin();
 

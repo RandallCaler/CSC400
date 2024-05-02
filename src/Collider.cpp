@@ -35,12 +35,14 @@ Collider::Collider(Entity *owner) : worldMin(owner->minBB), worldMax(owner->maxB
 float Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap, glm::vec3 hMapOrigin, glm::vec3 scale) {
     // translate world position of entity to pixel space of heightmap
     std::pair<int, int> texDim = hMap->getDim();
-    float pixelSpaceX = (owner->position.x - hMapOrigin.x) * texDim.first / scale.x;
-    float pixelSpaceZ = (owner->position.z - hMapOrigin.z) * texDim.second / scale.z;
+    float pixelSpaceX = (owner->position.x - hMapOrigin.x + texDim.first / 2) / scale.x;
+    float pixelSpaceZ = (owner->position.z - hMapOrigin.z + texDim.second / 2) / scale.z;
 
     unsigned char* texData = hMap->getData();
     if (pixelSpaceX >= 0 && pixelSpaceX <= texDim.first && pixelSpaceZ >= 0 && pixelSpaceZ <= texDim.second) {
-        return (float)(texData[(int)pixelSpaceX * texDim.second + (int)pixelSpaceZ]) * scale.y / UCHAR_MAX;
+        unsigned char p0 = texData[3*((int)pixelSpaceZ * texDim.first + (int)pixelSpaceX)];
+        // printf("height %i %i: %u -> %.2f\n", (int)pixelSpaceX, (int)pixelSpaceZ, texData[3*((int)pixelSpaceZ * texDim.first + (int)pixelSpaceX)], (float)(texData[3*((int)pixelSpaceZ * texDim.first + (int)pixelSpaceX)]) * scale.y / UCHAR_MAX);
+        return ((float)p0 / UCHAR_MAX + hMapOrigin.y) * scale.y;
     }
     return -1;
 }
