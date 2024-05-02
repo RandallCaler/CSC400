@@ -436,7 +436,7 @@ public:
 
 	//directly pass quad for the ground to the GPU
 	void initHMapGround() {
-		const float Y_MAX = 1;
+		const float Y_MAX = 5;
 		const float Y_MIN = -Y_MAX;
 
 		vector<float> vertices;
@@ -447,7 +447,7 @@ public:
 				unsigned char hval = *(hmap_data + 3 * (i * hmap_dim.first + j));
 
 				vertices.push_back(j - hmap_dim.first / 2.0f);
-				vertices.push_back(hval / 255.0f * (Y_MAX - Y_MIN) + Y_MIN);
+				vertices.push_back((hval / 255.0f) * (Y_MAX - Y_MIN) + Y_MIN);
 				vertices.push_back(i - hmap_dim.second / 2.0f);
 			}
 		}
@@ -485,6 +485,8 @@ public:
       	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
 		g_GiboLen = indices.size();
+
+		worldentities["bunny"]->collider->SetGround(vec3(0,-2.5,0), vec3(1,10,1));
       }
 	
       //code to draw the ground plane

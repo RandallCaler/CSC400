@@ -110,16 +110,17 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap) {
 
         position = groundCheckPos;
         
-		float groundHeight = collider->CheckGroundCollision(hmap, vec3(0,-1.5,0), vec3(1,2,1));
+		float groundHeight = collider->CheckGroundCollision(hmap);
         float deltaY = groundHeight - position.y;
 
         bool climbable = deltaY < SLOPE_TOLERANCE + EPSILON;
-        // printf("ground: %.4f, bunny: %.4f, climb? %u\n", groundHeight, position.y, climbable);
+        // printf("ground: %.4f, bunny: %.4f, dy %.4f, climb? %u, grounded? %u\n", groundHeight, oldPosition.y, deltaY, climbable, grounded);
         if (climbable) {
             position = newPosition;
         }
         else {
             position = oldPosition;
+		    groundHeight = collider->CheckGroundCollision(hmap);
         }
 
         if (position.y > groundHeight) {
