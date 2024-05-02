@@ -45,7 +45,7 @@ float Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap, glm::vec3 hM
     return -1;
 }
 
-int Collider::CheckCollision(std::vector<Entity>& entities)
+int Collider::CheckCollision(std::vector<std::shared_ptr<Entity>>& entities)
 {
     for(int i = 0; i < entities.size(); i++){
         // cout << "this id = " << cat->id << " and checking id " << entities[i].id << endl;
