@@ -277,10 +277,11 @@ public:
 			// cout << "INSIDE SCROLL CALLBACK BUNNY MOVEMENT" << endl;
 			//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
 			cam.angle -= 10 * (deltaX / 57.296);
+			ih.setRotation(worldentities["bunny"].get(), -10 * (deltaX / 57.296));
 
 			// cat entity updated with camera
-			worldentities["bunny"]->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
-			worldentities["bunny"]->m.forward.y = 0;
+			//worldentities["bunny"]->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
+			//worldentities["bunny"]->m.forward.y = 0;
 			// worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
 
 
@@ -300,10 +301,11 @@ public:
 			// cout << "INSIDE SCROLL CALLBACK BUNNY MOVEMENT" << endl;
 			//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
 			cam.angle -= 10 * (deltaX / 57.296);
+			ih.setRotation(worldentities["bunny"].get(), -10 * (deltaX / 57.296));
 
 			// cat entity updated with camera
-			worldentities["bunny"]->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
-			worldentities["bunny"]->m.forward.y = 0;
+			//worldentities["bunny"]->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
+			//worldentities["bunny"]->m.forward.y = 0;
 			// worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
 		}
 
