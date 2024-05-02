@@ -18,6 +18,7 @@ class Shape
 
 public:
 
+	void createShape(tinyobj::shape_t & shape, std::string filePath, std::string n);
 	void createShape(tinyobj::shape_t & shape);
 	void init();
 	void generateNormals();
@@ -26,6 +27,9 @@ public:
 	void drawClean() const;
 	void draw(const std::shared_ptr<Program> prog) const;
 	void drawInstanced(const std::shared_ptr<Program> prog, int count) const;
+	std::string getFilePath();
+	std::string getShapeName();
+	std::string getName();
 
 	glm::vec3 min = glm::vec3(0);
 	glm::vec3 max = glm::vec3(0);
@@ -41,6 +45,9 @@ private:
 	unsigned int norBufID = 0;
 	unsigned int texBufID = 0;
 	unsigned int vaoID = 0;
+	std::string filePath;
+	std::string shapeName;
+	std::string name;
 
 };
 
