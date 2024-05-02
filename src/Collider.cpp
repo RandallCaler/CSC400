@@ -6,7 +6,7 @@ Collider::Collider(){};
 
 Collider::Collider(Entity *owner) : worldMin(owner->minBB), worldMax(owner->maxBB)
 {
-   
+    this->owner = owner;
 }
 
 //void Collider::CheckCollision(std::vector<Entity> entities, int thisID)
@@ -31,6 +31,19 @@ Collider::Collider(Entity *owner) : worldMin(owner->minBB), worldMax(owner->maxB
 //        //} 
 //    }
 //}
+
+float Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap, glm::vec3 hMapOrigin, glm::vec3 scale) {
+    // translate world position of entity to pixel space of heightmap
+    std::pair<int, int> texDim = hMap->getDim();
+    float pixelSpaceX = (owner->position.x - hMapOrigin.x) * texDim.first / scale.x;
+    float pixelSpaceZ = (owner->position.z - hMapOrigin.z) * texDim.second / scale.z;
+
+    unsigned char* texData = hMap->getData();
+    if (pixelSpaceX >= 0 && pixelSpaceX <= texDim.first && pixelSpaceZ >= 0 && pixelSpaceZ <= texDim.second) {
+        return (float)(texData[(int)pixelSpaceX * texDim.second + (int)pixelSpaceZ]) * scale.y / UCHAR_MAX;
+    }
+    return -1;
+}
 
 int Collider::CheckCollision(std::vector<std::shared_ptr<Entity>>& entities)
 {

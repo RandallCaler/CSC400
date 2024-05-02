@@ -1,6 +1,7 @@
 // Shaders: 1 shaderID vertexSFile fragSFile numUniforms [uniform1...] numAttributes [attribute1...]
 1 reg /simple_vert.glsl /simple_frag.glsl 8 P V M MatAmb MatDif MatSpec MatShine lightDir 3 vertPos vertNor vertTex
 1 tex /tex_vert.glsl /tex_frag0.glsl 10 P V M MatAmb MatDif MatSpec MatShine lightDir flip Texture0 3 vertPos vertNor vertTex
+1 hmap /hmap_vert.glsl /hmap_frag.glsl 3 P V M 1 vertPos
 1 skybox /skybox_vert.glsl /skybox_frag.glsl 4 P V M Texture0 3 vertPos vertNor vertTex
 // Textures: 4 textID textFile
 4 sky /sky.jpg
