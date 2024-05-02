@@ -216,7 +216,7 @@ public:
 			// ih.handleInput(NULL, &freeCam);
 		}
 		else {
-			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding() && bounds < 19){
+			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding() && bounds < 1000){
 				ih.inputStates[0] = 1;
 			}
 
@@ -224,7 +224,7 @@ public:
 				ih.inputStates[1] = 1;
 			}
 
-			if (key == GLFW_KEY_S && (action == GLFW_PRESS) && bounds < 19){	
+			if (key == GLFW_KEY_S && (action == GLFW_PRESS) && bounds < 1000){	
 				ih.inputStates[2] = 1;
 			}
 
@@ -242,7 +242,7 @@ public:
 
 			// KEY RELEASED
 
-			if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding() && bounds < 19){
+			if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding() && bounds < 1000){
 				ih.inputStates[0] = 0;
 			}
 
@@ -250,7 +250,7 @@ public:
 				ih.inputStates[1] = 0;
 			}
 
-			if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 19){	
+			if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 1000){	
 				ih.inputStates[2] = 0;
 			}
 
