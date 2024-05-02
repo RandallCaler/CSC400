@@ -39,7 +39,9 @@ class ImporterExporter {
         string shadersToText();
         string shapesToText();
         string entitiesToText();
-        void saveToFile(string path);
+        string texturesToText();
+        string findFilename(string path);
+        int saveToFile(string path);
 
     private:
         map<string, shared_ptr<Shader>>* shaders; // reference to main shader list

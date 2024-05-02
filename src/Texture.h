@@ -11,6 +11,7 @@ public:
 	Texture();
 	virtual ~Texture();
 	void setFilename(const std::string &f) { filename = f; }
+	void setName(const std::string &n) { name = n; }
 	void init();
 	void setUnit(GLint u) { unit = u; }
 	GLint getUnit() const { return unit; }
@@ -19,6 +20,7 @@ public:
 	void setWrapModes(GLint wrapS, GLint wrapT); // Must be called after init()
 	GLint getID() const { return tid;}
 	std::string filename;
+	std::string name;
 private:
 	int width;
 	int height;

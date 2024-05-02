@@ -76,6 +76,7 @@ void ImporterExporter::loadTexture() {
 	string textFile = readString();
     shared_ptr<Texture> texture = make_shared<Texture>();
     texture->setFilename(resourceDir + textFile);
+    texture->setName(id);
     texture->init();
     texture->setUnit(0);
     texture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
@@ -103,7 +104,7 @@ void ImporterExporter::loadSingleShape() {
 		for(tinyobj::shape_t shape: TOshapes) {
 			if (shape.name == shapeName) {
 				shared_ptr<Shape> newShape = make_shared<Shape>();
-				newShape->createShape(shape, resourceDir + meshFile);
+				newShape->createShape(shape, resourceDir + meshFile, id);
 				newShape->measure();
 				newShape->init();
 				material newMat = material();
@@ -235,8 +236,9 @@ string ImporterExporter::shadersToText(){
 
 	// iterate through every shader and convert its properties to a string
 	for (auto shaderIter = shaders->begin(); shaderIter != shaders->end(); shaderIter++) {
-        string tag = "1 s" + to_string(shaderCount) + ' ';
-        string files = "/" + shaderIter->second->prog->getVShaderName() + " /" + shaderIter->second->prog->getFShaderName() + " ";
+        string tag = "1 " + shaderIter->first + ' ';
+        string files = "/" + findFilename(shaderIter->second->prog->getVShaderName()) + " /" 
+			+ findFilename(shaderIter->second->prog->getFShaderName()) + " ";
 
 		// process the uniforms
         map<string, GLint> uniRef = shaderIter->second->prog->getUniforms();
@@ -265,7 +267,8 @@ string ImporterExporter::shapesToText(){
 
 	//create set of shapes w/ materials from entities
 	for(auto iter = shapeLibrary.begin(); iter != shapeLibrary.end(); iter++){ // map<string, pair<shared_ptr<Shape>, material>>
-		string tag = "2 " + iter->first + ' ' + iter->second.first.get()->getFilePath() + ' ' + iter->second.first.get()->getShapeName() + ' ';
+		string tag = "2 " + iter->first + ' ' + findFilename(iter->second.first.get()->getFilePath()) + ' ' 
+			+ iter->second.first.get()->getShapeName() + ' ';
 		
 		material shapeMat = iter->second.second;
 		string mats = to_string(shapeMat.amb.r) + ' ' + to_string(shapeMat.amb.g) + ' ' + to_string(shapeMat.amb.b) + ' ' +
@@ -282,21 +285,63 @@ string ImporterExporter::shapesToText(){
 // Entities: 3 entityID numShapes [shapeID1...] transX transY transZ rotX rotY rotZ scaleX scaleY scaleZ
 string ImporterExporter::entitiesToText(){
 	string result = "";
+	for (auto entityIter = worldentities->begin(); entityIter != worldentities->end(); entityIter++) {
+		string entityInfo = "3 " + entityIter->first + " " + entityIter->second->defaultShaderName + " " + to_string(entityIter->second->objs.size()) + " ";
+		for (auto shape : entityIter->second->objs) {
+			entityInfo += shape->getName() + " ";
+		}
 
-	//for(auto entity = )
+		entityInfo += to_string(entityIter->second->textures.size()) + " ";
+		if (entityIter->second->textures.size() != 0) {
+			for (auto texture : entityIter->second->textures) {
+				entityInfo += texture->name + " ";
+			}
+		}
+
+		entityInfo += to_string(entityIter->second->position.x) + " " + to_string(entityIter->second->position.y) + " " + to_string(entityIter->second->position.z) + " "
+			+ to_string(entityIter->second->rotX) + " " + to_string(entityIter->second->rotY) + " " + to_string(entityIter->second->rotZ) + " " 
+			+ to_string(entityIter->second->scaleVec.x) + " " + to_string(entityIter->second->scaleVec.y) + " " + to_string(entityIter->second->scaleVec.z) + "\n";
+		result += entityInfo;
+	}
 
 	return result;
 }
 
-void ImporterExporter::saveToFile(string outFileName){
+// Entities: 3 entityID numShapes [shapeID1...] transX transY transZ rotX rotY rotZ scaleX scaleY scaleZ
+string ImporterExporter::texturesToText() {
+	string result = "";
+	for (auto textIter = textureLibrary.begin(); textIter != textureLibrary.end(); textIter++) {
+		string textInfo = "4 " + textIter->first + " " + findFilename(textIter->second->filename) + '\n';
+		result += textInfo;
+	}
+
+	return result;
+}
+
+string ImporterExporter::findFilename(string path) {
+	size_t pos = path.find(resourceDir);
+	string result = "";
+	if (pos != std::string::npos) {
+		pos += resourceDir.length(); 
+
+		// Extract the substring from the position to the end of the string
+		result = path.substr(pos);
+
+	}
+
+	return result;
+}
+
+int ImporterExporter::saveToFile(string outFileName){
 	std::ofstream outFile(outFileName);
 
 	if(outFile.is_open()){
-		outFile << shadersToText() << shapesToText();
+		outFile << shadersToText() << texturesToText() << shapesToText() << entitiesToText();
 		outFile.close();
 		cout << "outFile has been written and closed." << endl;
 	}
 	else {
 		std::cerr << "Error opening file from exporter." << endl;
 	}
+	return 1;
 }

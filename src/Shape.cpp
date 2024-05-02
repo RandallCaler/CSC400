@@ -11,7 +11,7 @@ using namespace std;
 int h_pos, h_nor, h_tex;
 
 // copy the data from the shape to this object
-void Shape::createShape(tinyobj::shape_t & shape, std::string filePath)
+void Shape::createShape(tinyobj::shape_t & shape, std::string filePath, std::string n)
 {
 	posBuf = shape.mesh.positions;
 	norBuf = shape.mesh.normals;
@@ -19,6 +19,7 @@ void Shape::createShape(tinyobj::shape_t & shape, std::string filePath)
 	eleBuf = shape.mesh.indices;
 	this->filePath = filePath;
 	shapeName = shape.name;
+	name = n;
 }
 
 void Shape::createShape(tinyobj::shape_t & shape)
@@ -221,4 +222,8 @@ std::string Shape::getShapeName(){
 
 std::string Shape::getFilePath(){
 	return filePath;
+}
+
+std::string Shape::getName() {
+	return name;
 }
