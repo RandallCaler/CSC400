@@ -8,7 +8,7 @@ InputHandler::InputHandler(){
     for (int i = 0; i < IN_SIZE; i++) {
         inputStates[i] = 0;
     }
-    camRot = 0;
+    // camRot = 0;
 };
 
 InputHandler::~InputHandler(){
@@ -94,12 +94,14 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam, float deltaTime) {
         penguin->rotY = 0;
     }
     angles.clear();
-    penguin->rotY += camRot;
-}
+    // penguin->rotY += (sum != 0 ? 0 : cam->angle);
+    penguin->rotY += cam->angle;
+    
+    }
 
 
-void InputHandler::setRotation(Entity *penguin, float inc) {
-    camRot += inc;
-    penguin->rotY = camRot;
-}
+// void InputHandler::setRotation(Entity *penguin, Camera *cam, float inc) {
+//     // cam->angle += inc;
+//     penguin->rotY = cam->angle;
+// }
 

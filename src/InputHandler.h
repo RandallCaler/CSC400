@@ -18,7 +18,7 @@ class InputHandler
 {
 public:
     // the queue takes in the corresponding index to the key pressed
-    float camRot;
+    // float camRot;
     int inputStates[IN_SIZE];
     InputHandler();
     ~InputHandler();
