@@ -12,7 +12,7 @@
 #define EPSILON 0.0001
 #define GRAVITY -10.0
 #define TERRAIN_HEIGHT -0.1
-#define SLOPE_TOLERANCE 0.3
+#define SLOPE_TOLERANCE 0.5
 
 typedef struct color {
     float r;

@@ -7,7 +7,7 @@ uniform mat4 M;
 out float h_vert;
 
 void main() {
-    h_vert = vertPos.y;
+    h_vert = mix(0, 1, (vertPos.y + 1)/2);
 
     // complete vertex shading
     gl_Position = P * V * M * vec4(vertPos, 1);
