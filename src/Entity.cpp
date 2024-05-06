@@ -95,7 +95,7 @@ glm::mat4 Entity::generateModel() {
 }
 
 
-void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap) {
+void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, InputHandler *ih) {
     // this method does not use the forward vector (simpler math)
     // if entity == player
         //rotY = m.curTurnSpeed * deltaTime;
@@ -129,8 +129,14 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap) {
 
         // FALLING physics
         if (!grounded) {
-            m.upwardSpeed += GRAVITY * deltaTime;
-            position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
+
+            if (ih->handleInput[5] == 1){
+                position += vec3(0.0f, -5.0*deltaTime, 0.0f);
+            }
+            else{
+                m.upwardSpeed += -10.0 * deltaTime;
+                position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);        
+            }
 
             // uses the terrain height to prevent character from indefinitely falling, will obviously have to be updated with 
             // the height value at the corresponding location

@@ -1,0 +1,96 @@
+﻿  Collider.cpp
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Collider.cpp(45,81): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+  Entity.cpp
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.h(27,22): error C2061: syntax error: identifier 'Entity'
+  (compiling source file '../src/Entity.cpp')
+  
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.h(28,22): error C2061: syntax error: identifier 'Entity'
+  (compiling source file '../src/Entity.cpp')
+  
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.cpp(86,17): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.cpp(86,17): warning C4244:         with
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.cpp(86,17): warning C4244:         [
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.cpp(86,17): warning C4244:             T=float
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.cpp(86,17): warning C4244:         ]
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.cpp(133,21): error C3867: 'InputHandler::handleInput': non-standard syntax; use '&' to create a pointer to member
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.cpp(133,34): error C2109: subscript requires array or pointer type
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.cpp(137,40): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+  GameObject.cpp
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.h(27,22): error C2061: syntax error: identifier 'Entity'
+  (compiling source file '../src/GameObject.cpp')
+  
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.h(28,22): error C2061: syntax error: identifier 'Entity'
+  (compiling source file '../src/GameObject.cpp')
+  
+  ImportExport.cpp
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.h(27,22): error C2061: syntax error: identifier 'Entity'
+  (compiling source file '../src/ImportExport.cpp')
+  
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.h(28,22): error C2061: syntax error: identifier 'Entity'
+  (compiling source file '../src/ImportExport.cpp')
+  
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\ImportExport.cpp(138,26): warning C4474: 'printf' : too many arguments passed for format string
+  C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\ImportExport.cpp(138,26):
+  placeholders and their parameters expect 12 variadic arguments, but 13 were provided
+  
+  InputHandler.cpp
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.h(55,66): error C2061: syntax error: identifier 'InputHandler'
+  (compiling source file '../src/InputHandler.cpp')
+  
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(53,34): warning C4305: 'argument': truncation from 'double' to '_Ty'
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(53,34): warning C4305:         with
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(53,34): warning C4305:         [
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(53,34): warning C4305:             _Ty=float
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(53,34): warning C4305:         ]
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(62,35): warning C4305: 'argument': truncation from 'double' to '_Ty'
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(62,35): warning C4305:         with
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(62,35): warning C4305:         [
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(62,35): warning C4305:             _Ty=float
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(62,35): warning C4305:         ]
+  PhysicalObject.cpp
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.h(27,22): error C2061: syntax error: identifier 'Entity'
+  (compiling source file '../src/PhysicalObject.cpp')
+  
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.h(28,22): error C2061: syntax error: identifier 'Entity'
+  (compiling source file '../src/PhysicalObject.cpp')
+  
+  ShaderManager.cpp
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.h(27,22): error C2061: syntax error: identifier 'Entity'
+  (compiling source file '../src/ShaderManager.cpp')
+  
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.h(28,22): error C2061: syntax error: identifier 'Entity'
+  (compiling source file '../src/ShaderManager.cpp')
+  
+  main.cpp
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.h(55,66): error C2061: syntax error: identifier 'InputHandler'
+  (compiling source file '../src/main.cpp')
+  
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(284,20): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(289,20): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(327,35): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(328,35): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(330,29): warning C4244: '=': conversion from 'const _Ty' to 'float', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(330,29): warning C4244:         with
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(330,29): warning C4244:         [
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(330,29): warning C4244:             _Ty=double
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(330,29): warning C4244:         ]
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(429,45): warning C4305: 'argument': truncation from 'double' to 'T'
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(429,45): warning C4305:         with
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(429,45): warning C4305:         [
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(429,45): warning C4305:             T=float
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(429,45): warning C4305:         ]
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(448,30): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(449,31): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(460,30): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(461,31): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(490,27): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(568,32): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(568,37): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(693,11): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(707,11): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(707,11): warning C4244:         with
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(707,11): warning C4244:         [
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(707,11): warning C4244:             _Rep=__int64
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(707,11): warning C4244:         ]
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(709,24): warning C4305: '*=': truncation from 'double' to 'float'
+  Generating Code...

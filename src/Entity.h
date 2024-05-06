@@ -8,10 +8,9 @@
 
 #include "Components.h"
 #include "MatrixStack.h"
+#include "InputHandler.h"
 
 #define EPSILON 0.0001
-#define GRAVITY -10.0
-#define TERRAIN_HEIGHT -0.1
 #define SLOPE_TOLERANCE 0.5
 
 typedef struct color {
@@ -53,7 +52,7 @@ public:
         float r3, float g3, float b3, float s);
     void setMaterials(int i, material& mat);
 
-    void updateMotion(float deltaTime, shared_ptr<Texture> hmap);
+    void updateMotion(float deltaTime, shared_ptr<Texture> hmap, InputHandler *ih);
     void updateScale(float newScale);
 
   

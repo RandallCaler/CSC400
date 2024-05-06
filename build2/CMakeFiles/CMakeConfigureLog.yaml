@@ -1,0 +1,434 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/CMakeDetermineSystem.cmake:233 (message)"
+      - "CMakeLists.txt:5 (project)"
+    message: |
+      The system is: Windows - 10.0.22631 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:5 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      MSBuild version 17.9.5+33de0b227 for .NET Framework
+      Build started 5/3/2024 1:45:06 PM.
+      
+      Project "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\3.28.2\\CompilerIdC\\CompilerIdC.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+        Creating directory "Debug\\CompilerIdC.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdC.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        Touching "Debug\\CompilerIdC.tlog\\unsuccessfulbuild".
+      VcpkgTripletSelection:
+        Using triplet "x64-windows" from "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\"
+        Using normalized configuration "Release"
+      ClCompile:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /I"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\include" /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TC /FC /errorReport:queue CMakeCCompilerId.c
+        CMakeCCompilerId.c
+      Link:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdC.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib" /LIBPATH:"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib\\manual-link" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib\\*.lib" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdC.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdC.lib" /MACHINE:X64 Debug\\CMakeCCompilerId.obj
+        CompilerIdC.vcxproj -> C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\3.28.2\\CompilerIdC\\CompilerIdC.exe
+      AppLocalFromInstalled:
+        pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\\Users\\Claire E Ogawa\\vcpkg\\scripts\\buildsystems\\msbuild\\applocal.ps1" "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\3.28.2\\CompilerIdC\\CompilerIdC.exe" "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\bin" "Debug\\CompilerIdC.tlog\\CompilerIdC.write.1u.tlog" "Debug\\vcpkg.applocal.log"
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_C_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_C_COMPILER=C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdC.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdC.tlog\\CompilerIdC.lastbuildstate".
+      Done Building Project "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\3.28.2\\CompilerIdC\\CompilerIdC.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:04.97
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.vcxproj"
+      
+      The C compiler identification is MSVC, found in:
+        C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/3.28.2/CompilerIdC/CompilerIdC.exe
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:5 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      MSBuild version 17.9.5+33de0b227 for .NET Framework
+      Build started 5/3/2024 1:45:12 PM.
+      
+      Project "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\3.28.2\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+        Creating directory "Debug\\CompilerIdCXX.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        Touching "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+      VcpkgTripletSelection:
+        Using triplet "x64-windows" from "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\"
+        Using normalized configuration "Release"
+      ClCompile:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /I"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\include" /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TP /FC /errorReport:queue CMakeCXXCompilerId.cpp
+        CMakeCXXCompilerId.cpp
+      Link:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib" /LIBPATH:"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib\\manual-link" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib\\*.lib" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdCXX.lib" /MACHINE:X64 Debug\\CMakeCXXCompilerId.obj
+        CompilerIdCXX.vcxproj -> C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\3.28.2\\CompilerIdCXX\\CompilerIdCXX.exe
+      AppLocalFromInstalled:
+        pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\\Users\\Claire E Ogawa\\vcpkg\\scripts\\buildsystems\\msbuild\\applocal.ps1" "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\3.28.2\\CompilerIdCXX\\CompilerIdCXX.exe" "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\bin" "Debug\\CompilerIdCXX.tlog\\CompilerIdCXX.write.1u.tlog" "Debug\\vcpkg.applocal.log"
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_CXX_COMPILER=C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdCXX.tlog\\CompilerIdCXX.lastbuildstate".
+      Done Building Project "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\3.28.2\\CompilerIdCXX\\CompilerIdCXX.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:03.79
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+      
+      The CXX compiler identification is MSVC, found in:
+        C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/3.28.2/CompilerIdCXX/CompilerIdCXX.exe
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/CMakeDetermineCompilerABI.cmake:57 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:5 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-39o7wv"
+      binary: "C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-39o7wv"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-39o7wv'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_c47b7.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        MSBuild version 17.9.5+33de0b227 for .NET Framework
+        Build started 5/3/2024 1:45:17 PM.
+        
+        Project "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-39o7wv\\cmTC_c47b7.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_c47b7.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Creating directory "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-39o7wv\\Debug\\".
+          Creating directory "cmTC_c47b7.dir\\Debug\\cmTC_c47b7.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_c47b7.dir\\Debug\\cmTC_c47b7.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_c47b7.dir\\Debug\\cmTC_c47b7.tlog\\unsuccessfulbuild".
+        VcpkgTripletSelection:
+          Using triplet "x64-windows" from "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\"
+          Using normalized configuration "Release"
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /I"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\include" /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c47b7.dir\\Debug\\\\" /Fd"cmTC_c47b7.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.28\\Modules\\CMakeCCompilerABI.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.39.33521 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /I"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\include" /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c47b7.dir\\Debug\\\\" /Fd"cmTC_c47b7.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.28\\Modules\\CMakeCCompilerABI.c"
+          CMakeCCompilerABI.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-39o7wv\\Debug\\cmTC_c47b7.exe" /INCREMENTAL /ILK:"cmTC_c47b7.dir\\Debug\\cmTC_c47b7.ilk" /NOLOGO /LIBPATH:"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib" /LIBPATH:"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib\\manual-link" kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib\\*.lib" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-39o7wv/Debug/cmTC_c47b7.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-39o7wv/Debug/cmTC_c47b7.lib" /MACHINE:X64  /machine:x64 cmTC_c47b7.dir\\Debug\\CMakeCCompilerABI.obj
+          cmTC_c47b7.vcxproj -> C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-39o7wv\\Debug\\cmTC_c47b7.exe
+        AppLocalFromInstalled:
+          pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\\Users\\Claire E Ogawa\\vcpkg\\scripts\\buildsystems\\msbuild\\applocal.ps1" "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-39o7wv\\Debug\\cmTC_c47b7.exe" "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\bin" "cmTC_c47b7.dir\\Debug\\cmTC_c47b7.tlog\\cmTC_c47b7.write.1u.tlog" "cmTC_c47b7.dir\\Debug\\vcpkg.applocal.log"
+        FinalizeBuildStatus:
+          Deleting file "cmTC_c47b7.dir\\Debug\\cmTC_c47b7.tlog\\unsuccessfulbuild".
+          Touching "cmTC_c47b7.dir\\Debug\\cmTC_c47b7.tlog\\cmTC_c47b7.lastbuildstate".
+        Done Building Project "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-39o7wv\\cmTC_c47b7.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:03.72
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/CMakeDetermineCompilerABI.cmake:57 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:5 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-3y07sp"
+      binary: "C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-3y07sp"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /W3 /GR /EHsc"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-3y07sp'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_0856a.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        MSBuild version 17.9.5+33de0b227 for .NET Framework
+        Build started 5/3/2024 1:45:23 PM.
+        
+        Project "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-3y07sp\\cmTC_0856a.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_0856a.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Creating directory "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-3y07sp\\Debug\\".
+          Creating directory "cmTC_0856a.dir\\Debug\\cmTC_0856a.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_0856a.dir\\Debug\\cmTC_0856a.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_0856a.dir\\Debug\\cmTC_0856a.tlog\\unsuccessfulbuild".
+        VcpkgTripletSelection:
+          Using triplet "x64-windows" from "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\"
+          Using normalized configuration "Release"
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /I"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\include" /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_0856a.dir\\Debug\\\\" /Fd"cmTC_0856a.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.28\\Modules\\CMakeCXXCompilerABI.cpp"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.39.33521 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /I"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\include" /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_0856a.dir\\Debug\\\\" /Fd"cmTC_0856a.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.28\\Modules\\CMakeCXXCompilerABI.cpp"
+          CMakeCXXCompilerABI.cpp
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-3y07sp\\Debug\\cmTC_0856a.exe" /INCREMENTAL /ILK:"cmTC_0856a.dir\\Debug\\cmTC_0856a.ilk" /NOLOGO /LIBPATH:"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib" /LIBPATH:"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib\\manual-link" kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib\\*.lib" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-3y07sp/Debug/cmTC_0856a.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-3y07sp/Debug/cmTC_0856a.lib" /MACHINE:X64  /machine:x64 cmTC_0856a.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_0856a.vcxproj -> C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-3y07sp\\Debug\\cmTC_0856a.exe
+        AppLocalFromInstalled:
+          pwsh.exe -ExecutionPolicy Bypass -noprofile -File "C:\\Users\\Claire E Ogawa\\vcpkg\\scripts\\buildsystems\\msbuild\\applocal.ps1" "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-3y07sp\\Debug\\cmTC_0856a.exe" "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\bin" "cmTC_0856a.dir\\Debug\\cmTC_0856a.tlog\\cmTC_0856a.write.1u.tlog" "cmTC_0856a.dir\\Debug\\vcpkg.applocal.log"
+        FinalizeBuildStatus:
+          Deleting file "cmTC_0856a.dir\\Debug\\cmTC_0856a.tlog\\unsuccessfulbuild".
+          Touching "cmTC_0856a.dir\\Debug\\cmTC_0856a.tlog\\cmTC_0856a.lastbuildstate".
+        Done Building Project "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-3y07sp\\cmTC_0856a.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:03.93
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/CheckCSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/FindThreads.cmake:97 (CHECK_C_SOURCE_COMPILES)"
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "C:/glm/glfw-3.3.9/CMakeLists.txt:61 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-4srvle"
+      binary: "C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-4srvle"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/glm/glfw-3.3.9/CMake/modules"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-4srvle'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_aa99c.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        MSBuild version 17.9.5+33de0b227 for .NET Framework
+        Build started 5/3/2024 1:45:28 PM.
+        
+        Project "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-4srvle\\cmTC_aa99c.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_aa99c.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Creating directory "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-4srvle\\Debug\\".
+          Creating directory "cmTC_aa99c.dir\\Debug\\cmTC_aa99c.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_aa99c.dir\\Debug\\cmTC_aa99c.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_aa99c.dir\\Debug\\cmTC_aa99c.tlog\\unsuccessfulbuild".
+        VcpkgTripletSelection:
+          Using triplet "x64-windows" from "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\"
+          Using normalized configuration "Release"
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /I"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\include" /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_aa99c.dir\\Debug\\\\" /Fd"cmTC_aa99c.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-4srvle\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.39.33521 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /I"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\include" /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_aa99c.dir\\Debug\\\\" /Fd"cmTC_aa99c.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-4srvle\\src.c"
+          src.c
+        C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-4srvle\\src.c(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-4srvle\\cmTC_aa99c.vcxproj]
+        Done Building Project "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-4srvle\\cmTC_aa99c.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-4srvle\\cmTC_aa99c.vcxproj" (default target) (1) ->
+        (ClCompile target) -> 
+          C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-4srvle\\src.c(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-4srvle\\cmTC_aa99c.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:01.51
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/CheckLibraryExists.cmake:69 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/FindThreads.cmake:175 (_threads_check_lib)"
+      - "C:/glm/glfw-3.3.9/CMakeLists.txt:61 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthreads"
+    directories:
+      source: "C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-uvewod"
+      binary: "C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-uvewod"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/glm/glfw-3.3.9/CMake/modules"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREADS_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-uvewod'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_8472b.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        MSBuild version 17.9.5+33de0b227 for .NET Framework
+        Build started 5/3/2024 1:45:31 PM.
+        
+        Project "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-uvewod\\cmTC_8472b.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_8472b.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Creating directory "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-uvewod\\Debug\\".
+          Creating directory "cmTC_8472b.dir\\Debug\\cmTC_8472b.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_8472b.dir\\Debug\\cmTC_8472b.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_8472b.dir\\Debug\\cmTC_8472b.tlog\\unsuccessfulbuild".
+        VcpkgTripletSelection:
+          Using triplet "x64-windows" from "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\"
+          Using normalized configuration "Release"
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /I"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\include" /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_8472b.dir\\Debug\\\\" /Fd"cmTC_8472b.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-uvewod\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.39.33521 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /I"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\include" /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_8472b.dir\\Debug\\\\" /Fd"cmTC_8472b.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-uvewod\\CheckFunctionExists.c"
+          CheckFunctionExists.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-uvewod\\Debug\\cmTC_8472b.exe" /INCREMENTAL /ILK:"cmTC_8472b.dir\\Debug\\cmTC_8472b.ilk" /NOLOGO /LIBPATH:"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib" /LIBPATH:"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib\\manual-link" pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib\\*.lib" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-uvewod/Debug/cmTC_8472b.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-uvewod/Debug/cmTC_8472b.lib" /MACHINE:X64  /machine:x64 cmTC_8472b.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-uvewod\\cmTC_8472b.vcxproj]
+        Done Building Project "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-uvewod\\cmTC_8472b.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-uvewod\\cmTC_8472b.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-uvewod\\cmTC_8472b.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:01.58
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/CheckLibraryExists.cmake:69 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "C:/Program Files/CMake/share/cmake-3.28/Modules/FindThreads.cmake:176 (_threads_check_lib)"
+      - "C:/glm/glfw-3.3.9/CMakeLists.txt:61 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthread"
+    directories:
+      source: "C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-ld26c4"
+      binary: "C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-ld26c4"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/glm/glfw-3.3.9/CMake/modules"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREAD_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-ld26c4'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_2357a.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        MSBuild version 17.9.5+33de0b227 for .NET Framework
+        Build started 5/3/2024 1:45:33 PM.
+        
+        Project "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-ld26c4\\cmTC_2357a.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_2357a.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Creating directory "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-ld26c4\\Debug\\".
+          Creating directory "cmTC_2357a.dir\\Debug\\cmTC_2357a.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_2357a.dir\\Debug\\cmTC_2357a.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_2357a.dir\\Debug\\cmTC_2357a.tlog\\unsuccessfulbuild".
+        VcpkgTripletSelection:
+          Using triplet "x64-windows" from "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\"
+          Using normalized configuration "Release"
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /I"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\include" /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_2357a.dir\\Debug\\\\" /Fd"cmTC_2357a.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-ld26c4\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.39.33521 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /I"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\include" /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_2357a.dir\\Debug\\\\" /Fd"cmTC_2357a.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-ld26c4\\CheckFunctionExists.c"
+          CheckFunctionExists.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-ld26c4\\Debug\\cmTC_2357a.exe" /INCREMENTAL /ILK:"cmTC_2357a.dir\\Debug\\cmTC_2357a.ilk" /NOLOGO /LIBPATH:"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib" /LIBPATH:"C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib\\manual-link" pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib "C:\\Users\\Claire E Ogawa\\vcpkg\\installed\\x64-windows\\lib\\*.lib" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-ld26c4/Debug/cmTC_2357a.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Claire E Ogawa/OneDrive - Cal Poly/CSC476/PenguinProj/CSC400/build2/CMakeFiles/CMakeScratch/TryCompile-ld26c4/Debug/cmTC_2357a.lib" /MACHINE:X64  /machine:x64 cmTC_2357a.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthread.lib' [C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-ld26c4\\cmTC_2357a.vcxproj]
+        Done Building Project "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-ld26c4\\cmTC_2357a.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-ld26c4\\cmTC_2357a.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: cannot open file 'pthread.lib' [C:\\Users\\Claire E Ogawa\\OneDrive - Cal Poly\\CSC476\\PenguinProj\\CSC400\\build2\\CMakeFiles\\CMakeScratch\\TryCompile-ld26c4\\cmTC_2357a.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:01.90
+        
+      exitCode: 1
+...
