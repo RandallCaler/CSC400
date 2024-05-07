@@ -6,7 +6,7 @@ Collider::Collider(){};
 
 Collider::Collider(Entity *owner) : worldMin(owner->minBB), worldMax(owner->maxBB)
 {
-   
+    this->owner = owner;
 }
 
 //void Collider::CheckCollision(std::vector<Entity> entities, int thisID)
@@ -32,7 +32,22 @@ Collider::Collider(Entity *owner) : worldMin(owner->minBB), worldMax(owner->maxB
 //    }
 //}
 
-int Collider::CheckCollision(std::vector<Entity>& entities)
+float Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap) {
+    // translate world position of entity to pixel space of heightmap
+    std::pair<int, int> texDim = hMap->getDim();
+    float pixelSpaceX = (owner->position.x - ground.origin.x + texDim.first / 2) / ground.scale.x;
+    float pixelSpaceZ = (owner->position.z - ground.origin.z + texDim.second / 2) / ground.scale.z;
+
+    unsigned char* texData = hMap->getData();
+    if (pixelSpaceX >= 0 && pixelSpaceX <= texDim.first && pixelSpaceZ >= 0 && pixelSpaceZ <= texDim.second) {
+        unsigned char p0 = texData[3*((int)pixelSpaceZ * texDim.first + (int)pixelSpaceX)];
+        // printf("height %i %i: %u -> %.2f\n", (int)pixelSpaceX, (int)pixelSpaceZ, texData[3*((int)pixelSpaceZ * texDim.first + (int)pixelSpaceX)], (float)(texData[3*((int)pixelSpaceZ * texDim.first + (int)pixelSpaceX)]) * scale.y / UCHAR_MAX);
+        return ((float)p0 / UCHAR_MAX - 0.5) * ground.scale.y + ground.origin.y + owner->scale;
+    }
+    return -1;
+}
+
+int Collider::CheckCollision(std::vector<std::shared_ptr<Entity>>& entities)
 {
     for(int i = 0; i < entities.size(); i++){
         // cout << "this id = " << cat->id << " and checking id " << entities[i].id << endl;
@@ -66,14 +81,15 @@ int Collider::CheckCollision(std::vector<Entity>& entities)
             //}
         //} 
 
-        Entity e = entities[i];
-        bool iscolliding =
-            (worldMax.x >= e.collider->worldMin.x &&
-             worldMax.y >= e.collider->worldMin.y &&
-             worldMax.z >= e.collider->worldMin.z) ||
-            (worldMin.x >= e.collider->worldMax.x &&
-             worldMin.y >= e.collider->worldMax.y &&
-             worldMin.z >= e.collider->worldMax.z);
+        shared_ptr<Entity> e = entities[i];
+        if (entityId != e->id) {
+            bool iscolliding =
+                (worldMax.x >= e->collider->worldMin.x &&
+                worldMax.y >= e->collider->worldMin.y &&
+                worldMax.z >= e->collider->worldMin.z) ||
+                (worldMin.x >= e->collider->worldMax.x &&
+                worldMin.y >= e->collider->worldMax.y &&
+                worldMin.z >= e->collider->worldMax.z);
 
             if (iscolliding) {
                 colliding = true;
@@ -82,6 +98,7 @@ int Collider::CheckCollision(std::vector<Entity>& entities)
             else {
                 colliding = false;
             }
+        }
     }
     return -1;
 }

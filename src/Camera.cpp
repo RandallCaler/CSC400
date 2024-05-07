@@ -27,12 +27,16 @@ Camera::~Camera()
 {
 }
 
+void Camera::updateCamera(float deltaTime) {
+    vec3 v_dir = -vec3(sin(-angle) * cos(pitch), sin(pitch), cos(angle) * cos(pitch));
+    cameraPos += (vec3(vel.z) * normalize(v_dir) + vec3(0,-vel.y,0) + vec3(vel.x) * normalize(cross(v_dir,vec3(0,1,0)))) * vec3(deltaTime);
+}
+
 void Camera::SetView(std::shared_ptr<Program> shader) {
     mat4 v_mat;
     if (freeCam) {
-        vec3 v_dir = -vec3(sin(-angle) * cos(pitch), sin(pitch), cos(angle) * cos(pitch));
-        cameraPos += (vec3(vel.z) * normalize(v_dir) + vec3(0,-vel.y,0) + vec3(vel.x) * normalize(cross(v_dir,vec3(0,1,0))));// * vec3(deltaTime);
-        v_mat = lookAt(cameraPos, v_dir + cameraPos, vec3(0,1,0));
+        vec3 v_dir = -vec3(sin(-angle) * cos(pitch), sin(pitch), cos(angle) * cos(pitch)) + cameraPos;
+        v_mat = lookAt(cameraPos, v_dir, vec3(0,1,0));
     }
     else {
         horiz = dist * cos(pitch * 0.01745329);   // for third person camera - calculate horizontal and

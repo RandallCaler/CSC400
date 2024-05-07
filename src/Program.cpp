@@ -142,3 +142,19 @@ GLint Program::getUniform(const std::string &name) const
 	}
 	return uniform->second;
 }
+
+const std::string Program::getVShaderName(){
+	return vShaderName;
+}
+
+const std::string Program::getFShaderName(){
+	return fShaderName;
+}
+
+std::map<std::string, GLint> Program::getUniforms(){
+	return uniforms;
+}
+
+std::map<std::string, GLint> Program::getAttributes(){
+	return attributes;
+}

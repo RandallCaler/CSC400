@@ -21,6 +21,7 @@
 #include "Camera.h"
 
 #include <chrono>
+#include <array>
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
@@ -37,37 +38,40 @@ using namespace glm;
 
 // Where the resources are loaded from
 std::string resourceDir = "../resources";
+std::string WORLD_FILE_NAME = "/world.txt";
 
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Entity>> worldentities;
+
+float deltaTime;
+// 	view pitch dist angle playerpos playerrot animate g_eye
+Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
+Camera freeCam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5), true);
+Camera* activeCam = &cam;
 
 class Application : public EventCallbacks
 {
 
 public:
 	WindowManager * windowManager = nullptr;
-
 	// Our shader program - use this one for Blinn-Phong has diffuse
 	shared_ptr<Shader> reg;
+	shared_ptr<Shader> proghmap;
 	//Our shader program for textures
 	// shared_ptr<Shader> tex;
 
 	bool editMode = false;
 
-	//our geometry
-	shared_ptr<Shape> sphere;
-
-	std::vector<shared_ptr<Shape>> bunny;
+	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities);
 
 	std::vector<shared_ptr<Shape>> butterfly;
 
 	InputHandler ih;
 
-
 	Entity bf1 = Entity();
 	Entity bf2 = Entity();
 	Entity bf3 = Entity();
-	Entity *catEnt = new PhysicalObject();
+	// Entity *catEnt = new Manchot();
 	
   	std::vector<Entity> bf;
 
@@ -94,10 +98,6 @@ public:
   
 	vec3 strafe = vec3(1, 0, 0);
 
-	// 	view pitch dist angle playerpos playerrot animate g_eye
-	Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
-	Camera freeCam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5), true);
-	Camera* activeCam = &cam;
 	double cursor_x = 0;
 	double cursor_y = 0;
   
@@ -109,6 +109,9 @@ public:
 	float editSpeed = 2.0;
 	int editSRT = 0; // 0 - translation, 1 - rotation, 2 - scale
 	vec3 mobileVel = vec3(0);
+
+	// hmap for terrain
+	shared_ptr<Texture> hmap;
 	
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -117,19 +120,18 @@ public:
 			glfwSetWindowShouldClose(window, GL_TRUE);
 		}
 
-		// KEY PRESSED
-
-		if (key == GLFW_KEY_CAPS_LOCK && (action == GLFW_PRESS)){
+		if (key == GLFW_KEY_CAPS_LOCK && action == GLFW_PRESS) {
 			editMode = !editMode;
 			editSRT = 0;
 			editSpeed = 2.0;
-			if (activeCam = &cam) {
+			if (editMode) {
 				activeCam = &freeCam;
 			}
 			else {
 				activeCam = &cam;
 			}
 		}
+		// KEY PRESSED
 
 		if (editMode) {
 			if (action == GLFW_PRESS) {
@@ -140,16 +142,16 @@ public:
 							activeEntity = worldentities.begin();
 						}
 						break;
-					case GLFW_KEY_W:
+					case GLFW_KEY_UP:
 						mobileVel.z = editSpeed;
 						break;
-					case GLFW_KEY_S:
+					case GLFW_KEY_DOWN:
 						mobileVel.z = -editSpeed;
 						break;
-					case GLFW_KEY_A:
+					case GLFW_KEY_LEFT:
 						mobileVel.x = editSpeed;
 						break;
-					case GLFW_KEY_D:
+					case GLFW_KEY_RIGHT:
 						mobileVel.x = -editSpeed;
 						break;
 					case GLFW_KEY_E:
@@ -167,49 +169,59 @@ public:
 					case GLFW_KEY_C:
 						editSRT = 0;
 						break;
-					case GLFW_KEY_UP:
-						freeCam.vel.z = editSpeed/10;
+					case GLFW_KEY_W:
+						freeCam.vel.z = editSpeed;
 						break;
-					case GLFW_KEY_DOWN:
-						freeCam.vel.z = -editSpeed/10;
+					case GLFW_KEY_S:
+						freeCam.vel.z = -editSpeed;
 						break;
-					case GLFW_KEY_LEFT:
-						freeCam.vel.x = -editSpeed/10;
+					case GLFW_KEY_A:
+						freeCam.vel.x = -editSpeed;
 						break;
-					case GLFW_KEY_RIGHT:
-						freeCam.vel.x = editSpeed/10;
+					case GLFW_KEY_D:
+						freeCam.vel.x = editSpeed;
 						break;
+					case GLFW_KEY_SPACE:
+						freeCam.vel.y = -editSpeed;
+						break;
+					case GLFW_KEY_LEFT_SHIFT:
+						freeCam.vel.y = editSpeed;
+						break;
+					case GLFW_KEY_V:
+						levelEditor->saveToFile(WORLD_FILE_NAME);
 				}
 			}
 			if (action == GLFW_RELEASE) {
 				switch (key) {
-					case GLFW_KEY_W:
-					case GLFW_KEY_S:
+					case GLFW_KEY_UP:
+					case GLFW_KEY_DOWN:
 						mobileVel.z = 0.0;
 						break;
-					case GLFW_KEY_A:
-					case GLFW_KEY_D:
+					case GLFW_KEY_LEFT:
+					case GLFW_KEY_RIGHT:
 						mobileVel.x = 0.0;
 						break;
 					case GLFW_KEY_E:
 					case GLFW_KEY_Q:
 						mobileVel.y = 0.0;
 						break;
-					case GLFW_KEY_UP:
-					case GLFW_KEY_DOWN:
+					case GLFW_KEY_W:
+					case GLFW_KEY_S:
 						freeCam.vel.z = 0.0;
 						break;
-					case GLFW_KEY_LEFT:
-					case GLFW_KEY_RIGHT:
+					case GLFW_KEY_A:
+					case GLFW_KEY_D:
 						freeCam.vel.x = 0.0;
+						break;
+					case GLFW_KEY_SPACE:
+					case GLFW_KEY_LEFT_SHIFT:
+						freeCam.vel.y = 0.0;
 						break;
 				}
 			}
-			
-			ih.handleInput(NULL, &freeCam);
 		}
 		else {
-			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding() && bounds < 19){
+			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding() && bounds < 1000){
 				ih.inputStates[0] = 1;
 			}
 
@@ -217,11 +229,11 @@ public:
 				ih.inputStates[1] = 1;
 			}
 
-			if (key == GLFW_KEY_S && (action == GLFW_PRESS) && bounds < 19){	
+			if (key == GLFW_KEY_S && (action == GLFW_PRESS) && bounds < 1000){	
 				ih.inputStates[2] = 1;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_PRESS)&& !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding()){
 				ih.inputStates[3] = 1;
 			}
 
@@ -235,7 +247,7 @@ public:
 
 			// KEY RELEASED
 
-			if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding() && bounds < 19){
+			if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding() && bounds < 1000){
 				ih.inputStates[0] = 0;
 			}
 
@@ -243,11 +255,11 @@ public:
 				ih.inputStates[1] = 0;
 			}
 
-			if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 19){	
+			if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 1000){
 				ih.inputStates[2] = 0;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_RELEASE)&& !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding()){
 				ih.inputStates[3] = 0;
 			}
 
@@ -260,31 +272,25 @@ public:
 			}
 
 			// Entity *catptr = &catEnt;
-			ih.handleInput(worldentities["bunny"].get(), &cam);
+			ih.handleInput(worldentities["bunny"].get(), &cam, deltaTime);
 		}
 	}
 
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
 		if (editMode) {
-			if (deltaY>0) {
-				mobileVel *= 0.9;
-				editSpeed *= 0.9;
-			}
-			else {
-				mobileVel *= 1.1;
-				editSpeed *= 1.1;
-			}
-		}
-		else {
+
+			// cout << "INSIDE SCROLL CALLBACK BUNNY MOVEMENT" << endl;
 			//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
 			cam.angle -= 10 * (deltaX / 57.296);
+			// ih.setRotation(worldentities["bunny"].get(), -10 * (deltaX / 57.296));
 
-			// cat entity updated with camera
-			worldentities["bunny"]->m.forward = vec4(glm::normalize(cam.player_pos - cam.g_eye), 1);
-			worldentities["bunny"]->m.forward.y = 0;
-			worldentities["bunny"]->rotY -= 10 * (deltaX / 57.296);
 		}
-	
+		else {
+			cam.angle -= 10 * (deltaX / 57.296);
+			// ih.setRotation(worldentities["bunny"].get(), -10 * (deltaX / 57.296));
+
+		}
+
 	}
 
 
@@ -341,16 +347,19 @@ public:
 		glEnable(GL_DEPTH_TEST);
 		// glEnable(GL_CLIP_DISTANCE0);
 
-		reg = shaders["reg"];
-		// tex = shaders["tex"];
 		shaders["skybox"]->has_texture = true;
 		shaders["tex"]->has_texture = true;
+		shaders["hmap"]->has_texture = false;
 
 		shaders["skybox"]->addTexture(resourceDirectory + "/sky.jpg");
 		shaders["tex"]->addTexture(resourceDirectory + "/grass_tex.jpg");
 		shaders["tex"]->addTexture(resourceDirectory + "/sky.jpg");
 		shaders["tex"]->addTexture(resourceDirectory + "/cat_tex.jpg");
 		shaders["tex"]->addTexture(resourceDirectory + "/cat_tex_legs.jpg");
+
+		hmap = make_shared<Texture>();
+		hmap->setFilename(resourceDirectory + "/hmap.png");
+		hmap->initHmap();
 	}
 
 	void initGeom(const std::string& resourceDirectory)
@@ -368,20 +377,6 @@ public:
 			cat[0]->createShape(TOshapesB[0]);
 			cat[0]->measure();
 			cat[0]->init();
-		}
-
-
-		vector<tinyobj::shape_t> TOshapesC;
- 		vector<tinyobj::material_t> objMaterialsC;
-		//load in the mesh and make the shape(s)
- 		rc = tinyobj::LoadObj(TOshapesC, objMaterialsC, errStr, (resourceDirectory + "/bunny.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		} else {	
-			bunny.push_back(make_shared<Shape>());
-			bunny[0]->createShape(TOshapesC[0]);
-			bunny[0]->measure();
-			bunny[0]->init();
 		}
 
 		vector<tinyobj::shape_t> TOshapes3;
@@ -428,159 +423,97 @@ public:
 				tree1[i]->init();
 			}
 		}
-
-		// // init butterfly 1
-		// bf1.initEntity(butterfly);
-		// bf1.position = vec3(2, -0.3, -1);
-		// bf1.m.forward = vec4(0, 0, 1, 1);
-		// bf1.m.velocity = vec3(2.0) * vec3(bf1.m.forward);
-		// bf1.collider = new Collider(butterfly, Collider::BUTTERFLY);
-		// bf1.collider->SetEntityID(bf1.id);
-		// //cout << "butterfly 1 " << bf1.id << endl;
-		// bf1.collider->entityName = 'b';
-		// bf1.scale = 0.01;
     
-    	// // init butterfly 2
-		// bf2.initEntity(butterfly);
-		// bf2.position = vec3(-2, -0.3, 0.5);
-		// bf2.m.forward = vec4(-1, 0, .3, 1);
-		// bf2.m.velocity = vec3(9.0) * vec3(bf2.m.forward);
-		// bf2.collider = new Collider(butterfly, Collider::BUTTERFLY);
-		// bf2.collider->SetEntityID(bf2.id);
-		// //cout << "butterfly 2 " << bf2.id << endl;
-		// bf2.collider->entityName = 'b';
-		
-		// bf2.scale = 0.01;
-
-    
-   		//  // init butterfly 3
-		// bf3.initEntity(butterfly);
-		// bf3.position = vec3(4, -0.3, 0.5);
-		// bf3.m.forward = vec4(1, 0, 0, 1);
-		// bf3.m.velocity = vec3(4.0) * vec3(bf3.m.forward);
-		// bf3.collider = new Collider(butterfly, Collider::BUTTERFLY);
-		// bf3.collider->SetEntityID(bf3.id);
-		// //cout << "butterfly 3 " << bf3.id << endl;
-		// bf3.collider->entityName = 'b';
-	
-		// bf3.scale = 0.01;
-
-    	// bf.push_back(bf1);
-		// bf.push_back(bf2);
-		// bf.push_back(bf3);
-
 		// IMPORT BUNNY
 		worldentities["bunny"]->m.forward = vec4(0, 0, 0.1, 1);
 		worldentities["bunny"]->m.velocity = vec3(0.1) * vec3(worldentities["bunny"]->m.forward);
+
 		worldentities["bunny"]->collider = new Collider(worldentities["bunny"].get());
 		worldentities["bunny"]->collider->SetEntityID(worldentities["bunny"]->id);
 		//cout << "cat " << worldentities["bunny"]->id << endl;
 		worldentities["bunny"]->collider->entityName = 'c';
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
-		initGround();
+		initHMapGround();
 	}
 
 	//directly pass quad for the ground to the GPU
-	void initGround() {
+	void initHMapGround() {
+		const float Y_MAX = 5;
+		const float Y_MIN = -Y_MAX;
 
-		float g_groundSize = 60;
-		float g_groundY = -0.25;
+		vector<float> vertices;
+		auto hmap_dim = hmap->getDim();
+		auto hmap_data = hmap->getData();
+		for (unsigned int i = 0; i < hmap_dim.second; i++) {
+			for (unsigned int j = 0; j < hmap_dim.first; j++) {
+				unsigned char hval = *(hmap_data + 3 * (i * hmap_dim.first + j));
 
-  		// A x-z plane at y = g_groundY of dimension [-g_groundSize, g_groundSize]^2
-		float GrndPos[] = {
-			-g_groundSize, g_groundY, -g_groundSize,
-			-g_groundSize, g_groundY,  g_groundSize,
-			g_groundSize, g_groundY,  g_groundSize,
-			g_groundSize, g_groundY, -g_groundSize
-		};
+				vertices.push_back(j - hmap_dim.first / 2.0f);
+				vertices.push_back((hval / 255.0f) * (Y_MAX - Y_MIN) + Y_MIN);
+				vertices.push_back(i - hmap_dim.second / 2.0f);
+			}
+		}
+		// hmap->freeData();
 
-		float GrndNorm[] = {
-			0, 1, 0,
-			0, 1, 0,
-			0, 1, 0,
-			0, 1, 0,
-			0, 1, 0,
-			0, 1, 0
-		};
+		vector<unsigned int> indices;
+		for (unsigned int i = 0; i < hmap_dim.second; i++) {
+			for (unsigned int j = 0; j < hmap_dim.first; j++) {
+				int v0 = i * hmap_dim.first + j;
+				int v1 = (i + 1) * hmap_dim.first + j;
+				int v2 = (i + 1) * hmap_dim.first + j + 1;
+				int v3 = i * hmap_dim.first + j + 1;
 
-		static GLfloat GrndTex[] = {
-      		0, 0, // back
-      		0, 1,
-      		1, 1,
-      		1, 0 };
+				indices.push_back(v0);
+				indices.push_back(v3);
+				indices.push_back(v1);
+				indices.push_back(v3);
+				indices.push_back(v2);
+				indices.push_back(v1);
+			}
+		}
 
-      	unsigned short idx[] = {0, 1, 2, 0, 2, 3};
+		std::cout << "vert size : " << vertices.size() << " ind size: " << indices.size() << std::endl;
 
 		//generate the ground VAO
       	glGenVertexArrays(1, &GroundVertexArrayID);
       	glBindVertexArray(GroundVertexArrayID);
 
-      	g_GiboLen = 6;
       	glGenBuffers(1, &GrndBuffObj);
       	glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
-      	glBufferData(GL_ARRAY_BUFFER, sizeof(GrndPos), GrndPos, GL_STATIC_DRAW);
-
-      	glGenBuffers(1, &GrndNorBuffObj);
-      	glBindBuffer(GL_ARRAY_BUFFER, GrndNorBuffObj);
-      	glBufferData(GL_ARRAY_BUFFER, sizeof(GrndNorm), GrndNorm, GL_STATIC_DRAW);
-
-      	glGenBuffers(1, &GrndTexBuffObj);
-      	glBindBuffer(GL_ARRAY_BUFFER, GrndTexBuffObj);
-      	glBufferData(GL_ARRAY_BUFFER, sizeof(GrndTex), GrndTex, GL_STATIC_DRAW);
+      	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
       	glGenBuffers(1, &GIndxBuffObj);
      	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
-      	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(idx), idx, GL_STATIC_DRAW);
+      	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+
+		g_GiboLen = indices.size();
+
+		worldentities["bunny"]->collider->SetGround(vec3(0,-2.5,0), vec3(1,10,1));
       }
+	
       //code to draw the ground plane
      void drawGround(shared_ptr<Shader> curS) {
      	glBindVertexArray(GroundVertexArrayID);
 
-
-		material c;
-		c.amb.r = 0.0;
-        c.amb.g = 0.0;
-        c.amb.b = 0.0;
-        c.dif.r = 1;
-        c.dif.g = 1;
-        c.dif.b = 1;
-        c.spec.r = 1;
-        c.spec.g = 1;
-        c.spec.b = 1;
-        c.shine = 1.0;
-		curS->flip(1);
-		curS->setMaterial(c);
-		curS->setTexture(0);
-
 		//draw the ground plane 
-  		curS->setModel(vec3(0, -1, 0), 0, 0, 0, 1);
+  		curS->setModel(vec3(0, -2.5f, 0), 0, 0, 0, 1);
   		glEnableVertexAttribArray(0);
   		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
   		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-  		glEnableVertexAttribArray(1);
-  		glBindBuffer(GL_ARRAY_BUFFER, GrndNorBuffObj);
-  		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-  		glEnableVertexAttribArray(2);
-  		glBindBuffer(GL_ARRAY_BUFFER, GrndTexBuffObj);
-  		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
    		// draw!
   		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
-  		glDrawElements(GL_TRIANGLES, g_GiboLen, GL_UNSIGNED_SHORT, 0);
+  		glDrawElements(GL_TRIANGLES, g_GiboLen, GL_UNSIGNED_INT, 0);
 
   		glDisableVertexAttribArray(0);
-  		glDisableVertexAttribArray(1);
-  		glDisableVertexAttribArray(2);
   		curS->prog->unbind();
      }
 
 	void render(float frametime) {
 		// Get current frame buffer size.
 		int width, height;
-		shared_ptr<Shader> curS = reg;
+		shared_ptr<Shader> curS = shaders["reg"];
 		glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
 		glViewport(0, 0, width, height);
 
@@ -600,7 +533,7 @@ public:
 
 		// Apply perspective projection.
 		Projection->pushMatrix();
-		Projection->perspective(45.0f, aspect, 0.01f, 100.0f);
+		Projection->perspective(45.0f, aspect, 0.01f, 1000.0f);
 
 		// editor mode updates
 		if (editMode) {
@@ -619,6 +552,10 @@ public:
 					break;
 			}
 		}
+
+		// updates player motion
+		worldentities["bunny"]->updateMotion(frametime, hmap);
+		cam.player_pos = worldentities["bunny"]->position;
 		
 		//material shader first
 		curS->prog->bind();
@@ -635,47 +572,24 @@ public:
 		butterfly_loc[1] = vec3(-2, -1.2, -3);
 		butterfly_loc[2] = vec3(4, -1, 4);
  
-		// bf[0].setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
-		// bf[0].setMaterials(1, 0.4, 0.2, 0.2, 0.94, 0.23, 0.20, 0.9, 0.23, 0.20, 0.6);
-		// bf[0].setMaterials(2, 0.4, 0.2, 0.2, 0.94, 0.23, 0.20, 0.9, 0.23, 0.20, 0.6);
 
-		// reg.setModel(bf[0].position, -1.1, 4.1, 0, bf[0].scale); //body
-
-		// for (int i = 0; i < 3; i++) {
-		// 	reg.setMaterial(bf[0].material[i]);
-		// 	bf[0].objs[i]->draw(reg.prog);
-		// }
-
-		// bf[1].setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
-		// bf[1].setMaterials(1, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
-		// bf[1].setMaterials(2, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
-
-		// reg.setModel(bf[1].position, -1.1, 4.1, 0, bf[1].scale); //body
-		// for (int i = 0; i < 3; i++) {
-		// 	reg.setMaterial(bf[1].material[i]);
-		// 	bf[1].objs[i]->draw(reg.prog);
-		// }
-    
-    	// bf[2].setMaterials(0, 0.1, 0.1, 0.1, 0.02, 0.02, 0.02, 0.25, 0.23, 0.30, 9);
-		// bf[2].setMaterials(1, 0.3, 0.3, 0.2, 0.90, 0.73, 0.20, 0.9, 0.23, 0.20, 0.6);
-		// bf[2].setMaterials(2, 0.3, 0.3, 0.2, 0.90, 0.73, 0.20, 0.9, 0.23, 0.20, 0.6);
-
-		// reg.setModel(bf[2].position, -1.1, 4.1, 0, bf[2].scale); //body
-		// for (int i = 0; i < 3; i++) {
-		// 	reg.setMaterial(bf[2].material[i]);
-		// 	bf[2].objs[i]->draw(reg.prog);
-		// }
-
-		// std::cout << "entity position:" << catEnt->position.x << ", " << catEnt->position.y << ", " << catEnt->position.z << std::endl;
-
-		// catEnt.setMaterials(0, 0.2, 0.3, 0.3, 0.20, 0.73, 0.80, 0.9, 0.23, 0.20, 0.6);
-		// reg.setModel(catEnt.position, 0, catEnt.rotY, 0, catEnt.scale);
-		// reg.setMaterial(catEnt.material[0]);
-		// catEnt.objs[0]->draw(reg.prog);
+		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["butterfly1"], worldentities["bunny"]};
 
 		// material imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
 		map<string, shared_ptr<Entity>>::iterator i;
+
+		for (i = worldentities.begin(); i != worldentities.end(); i++) {
+			shared_ptr<Entity> entity = i->second;
+			entity->generateModel();
+		}
+		// for (i = worldentities.begin(); i != worldentities.end(); i++) {
+		// 	shared_ptr<Entity> entity = i->second;
+		// 	if (entity->collider) {
+		// 		entity->collider->CalculateBoundingBox(entity->modelMatrix);
+		// 	}
+		// }
+
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 			if (shaders[entity->defaultShaderName] != curS) {
@@ -690,8 +604,18 @@ public:
 				// skybox is always the furthest surface away
 				glDepthFunc(GL_LEQUAL);
 			}
-			mat4 modelMatrix = entity->generateModel();
-			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(modelMatrix));
+
+			// if (entity->collider) {
+			// 	int col =entity->collider->CheckCollision(tempCollisionList);
+			// 	if (col == -1) {
+			// 		entity->updateMotion(frametime);
+			// 	}
+			// 	else {
+			// 		printf("entity %u colliding with %u\n", entity->id, col);
+			// 	}
+			// }
+			
+			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
 			// curS->setModel(*entity);
 			for (int i = 0; i < entity->objs.size(); i++) {
 				if (curS->has_texture) {
@@ -713,24 +637,15 @@ public:
 
 		curS->prog->unbind();
 
-		curS = shaders["tex"];
+		curS = shaders["hmap"];
 
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-
 		activeCam->SetView(curS->prog);
-		// directional light
-		glUniform3f(curS->prog->getUniform("lightDir"), -1.0f, 1.0f, -1.0f);
 		drawGround(curS);  //draw ground here
 
 
-		int collided = worldentities["bunny"]->collider->CheckCollision(bf);
-
-		//catEnt->position = cam.player_pos;
-
-		if (collided != -1) {
-			bf_flags[collided] = 1;
-		}
+		// int collided = worldentities["bunny"]->collider->CheckCollision(tempCollisionList);
 
 
 		bounds = std::sqrt(   //update cat's distance from skybox
@@ -740,18 +655,6 @@ public:
 
 		// Pop matrix stacks.
 		Projection->popMatrix();
-
-		// for (int i = 0; i < 3; i ++){
-		// 	if (bf_flags[i] == 1) {
-		// 		bf[i].scale *= 0.95f;
-		// 		if (bf[i].scale < 0.00001) {
-		// 			bf[i].scale = 0.01;
-		// 			bf_flags[i] = 0;
-		// 			bf[i].position = vec3(0, -0.3, 0);
-		// 		}
-		// 	}
-		// 	bf[i].updateMotion(frametime);
-		// }
 	}
 };
 
@@ -773,22 +676,21 @@ int main(int argc, char *argv[]) {
 	// and GL context, etc.
 
 	WindowManager *windowManager = new WindowManager();
-	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities);
 
 	windowManager->init(640, 480);
 	windowManager->setEventCallbacks(application);
 	application->windowManager = windowManager;
+	glfwSetInputMode(windowManager->getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	// This is the code that will likely change program to program as you
 	// may need to initialize or set up different data and state
 
-	levelEditor->loadFromFile("/save.noot");
+	application->levelEditor->loadFromFile(WORLD_FILE_NAME);
 
 	application->init(resourceDir);
 	application->initGeom(resourceDir);
 
 	float dt = 1 / 60.0;
-
 	auto lastTime = chrono::high_resolution_clock::now();
 	application->activeEntity = worldentities.begin();
 
@@ -800,7 +702,7 @@ int main(int argc, char *argv[]) {
 		auto nextLastTime = chrono::high_resolution_clock::now();
 
 		// get time since last frame
-		float deltaTime =
+		deltaTime = 
 			chrono::duration_cast<std::chrono::microseconds>(
 				chrono::high_resolution_clock::now() - lastTime)
 				.count();
@@ -813,6 +715,7 @@ int main(int argc, char *argv[]) {
 		// on the next frame
 		lastTime = nextLastTime;
 
+		activeCam->updateCamera(deltaTime);
 		// Render scene.
 		application->render(deltaTime);
 
@@ -822,7 +725,7 @@ int main(int argc, char *argv[]) {
 		glfwPollEvents();
 	}
 
-	// Quit program.
 	windowManager->shutdown();
+
 	return 0;
 }

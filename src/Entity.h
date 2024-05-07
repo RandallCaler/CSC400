@@ -10,6 +10,9 @@
 #include "MatrixStack.h"
 
 #define EPSILON 0.0001
+#define GRAVITY -10.0
+#define TERRAIN_HEIGHT -0.1
+#define SLOPE_TOLERANCE 0.5
 
 typedef struct color {
     float r;
@@ -25,12 +28,17 @@ typedef struct material {
     float shine;
 } material;
 
-
+// to avoid making a separate player class, I added a few extra variables to the motion struct for the player specifically
+// however, I think they could be useful for obstacle movement as well - Claire 
 struct motion {
     // the velocity of the obstacles will be a constant speed in the forward direction
     glm::vec3 velocity;
     // a vector to inform which direction the object is facing
     glm::vec4 forward; 
+
+    float curSpeed;
+    float curTurnSpeed;
+    float upwardSpeed;
 };
 
 class Collider; // forward declaration to enable use of this class in Collider class
@@ -45,8 +53,9 @@ public:
         float r3, float g3, float b3, float s);
     void setMaterials(int i, material& mat);
 
-    void updateMotion(float deltaTime);
+    void updateMotion(float deltaTime, shared_ptr<Texture> hmap);
     void updateScale(float newScale);
+
   
     glm::mat4 generateModel();
 
@@ -55,14 +64,15 @@ public:
     std::vector<std::shared_ptr<Shape>> objs;
     std::vector<std::shared_ptr<Texture>> textures;
     std::vector<material> materials;
-    Collider* collider;
+    Collider* collider = NULL;
     glm::vec3 position = glm::vec3(0);
     glm::vec3 scaleVec = glm::vec3(1);
     float scale;
     motion m;
-    float rotX = 0.0;
-    float rotY = 0.0;
-    float rotZ = 0.0;
+    float rotX;
+    float rotY;
+    float rotZ;
+    bool grounded = false;
     string defaultShaderName;
     glm::mat4 modelMatrix;
 

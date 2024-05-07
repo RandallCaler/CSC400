@@ -3,9 +3,15 @@
 #ifndef COLLIDER_H_INCLUDED
 #define COLLIDER_H_INCLUDED
 
+#include "Texture.h"
 #include "Shape.h"
 
 class Entity; // forward declaration to enable use of this class in Entity class
+
+typedef struct groundProperties {
+    glm::vec3 origin;
+    glm::vec3 scale;
+} Ground;
 
 class Collider
 {
@@ -25,8 +31,10 @@ public:
     Collider();
     Collider(Entity *owner);
     void UpdateColliderSize();
-    int CheckCollision(std::vector<Entity>& entities);
+    float CheckGroundCollision(std::shared_ptr<Texture> hMap);
+    int CheckCollision(std::vector<std::shared_ptr<Entity>>& entities);
     void SetEntityID(int ID);
+    void SetGround(glm::vec3 origin, glm::vec3 scale) { ground.origin = origin; ground.scale = scale; };
     bool IsColliding();
     void ExitCollision();
     float GetRadial();
@@ -36,10 +44,11 @@ public:
 
     glm::vec3 worldMin;
     glm::vec3 worldMax;
+    Ground ground;
 
 private:
-
     int entityId;
+    Entity* owner;
     float radial;
     bool colliding = false;
 
