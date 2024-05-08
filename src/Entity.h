@@ -10,8 +10,6 @@
 #include "MatrixStack.h"
 
 #define EPSILON 0.0001
-#define GRAVITY -10.0
-#define TERRAIN_HEIGHT -0.1
 #define SLOPE_TOLERANCE 0.5
 
 typedef struct color {
@@ -73,6 +71,7 @@ public:
     float rotY;
     float rotZ;
     bool grounded = false;
+    bool gliding = false;
     string defaultShaderName;
     glm::mat4 modelMatrix;
 
