@@ -132,7 +132,6 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap) {
 
             if (gliding == true){
                 // upward speed to simulate the slide updraft, needs to be tinkered with
-                m.upwardSpeed += -17.0 * deltaTime;
                 position += vec3(0.0f, -3.0*deltaTime, 0.0f);
             }
             else{

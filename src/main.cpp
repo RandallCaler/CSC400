@@ -271,7 +271,7 @@ public:
 				ih.inputStates[4] = 0;
 			}
 
-			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_PRESS)){
+			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_RELEASE)){
 				ih.inputStates[5] = 0;
 			}
 			
