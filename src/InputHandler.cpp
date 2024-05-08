@@ -2,7 +2,7 @@
 
 #define WALK_SPEED 7.0
 #define TURN_SPEED 25.0
-#define JUMP_HEIGHT 8.0
+#define JUMP_HEIGHT 14.0
 
 InputHandler::InputHandler(){
     for (int i = 0; i < IN_SIZE; i++) {
@@ -54,8 +54,10 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam, float deltaTime) {
                 break;
             case 2:
                 //south
-                angles.push_back(0);
-                backwards = true;
+                if(!penguin->gliding){
+                    angles.push_back(0);
+                    backwards = true;
+                }
                 break;
             case 3:
                 //east
@@ -68,6 +70,11 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam, float deltaTime) {
                     penguin->grounded = false;
                 }
                 break;
+            case 5:
+                if (!(penguin->grounded)){
+                    penguin->m.upwardSpeed = 1.0;
+                    penguin->gliding = true;
+                }
         }
     }
 
@@ -100,8 +107,5 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam, float deltaTime) {
     }
 
 
-// void InputHandler::setRotation(Entity *penguin, Camera *cam, float inc) {
-//     // cam->angle += inc;
-//     penguin->rotY = cam->angle;
-// }
+
 
