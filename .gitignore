@@ -5,3 +5,7 @@ x64/
 .idea/
 cmake-build-debug/
 resources/testOut.txt
+<<<<<<< HEAD
+=======
+resources/testOut.txt
+>>>>>>> 0656e0466addab3d9f907aae52e32b270bea6b28

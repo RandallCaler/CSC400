@@ -38,6 +38,7 @@ using namespace glm;
 
 // Where the resources are loaded from
 std::string resourceDir = "../resources";
+std::string WORLD_FILE_NAME = "/world.txt";
 
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Entity>> worldentities;
@@ -61,11 +62,11 @@ public:
 
 	bool editMode = false;
 
+	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities);
 
 	std::vector<shared_ptr<Shape>> butterfly;
 
 	InputHandler ih;
-
 
 	Entity bf1 = Entity();
 	Entity bf2 = Entity();
@@ -186,6 +187,14 @@ public:
 					case GLFW_KEY_LEFT_SHIFT:
 						freeCam.vel.y = editSpeed;
 						break;
+					case GLFW_KEY_SPACE:
+						freeCam.vel.y = -editSpeed;
+						break;
+					case GLFW_KEY_LEFT_SHIFT:
+						freeCam.vel.y = editSpeed;
+						break;
+					case GLFW_KEY_V:
+						levelEditor->saveToFile(WORLD_FILE_NAME);
 				}
 			}
 			if (action == GLFW_RELEASE) {
@@ -230,7 +239,7 @@ public:
 				ih.inputStates[2] = 1;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_PRESS)&& !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding()){
 				ih.inputStates[3] = 1;
 			}
 
@@ -252,11 +261,11 @@ public:
 				ih.inputStates[1] = 0;
 			}
 
-			if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 1000){	
+			if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 1000){
 				ih.inputStates[2] = 0;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_RELEASE)&& !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding()){
 				ih.inputStates[3] = 0;
 			}
 
@@ -279,12 +288,12 @@ public:
 			// cout << "INSIDE SCROLL CALLBACK BUNNY MOVEMENT" << endl;
 			//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
 			cam.angle -= 10 * (deltaX / 57.296);
-			ih.setRotation(worldentities["bunny"].get(), -10 * (deltaX / 57.296));
+			// ih.setRotation(worldentities["bunny"].get(), -10 * (deltaX / 57.296));
 
 		}
 		else {
 			cam.angle -= 10 * (deltaX / 57.296);
-			ih.setRotation(worldentities["bunny"].get(), -10 * (deltaX / 57.296));
+			// ih.setRotation(worldentities["bunny"].get(), -10 * (deltaX / 57.296));
 
 		}
 
@@ -355,7 +364,7 @@ public:
 		shaders["tex"]->addTexture(resourceDirectory + "/cat_tex_legs.jpg");
 
 		hmap = make_shared<Texture>();
-		hmap->setFilename(resourceDirectory + "/hmap.jpg");
+		hmap->setFilename(resourceDirectory + "/hmap.png");
 		hmap->initHmap();
 	}
 
@@ -436,7 +445,7 @@ public:
 
 	//directly pass quad for the ground to the GPU
 	void initHMapGround() {
-		const float Y_MAX = 1;
+		const float Y_MAX = 5;
 		const float Y_MIN = -Y_MAX;
 
 		vector<float> vertices;
@@ -447,11 +456,11 @@ public:
 				unsigned char hval = *(hmap_data + 3 * (i * hmap_dim.first + j));
 
 				vertices.push_back(j - hmap_dim.first / 2.0f);
-				vertices.push_back(hval / 255.0f * (Y_MAX - Y_MIN) + Y_MIN);
+				vertices.push_back((hval / 255.0f) * (Y_MAX - Y_MIN) + Y_MIN);
 				vertices.push_back(i - hmap_dim.second / 2.0f);
 			}
 		}
-		hmap->freeData();
+		// hmap->freeData();
 
 		vector<unsigned int> indices;
 		for (unsigned int i = 0; i < hmap_dim.second; i++) {
@@ -485,6 +494,8 @@ public:
       	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
 		g_GiboLen = indices.size();
+
+		worldentities["bunny"]->collider->SetGround(vec3(0,-2.5,0), vec3(1,10,1));
       }
 	
       //code to draw the ground plane
@@ -549,7 +560,7 @@ public:
 		}
 
 		// updates player motion
-		worldentities["bunny"]->updateMotion(frametime);
+		worldentities["bunny"]->updateMotion(frametime, hmap);
 		cam.player_pos = worldentities["bunny"]->position;
 		
 		//material shader first
@@ -671,7 +682,6 @@ int main(int argc, char *argv[]) {
 	// and GL context, etc.
 
 	WindowManager *windowManager = new WindowManager();
-	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities);
 
 	windowManager->init(640, 480);
 	windowManager->setEventCallbacks(application);
@@ -681,19 +691,19 @@ int main(int argc, char *argv[]) {
 	// This is the code that will likely change program to program as you
 	// may need to initialize or set up different data and state
 
-	levelEditor->loadFromFile("/save.noot");
+	application->levelEditor->loadFromFile(WORLD_FILE_NAME);
 
 	application->init(resourceDir);
 	application->initGeom(resourceDir);
 
 	float dt = 1 / 60.0;
-
 	auto lastTime = chrono::high_resolution_clock::now();
 	application->activeEntity = worldentities.begin();
 
 	// Loop until the user closes the window.
 	while (!glfwWindowShouldClose(windowManager->getHandle()))
 	{
+
 		// save current time for next frame
 		auto nextLastTime = chrono::high_resolution_clock::now();
 

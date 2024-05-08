@@ -18,14 +18,13 @@ class InputHandler
 {
 public:
     // the queue takes in the corresponding index to the key pressed
-    float camRot;
+    // float camRot;
     int inputStates[IN_SIZE];
     InputHandler();
     ~InputHandler();
     // void handleMotionPlayer();
     // void handleMotionCamera();
     void handleInput(Entity *penguin, Camera *cam, float deltaTime);
-    void setRotation(Entity *penguin, float inc);
 };
 
 #endif

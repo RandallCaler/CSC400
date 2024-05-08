@@ -6,9 +6,6 @@
 #include "Shape.h"
 #include "Collider.h"
 
-#define GRAVITY -10.0
-#define TERRAIN_HEIGHT -0.1
-
 using namespace std;
 using namespace glm;
 
@@ -98,7 +95,7 @@ glm::mat4 Entity::generateModel() {
 }
 
 
-void Entity::updateMotion(float deltaTime) {
+void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap) {
     // this method does not use the forward vector (simpler math)
     // if entity == player
         //rotY = m.curTurnSpeed * deltaTime;
@@ -107,18 +104,41 @@ void Entity::updateMotion(float deltaTime) {
         // movement and rotation
         float deltaX = distance * sin(rotY);
         float deltaZ = distance * cos(rotY);
-        position += vec3(deltaX, 0.0f, deltaZ);
+        vec3 oldPosition = position;
+        vec3 newPosition = position + vec3(deltaX, 0, deltaZ);
+        vec3 groundCheckPos = newPosition + vec3((distance + scale) * sin(rotY), 0, (distance + scale) * cos(rotY));
+
+        position = groundCheckPos;
+        
+		float groundHeight = collider->CheckGroundCollision(hmap);
+        float deltaY = groundHeight - position.y;
+
+        bool climbable = deltaY < SLOPE_TOLERANCE + EPSILON;
+        // printf("ground: %.4f, bunny: %.4f, dy %.4f, climb? %u, grounded? %u\n", groundHeight, oldPosition.y, deltaY, climbable, grounded);
+        if (climbable) {
+            position = newPosition;
+        }
+        else {
+            position = oldPosition;
+		    groundHeight = collider->CheckGroundCollision(hmap);
+        }
+
+        if (position.y > groundHeight) {
+            grounded = false;
+        }
 
         // FALLING physics
-        m.upwardSpeed += GRAVITY * deltaTime;
-        position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
+        if (!grounded) {
+            m.upwardSpeed += GRAVITY * deltaTime;
+            position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
 
-        // uses the terrain height to prevent character from indefinitely falling, will obviously have to be updated with 
-        // the height value at the corresponding location
-        if (position.y < TERRAIN_HEIGHT){
-            grounded = true;
-            m.upwardSpeed = 0.0;
-            position.y = TERRAIN_HEIGHT;
+            // uses the terrain height to prevent character from indefinitely falling, will obviously have to be updated with 
+            // the height value at the corresponding location
+            if (position.y < groundHeight) {
+                grounded = true;
+                m.upwardSpeed = 0.0;
+                position.y = groundHeight;
+            }
         }
 
         // std::cout << "position in entity " << position.x << " " << position.y << " " << position.z << endl;
