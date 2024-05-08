@@ -72,7 +72,6 @@ void ImporterExporter::loadShader() {
 }
 
 void ImporterExporter::loadTexture() {
-void ImporterExporter::loadTexture() {
 	string id = readString();
 	string textFile = readString();
     shared_ptr<Texture> texture = make_shared<Texture>();

@@ -187,12 +187,6 @@ public:
 					case GLFW_KEY_LEFT_SHIFT:
 						freeCam.vel.y = editSpeed;
 						break;
-					case GLFW_KEY_SPACE:
-						freeCam.vel.y = -editSpeed;
-						break;
-					case GLFW_KEY_LEFT_SHIFT:
-						freeCam.vel.y = editSpeed;
-						break;
 					case GLFW_KEY_V:
 						levelEditor->saveToFile(WORLD_FILE_NAME);
 				}
@@ -703,7 +697,6 @@ int main(int argc, char *argv[]) {
 	// Loop until the user closes the window.
 	while (!glfwWindowShouldClose(windowManager->getHandle()))
 	{
-
 		// save current time for next frame
 		auto nextLastTime = chrono::high_resolution_clock::now();
 
@@ -731,9 +724,7 @@ int main(int argc, char *argv[]) {
 		glfwPollEvents();
 	}
 
-	if (levelEditor->saveToFile("../resources/testOut.txt")) {
-		// Quit program.
-		windowManager->shutdown();
-	}
+	windowManager->shutdown();
+
 	return 0;
 }
