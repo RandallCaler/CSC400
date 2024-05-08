@@ -129,13 +129,22 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap) {
 
         // FALLING physics
         if (!grounded) {
-            m.upwardSpeed += GRAVITY * deltaTime;
-            position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
+
+            if (gliding == true){
+                // upward speed to simulate the slide updraft, needs to be tinkered with
+                m.upwardSpeed += -17.0 * deltaTime;
+                position += vec3(0.0f, -3.0*deltaTime, 0.0f);
+            }
+            else{
+                m.upwardSpeed += -17.0 * deltaTime;
+                position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);        
+            }
 
             // uses the terrain height to prevent character from indefinitely falling, will obviously have to be updated with 
             // the height value at the corresponding location
             if (position.y < groundHeight) {
                 grounded = true;
+                gliding = false;
                 m.upwardSpeed = 0.0;
                 position.y = groundHeight;
             }

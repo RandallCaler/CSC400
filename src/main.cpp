@@ -240,6 +240,10 @@ public:
 			if (key == GLFW_KEY_SPACE && (action == GLFW_PRESS)){
 				ih.inputStates[4] = 1;
 			}
+
+			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_PRESS)){
+				ih.inputStates[5] = 1;
+			}
 	
 			if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -265,6 +269,10 @@ public:
 
 			if (key == GLFW_KEY_SPACE && (action == GLFW_RELEASE)){
 				ih.inputStates[4] = 0;
+			}
+
+			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_PRESS)){
+				ih.inputStates[5] = 0;
 			}
 			
 			if (key == GLFW_KEY_F1 && action == GLFW_RELEASE) {
