@@ -131,7 +131,7 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap) {
         if (!grounded) {
 
             if (gliding == true){
-                position += vec3(0.0f, (GRAVITY - (.80 * GRAVITY))*deltaTime, 0.0f);
+                position += vec3(0.0f, (GRAVITY - AIR_RESISTANCE)*deltaTime, 0.0f);
             }
             else{
                 m.upwardSpeed += GRAVITY * deltaTime;
