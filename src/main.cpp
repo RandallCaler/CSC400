@@ -431,7 +431,13 @@ public:
 		worldentities["bunny"]->collider = new Collider(worldentities["bunny"].get());
 		worldentities["bunny"]->collider->SetEntityID(worldentities["bunny"]->id);
 		//cout << "cat " << worldentities["bunny"]->id << endl;
-		worldentities["bunny"]->collider->entityName = 'c';
+		worldentities["bunny"]->collider->entityName = 'p';
+
+		
+		worldentities["cube1"]->collider = new Collider(worldentities["cube1"].get());
+		worldentities["cube1"]->collider->SetEntityID(worldentities["cube1"]->id);
+		//cout << "cat " << worldentities["bunny"]->id << endl;
+		worldentities["cube1"]->collider->entityName = 'c';
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initHMapGround();
@@ -605,15 +611,15 @@ public:
 				glDepthFunc(GL_LEQUAL);
 			}
 
-			// if (entity->collider) {
-			// 	int col =entity->collider->CheckCollision(tempCollisionList);
-			// 	if (col == -1) {
-			// 		entity->updateMotion(frametime);
-			// 	}
-			// 	else {
-			// 		printf("entity %u colliding with %u\n", entity->id, col);
-			// 	}
-			// }
+			if (entity->collider) {
+				int col =entity->collider->CheckCollision(tempCollisionList);
+				// if (col == -1) {
+				// 	entity->updateMotion(frametime);
+				// }
+				if (col != -1) {
+					printf("entity %u colliding with %u\n", entity->id, col);
+				}
+			}
 			
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
 			// curS->setModel(*entity);

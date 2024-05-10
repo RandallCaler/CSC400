@@ -47,6 +47,92 @@ float Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap) {
     return -1;
 }
 
+float distanceOnSeparationAxis(glm::vec3 T, glm::vec3 L, glm::vec3 dimA, glm::vec3 dimB, glm::mat4 rotA, glm::mat4 rotB) {
+    return std::abs(glm::dot(glm::vec3(rotA * glm::vec4(dimA.x,0,0,1)), L)) + 
+        std::abs(glm::dot(glm::vec3(rotA * glm::vec4(0,dimA.y,0,1)), L)) +
+        std::abs(glm::dot(glm::vec3(rotA * glm::vec4(0,0,dimA.z,1)), L)) +
+        std::abs(glm::dot(glm::vec3(rotB * glm::vec4(dimB.x,0,0,1)), L)) + 
+        std::abs(glm::dot(glm::vec3(rotB * glm::vec4(0,dimB.y,0,1)), L)) +
+        std::abs(glm::dot(glm::vec3(rotB * glm::vec4(0,0,dimB.z,1)), L));
+}
+
+bool Collider::isColliding(std::shared_ptr<Entity> other) {
+    int i = 0;
+
+    glm::vec3 T = other->position - owner->position;
+
+  	mat4 ARotX = glm::rotate( glm::mat4(1.0f), owner->rotX, vec3(1, 0, 0));
+  	mat4 ARotY = glm::rotate( glm::mat4(1.0f), owner->rotY, vec3(0, 1, 0));
+	mat4 ARotZ = glm::rotate( glm::mat4(1.0f), owner->rotZ, vec3(0, 0, 1));
+  	mat4 BRotX = glm::rotate( glm::mat4(1.0f), other->rotX, vec3(1, 0, 0));
+  	mat4 BRotY = glm::rotate( glm::mat4(1.0f), other->rotY, vec3(0, 1, 0));
+	mat4 BRotZ = glm::rotate( glm::mat4(1.0f), other->rotZ, vec3(0, 0, 1));
+    mat4 ARot = ARotZ * ARotY * ARotX * glm::mat4(1.0f);
+    mat4 BRot = BRotZ * BRotY * BRotX * glm::mat4(1.0f);
+    
+    glm::vec3 Ax = glm::vec3(ARot * glm::vec4(1,0,0,1));
+    glm::vec3 Ay = glm::vec3(ARot * glm::vec4(0,1,0,1));
+    glm::vec3 Az = glm::vec3(ARot * glm::vec4(0,0,1,1));
+    glm::vec3 Bx = glm::vec3(BRot * glm::vec4(1,0,0,1));
+    glm::vec3 By = glm::vec3(BRot * glm::vec4(0,1,0,1));
+    glm::vec3 Bz = glm::vec3(BRot * glm::vec4(0,0,1,1));
+
+    glm::vec3 L = Ax;
+    
+    while (distanceOnSeparationAxis(T, L, owner->maxBB, other->maxBB, ARot, BRot) > glm::dot(T, L) - EPSILON) {
+        switch (i) {
+            case 0:
+                L = Ay;
+                break;
+            case 1:
+                L = Az;
+                break;
+            case 2:
+                L = Bx;
+                break;
+            case 3:
+                L = By;
+                break;
+            case 4:
+                L = Bz;
+                break;
+            case 5:
+                L = glm::cross(Ax, Bx);
+                break;
+            case 6:
+                L = glm::cross(Ax, By);
+                break;
+            case 7:
+                L = glm::cross(Ax, Bz);
+                break;
+            case 8:
+                L = glm::cross(Ay, Bx);
+                break;
+            case 9:
+                L = glm::cross(Ay, By);
+                break;
+            case 10:
+                L = glm::cross(Ay, Bz);
+                break;
+            case 11:
+                L = glm::cross(Az, Bx);
+                break;
+            case 12:
+                L = glm::cross(Az, By);
+                break;
+            case 13:
+                L = glm::cross(Az, Bz);
+                break;
+            default:
+                return true;
+        }
+        i++;
+    }
+    printf("case: %2u dist: %.2f\t margin: %.2f\t\r", i, distanceOnSeparationAxis(T, L, owner->maxBB, other->maxBB, ARot, BRot), glm::dot(T, L));
+    
+    return false;
+}
+
 int Collider::CheckCollision(std::vector<std::shared_ptr<Entity>>& entities)
 {
     for(int i = 0; i < entities.size(); i++){
@@ -83,16 +169,17 @@ int Collider::CheckCollision(std::vector<std::shared_ptr<Entity>>& entities)
 
         shared_ptr<Entity> e = entities[i];
         if (entityId != e->id) {
-            bool iscolliding =
-                (worldMax.x >= e->collider->worldMin.x &&
-                worldMax.y >= e->collider->worldMin.y &&
-                worldMax.z >= e->collider->worldMin.z) ||
-                (worldMin.x >= e->collider->worldMax.x &&
-                worldMin.y >= e->collider->worldMax.y &&
-                worldMin.z >= e->collider->worldMax.z);
+            // bool iscolliding =
+            //     (worldMax.x >= e->collider->worldMin.x &&
+            //     worldMax.y >= e->collider->worldMin.y &&
+            //     worldMax.z >= e->collider->worldMin.z) ||
+            //     (worldMin.x >= e->collider->worldMax.x &&
+            //     worldMin.y >= e->collider->worldMax.y &&
+            //     worldMin.z >= e->collider->worldMax.z);
 
-            if (iscolliding) {
+            if (isColliding(e)) {
                 colliding = true;
+                printf("collision\n");
                 return i;
             }
             else {
