@@ -35,6 +35,13 @@
 using namespace std;
 using namespace glm;
 
+enum ACTIVE_COLOR {
+	ERR = -1,
+	R,
+	G,
+	B
+};
+
 
 // Where the resources are loaded from
 std::string resourceDir = "../resources";
@@ -447,7 +454,15 @@ public:
 		auto hmap_data = hmap->getData();
 		for (unsigned int i = 0; i < hmap_dim.second; i++) {
 			for (unsigned int j = 0; j < hmap_dim.first; j++) {
-				unsigned char hval = *(hmap_data + 3 * (i * hmap_dim.first + j));
+				unsigned char hvalr = *(hmap_data + 3 * (i * hmap_dim.first + j));
+				unsigned char hvalg = *(hmap_data + 3 * (i * hmap_dim.first + j) + 1);
+				unsigned char hvalb = *(hmap_data + 3 * (i * hmap_dim.first + j) + 2);
+				unsigned char hval = hvalr | hvalg | hvalb;
+				ACTIVE_COLOR region = 
+					hval == hvalr ? ACTIVE_COLOR::R : 
+					hval == hvalg ? ACTIVE_COLOR::G : 
+					hval == hvalb ? ACTIVE_COLOR::B : 
+					ACTIVE_COLOR::ERR;
 
 				vertices.push_back(j - hmap_dim.first / 2.0f);
 				vertices.push_back((hval / 255.0f) * (Y_MAX - Y_MIN) + Y_MIN);
