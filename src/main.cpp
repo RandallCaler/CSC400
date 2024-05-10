@@ -467,13 +467,14 @@ public:
 				vertices.push_back(j - hmap_dim.first / 2.0f);
 				vertices.push_back((hval / 255.0f) * (Y_MAX - Y_MIN) + Y_MIN);
 				vertices.push_back(i - hmap_dim.second / 2.0f);
+				vertices.push_back((float)region);
 			}
 		}
 		// hmap->freeData();
 
 		vector<unsigned int> indices;
-		for (unsigned int i = 0; i < hmap_dim.second; i++) {
-			for (unsigned int j = 0; j < hmap_dim.first; j++) {
+		for (unsigned int i = 0; i < hmap_dim.second - 1; i++) {
+			for (unsigned int j = 0; j < hmap_dim.first - 1; j++) {
 				int v0 = i * hmap_dim.first + j;
 				int v1 = (i + 1) * hmap_dim.first + j;
 				int v2 = (i + 1) * hmap_dim.first + j + 1;
@@ -504,7 +505,7 @@ public:
 
 		g_GiboLen = indices.size();
 
-		worldentities["bunny"]->collider->SetGround(vec3(0,-2.5,0), vec3(1,10,1));
+		worldentities["bunny"]->collider->SetGround(vec3(0,0,0), vec3(1,1,1));
       }
 	
       //code to draw the ground plane
@@ -512,16 +513,20 @@ public:
      	glBindVertexArray(GroundVertexArrayID);
 
 		//draw the ground plane 
-  		curS->setModel(vec3(0, -2.5f, 0), 0, 0, 0, 1);
+  		curS->setModel(vec3(0, 0, 0), 0, 0, 0, 1);
   		glEnableVertexAttribArray(0);
   		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
-  		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+		
+		glEnableVertexAttribArray(1);
+  		glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)3);
 
    		// draw!
   		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
   		glDrawElements(GL_TRIANGLES, g_GiboLen, GL_UNSIGNED_INT, 0);
 
   		glDisableVertexAttribArray(0);
+  		glDisableVertexAttribArray(1);
   		curS->prog->unbind();
      }
 
