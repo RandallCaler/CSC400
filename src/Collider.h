@@ -36,6 +36,7 @@ public:
     void SetEntityID(int ID);
     void SetGround(glm::vec3 origin, glm::vec3 scale) { ground.origin = origin; ground.scale = scale; };
     bool IsColliding();
+    float distanceOnSeparationAxis(glm::vec3 T, glm::vec3 L, glm::vec3 dimA, glm::vec3 dimB, glm::mat4 rotA, glm::mat4 rotB);
     bool isColliding(std::shared_ptr<Entity> other);
     void ExitCollision();
     float GetRadial();

@@ -579,7 +579,7 @@ public:
 		butterfly_loc[2] = vec3(4, -1, 4);
  
 
-		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["butterfly1"], worldentities["bunny"]};
+		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["bunny"]};
 
 		// material imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -617,7 +617,9 @@ public:
 				// 	entity->updateMotion(frametime);
 				// }
 				if (col != -1) {
-					printf("entity %u colliding with %u\n", entity->id, tempCollisionList[col]->id);
+					// printf("entity %u colliding with %u\n", entity->id, tempCollisionList[col]->id);
+					entity->m.forward.x = 0;
+					entity->m.forward.z = 0;
 				}
 			}
 			

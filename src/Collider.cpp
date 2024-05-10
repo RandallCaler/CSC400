@@ -47,7 +47,7 @@ float Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap) {
     return -1;
 }
 
-float distanceOnSeparationAxis(glm::vec3 T, glm::vec3 L, glm::vec3 dimA, glm::vec3 dimB, glm::mat4 rotA, glm::mat4 rotB) {
+float Collider::distanceOnSeparationAxis(glm::vec3 T, glm::vec3 L, glm::vec3 dimA, glm::vec3 dimB, glm::mat4 rotA, glm::mat4 rotB) {
     return std::abs(glm::dot(glm::vec3(rotA * glm::vec4(dimA.x,0,0,1)), L)) + 
         std::abs(glm::dot(glm::vec3(rotA * glm::vec4(0,dimA.y,0,1)), L)) +
         std::abs(glm::dot(glm::vec3(rotA * glm::vec4(0,0,dimA.z,1)), L)) +
@@ -60,6 +60,9 @@ bool Collider::isColliding(std::shared_ptr<Entity> other) {
     int i = 0;
 
     glm::vec3 T = other->position - owner->position;
+    // if(owner->id == 0) {
+    //     printf("bunny xyz: %.2f %.2f %.2f cube xyz: %.2f %.2f %.2f \n", owner->position.x, owner->position.y, owner->position.z, other->position.x, other->position.y, other->position.z);
+    // }
 
   	mat4 ARotX = glm::rotate( glm::mat4(1.0f), owner->rotX, vec3(1, 0, 0));
   	mat4 ARotY = glm::rotate( glm::mat4(1.0f), owner->rotY, vec3(0, 1, 0));
@@ -67,9 +70,9 @@ bool Collider::isColliding(std::shared_ptr<Entity> other) {
   	mat4 BRotX = glm::rotate( glm::mat4(1.0f), other->rotX, vec3(1, 0, 0));
   	mat4 BRotY = glm::rotate( glm::mat4(1.0f), other->rotY, vec3(0, 1, 0));
 	mat4 BRotZ = glm::rotate( glm::mat4(1.0f), other->rotZ, vec3(0, 0, 1));
-    mat4 ARot = ARotZ * ARotY * ARotX * glm::mat4(1.0f);
-    mat4 BRot = BRotZ * BRotY * BRotX * glm::mat4(1.0f);
-    
+    mat4 ARot = ARotX * ARotY * ARotZ * glm::mat4(1.0f);
+    mat4 BRot = BRotX * BRotY * BRotZ * glm::mat4(1.0f);
+
     glm::vec3 Ax = glm::vec3(ARot * glm::vec4(1,0,0,1));
     glm::vec3 Ay = glm::vec3(ARot * glm::vec4(0,1,0,1));
     glm::vec3 Az = glm::vec3(ARot * glm::vec4(0,0,1,1));
@@ -77,21 +80,30 @@ bool Collider::isColliding(std::shared_ptr<Entity> other) {
     glm::vec3 By = glm::vec3(BRot * glm::vec4(0,1,0,1));
     glm::vec3 Bz = glm::vec3(BRot * glm::vec4(0,0,1,1));
 
-    glm::vec3 sv1 = owner->scaleVec * 
-        vec3(1.0/std::max(std::max(owner->maxBB.x - owner->minBB.x, 
+    float scalefactor1 = 1.0/(std::max(owner->maxBB.x - owner->minBB.x, 
             owner->maxBB.y - owner->minBB.y), 
-            owner->maxBB.z - owner->minBB.z));
-	glm::mat4 s1 = glm::scale(glm::mat4(1.f), sv1);
+            owner->maxBB.z - owner->minBB.z);
+    glm::vec3 sv1 = owner->scaleVec * 
+        glm::vec3((owner->maxBB.x - owner->minBB.x)/2*scalefactor1,
+            (owner->maxBB.y - owner->minBB.y)/2*scalefactor1, 
+            (owner->maxBB.z - owner->minBB.z)/2*scalefactor1);
 
-    glm::vec3 sv2 = other->scaleVec * 
-        vec3(1.0/std::max(std::max(other->maxBB.x - other->minBB.x, 
+    float scalefactor2 = 1.0/(std::max(other->maxBB.x - other->minBB.x, 
             other->maxBB.y - other->minBB.y), 
-            other->maxBB.z - other->minBB.z));
-	glm::mat4 s2 = glm::scale(glm::mat4(1.f), sv2);
+            other->maxBB.z - other->minBB.z);
+    glm::vec3 sv2 = other->scaleVec * 
+        glm::vec3((other->maxBB.x - other->minBB.x)/2 *scalefactor2,
+            (other->maxBB.y - other->minBB.y)/2*scalefactor2, 
+            (other->maxBB.z - other->minBB.z)/2*scalefactor2);
 
     glm::vec3 L = Ax;
-    
-    while (distanceOnSeparationAxis(T, L, sv1, sv2, ARot, BRot) < glm::dot(T, L) - EPSILON) {
+//     if (owner->id == 0){
+//         printf("\nT: %.2f %.2f %.2f \n", T.x, T.y, T.z);
+//         printf("case 0\n");
+// }
+    while (distanceOnSeparationAxis(T, L, sv1, sv2, ARot, BRot) > std::abs(glm::dot(T, L))) {
+        // if (owner->id == 0)
+        //     printf("current dist: %.2f\n", dot(T, L));
         switch (i) {
             case 0:
                 L = Ay;
@@ -109,38 +121,72 @@ bool Collider::isColliding(std::shared_ptr<Entity> other) {
                 L = Bz;
                 break;
             case 5:
-                L = glm::cross(Ax, Bx);
-                break;
+                if (Ax != Bx) {
+                    L = glm::cross(Ax, Bx);
+                    break;
+                }
+                i++;
             case 6:
-                L = glm::cross(Ax, By);
-                break;
+                if (Ax != By) {
+                    L = glm::cross(Ax, By);
+                    break;
+                }
+                i++;
             case 7:
-                L = glm::cross(Ax, Bz);
-                break;
+                if (Ax != Bz) {
+                    L = glm::cross(Ax, Bz);
+                    break;
+                }
+                i++;
             case 8:
-                L = glm::cross(Ay, Bx);
-                break;
+                if (Ay != Bx) {
+                   L = glm::cross(Ay, Bx);
+                    break;
+                }
+                i++;
             case 9:
-                L = glm::cross(Ay, By);
-                break;
+                if (Ay != By) {
+                    L = glm::cross(Ay, By);
+                    break;
+                }
+                i++;
             case 10:
-                L = glm::cross(Ay, Bz);
-                break;
+                if (Ay != Bz) {
+                    L = glm::cross(Ay, Bz);
+                    break;
+                }
+                i++;
             case 11:
-                L = glm::cross(Az, Bx);
-                break;
+                if (Az != Bx) {
+                    L = glm::cross(Az, Bx);
+                    break;
+                }
+                i++;
             case 12:
-                L = glm::cross(Az, By);
-                break;
+                if (Az != By) {
+                    L = glm::cross(Az, By);
+                    break;
+                }
+                i++;
             case 13:
-                L = glm::cross(Az, Bz);
-                break;
-            default:
+                if (Az != Bz) {
+                    L = glm::cross(Az, Bz);
+                    break;
+                }
+                i++;
+            default:    
                 return true;
         }
+        
         i++;
+        // if (owner->id == 0) {
+        //     printf("case %u\n", i);
+        // }
     }
-    printf("case: %2u dist: %.2f\t margin: %.2f\t\r", i, distanceOnSeparationAxis(T, L, owner->maxBB, other->maxBB, ARot, BRot), glm::dot(T, L));
+
+    // if (owner->id == 0)
+    //         printf("current dist: %.2f\n", dot(T, L));
+    //     printf("case: %2u dist: %.2f\t\t margin: %.2f\t\t\t\n", i, distanceOnSeparationAxis(T, L, owner->maxBB, other->maxBB, ARot, BRot), glm::dot(T, L));
     
     return false;
 }
@@ -199,6 +245,7 @@ int Collider::CheckCollision(std::vector<std::shared_ptr<Entity>>& entities)
             }
         }
     }
+    printf("no collision\n");
     return -1;
 }
 
