@@ -617,7 +617,7 @@ public:
 				// 	entity->updateMotion(frametime);
 				// }
 				if (col != -1) {
-					printf("entity %u colliding with %u\n", entity->id, col);
+					printf("entity %u colliding with %u\n", entity->id, tempCollisionList[col]->id);
 				}
 			}
 			

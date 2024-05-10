@@ -77,9 +77,21 @@ bool Collider::isColliding(std::shared_ptr<Entity> other) {
     glm::vec3 By = glm::vec3(BRot * glm::vec4(0,1,0,1));
     glm::vec3 Bz = glm::vec3(BRot * glm::vec4(0,0,1,1));
 
+    glm::vec3 sv1 = owner->scaleVec * 
+        vec3(1.0/std::max(std::max(owner->maxBB.x - owner->minBB.x, 
+            owner->maxBB.y - owner->minBB.y), 
+            owner->maxBB.z - owner->minBB.z));
+	glm::mat4 s1 = glm::scale(glm::mat4(1.f), sv1);
+
+    glm::vec3 sv2 = other->scaleVec * 
+        vec3(1.0/std::max(std::max(other->maxBB.x - other->minBB.x, 
+            other->maxBB.y - other->minBB.y), 
+            other->maxBB.z - other->minBB.z));
+	glm::mat4 s2 = glm::scale(glm::mat4(1.f), sv2);
+
     glm::vec3 L = Ax;
     
-    while (distanceOnSeparationAxis(T, L, owner->maxBB, other->maxBB, ARot, BRot) > glm::dot(T, L) - EPSILON) {
+    while (distanceOnSeparationAxis(T, L, sv1, sv2, ARot, BRot) < glm::dot(T, L) - EPSILON) {
         switch (i) {
             case 0:
                 L = Ay;
