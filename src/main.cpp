@@ -98,7 +98,7 @@ public:
 	int nextID = 0;
 
 	//global data for ground plane - direct load constant defined CPU data to GPU (not obj)
-	GLuint GrndBuffObj, GrndNorBuffObj, GrndTexBuffObj, GIndxBuffObj;
+	GLuint GrndBuffObj, GrndRegionBuffObj, GrndNorBuffObj, GrndTexBuffObj, GIndxBuffObj;
 	int g_GiboLen;
 	//ground VAO
 	GLuint GroundVertexArrayID;
@@ -450,6 +450,7 @@ public:
 		const float Y_MIN = -Y_MAX;
 
 		vector<float> vertices;
+		vector<float> regions;
 		auto hmap_dim = hmap->getDim();
 		auto hmap_data = hmap->getData();
 		for (unsigned int i = 0; i < hmap_dim.second; i++) {
@@ -457,17 +458,17 @@ public:
 				unsigned char hvalr = *(hmap_data + 3 * (i * hmap_dim.first + j));
 				unsigned char hvalg = *(hmap_data + 3 * (i * hmap_dim.first + j) + 1);
 				unsigned char hvalb = *(hmap_data + 3 * (i * hmap_dim.first + j) + 2);
-				unsigned char hval = hvalr | hvalg | hvalb;
-				ACTIVE_COLOR region = 
-					hval == hvalr ? ACTIVE_COLOR::R : 
-					hval == hvalg ? ACTIVE_COLOR::G : 
-					hval == hvalb ? ACTIVE_COLOR::B : 
-					ACTIVE_COLOR::ERR;
+				float hval = (hvalr + hvalg + hvalb) / (3 * 255.0f);
+
+
 
 				vertices.push_back(j - hmap_dim.first / 2.0f);
-				vertices.push_back((hval / 255.0f) * (Y_MAX - Y_MIN) + Y_MIN);
+				vertices.push_back(hval * (Y_MAX - Y_MIN) + Y_MIN);
 				vertices.push_back(i - hmap_dim.second / 2.0f);
-				vertices.push_back((float)region);
+
+				regions.push_back(hvalr / 255.0f);
+				regions.push_back(hvalg / 255.0f);
+				regions.push_back(hvalb / 255.0f);
 			}
 		}
 		// hmap->freeData();
@@ -498,6 +499,10 @@ public:
       	glGenBuffers(1, &GrndBuffObj);
       	glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
       	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+		
+		glGenBuffers(1, &GrndRegionBuffObj);
+      	glBindBuffer(GL_ARRAY_BUFFER, GrndRegionBuffObj);
+      	glBufferData(GL_ARRAY_BUFFER, regions.size() * sizeof(float), regions.data(), GL_STATIC_DRAW);
 
       	glGenBuffers(1, &GIndxBuffObj);
      	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
@@ -516,10 +521,11 @@ public:
   		curS->setModel(vec3(0, 0, 0), 0, 0, 0, 1);
   		glEnableVertexAttribArray(0);
   		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
-  		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+  		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 		
 		glEnableVertexAttribArray(1);
-  		glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)3);
+  		glBindBuffer(GL_ARRAY_BUFFER, GrndRegionBuffObj);
+  		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
    		// draw!
   		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
