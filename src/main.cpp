@@ -45,6 +45,8 @@ bool editMode = false;
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Entity>> worldentities;
 
+shared_ptr<Entity> cur_entity = NULL;
+
 float deltaTime;
 // 	view pitch dist angle playerpos playerrot animate g_eye
 Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
@@ -184,14 +186,16 @@ public:
 					case GLFW_KEY_D:
 						freeCam.vel.x = editSpeed;
 						break;
-					case GLFW_KEY_SPACE:
-						freeCam.vel.y = -editSpeed;
-						break;
-					case GLFW_KEY_LEFT_CONTROL:
-						freeCam.vel.y = editSpeed;
-						break;
 					case GLFW_KEY_V:
 						levelEditor->saveToFile(WORLD_FILE_NAME);
+						break;
+					case GLFW_KEY_F:
+						if (cur_entity != NULL) {
+							freeCam.cameraPos = cur_entity->position + vec3(0,2,2);
+							freeCam.pitch = atan((freeCam.cameraPos.z - cur_entity->position.z) /
+								(freeCam.cameraPos.y - cur_entity->position.y));
+							freeCam.angle = 0;
+						}
 						break;
 				}
 			}
@@ -216,10 +220,6 @@ public:
 					case GLFW_KEY_A:
 					case GLFW_KEY_D:
 						freeCam.vel.x = 0.0;
-						break;
-					case GLFW_KEY_SPACE:
-					case GLFW_KEY_LEFT_CONTROL:
-						freeCam.vel.y = 0.0;
 						break;
 				}
 			}

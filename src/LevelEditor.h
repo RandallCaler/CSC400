@@ -19,6 +19,7 @@ using namespace ImGui;
 
 extern string resourceDir;
 extern map<string, shared_ptr<Entity>> worldentities;
+extern shared_ptr<Entity> cur_entity;
 
 class LevelEditor {
 	public:
@@ -37,8 +38,6 @@ class LevelEditor {
 	private:
 		bool show_demo_window = true;
 		bool show_another_window = false;
-		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-		ImGuiIO io;
 		vector<std::string> meshFiles;
 };
 

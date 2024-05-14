@@ -7,14 +7,16 @@ void LevelEditor::Init(GLFWwindow* window) {
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	io = ImGui::GetIO();
+    ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplGlfw_InitForOpenGL(window, true);          // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
 	ImGui_ImplOpenGL3_Init();
+
+    io.FontGlobalScale = 2.0f;
+
     FindMesh();
 
 }
@@ -112,7 +114,7 @@ void LevelEditor::MeshList() {
     else {   
         for (const auto& file : meshFiles) {
             const bool is_selected = (cur_file == file);
-            if (ImGui::Selectable(file.c_str())) {
+            if (ImGui::Selectable(file.c_str(), is_selected)) {
                 cur_file = file;
                 cout << "Mesh selected: " << file << endl;
                 if (is_selected)
@@ -136,7 +138,6 @@ void LevelEditor::EntityList()
         for (const auto& pair : worldentities) {
             const string& name = pair.first;
             const bool is_selected = (cur_name == name);
-            shared_ptr<Entity> entity = pair.second;
             if (ImGui::Selectable(name.c_str(), is_selected)) {
                 cur_name = name;
                 cout << "Entity selected: " << name << endl;
@@ -149,6 +150,7 @@ void LevelEditor::EntityList()
     auto selectedEntity = worldentities.find(cur_name);
     if (selectedEntity != worldentities.end()) {
         Inspector(selectedEntity->second);
+        cur_entity = selectedEntity->second;
     }
 
     ImGui::End(); // End ImGui window
