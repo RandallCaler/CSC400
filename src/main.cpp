@@ -19,6 +19,7 @@
 #include "ShaderManager.h"
 #include "ImportExport.h"
 #include "Camera.h"
+#include "LevelEditor.h"
 
 #include <chrono>
 #include <array>
@@ -39,6 +40,7 @@ using namespace glm;
 // Where the resources are loaded from
 std::string resourceDir = "../resources";
 std::string WORLD_FILE_NAME = "/world.txt";
+bool editMode = false;
 
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Entity>> worldentities;
@@ -60,9 +62,10 @@ public:
 	//Our shader program for textures
 	// shared_ptr<Shader> tex;
 
-	bool editMode = false;
 
 	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities);
+
+	LevelEditor* leGUI = new LevelEditor();
 
 	std::vector<shared_ptr<Shape>> butterfly;
 
@@ -120,7 +123,7 @@ public:
 			glfwSetWindowShouldClose(window, GL_TRUE);
 		}
 
-		if (key == GLFW_KEY_CAPS_LOCK && action == GLFW_PRESS) {
+		if (key == GLFW_KEY_L && action == GLFW_PRESS) {
 			editMode = !editMode;
 			editSRT = 0;
 			editSpeed = 2.0;
@@ -136,7 +139,7 @@ public:
 		if (editMode) {
 			if (action == GLFW_PRESS) {
 				switch (key) {
-					case GLFW_KEY_TAB:
+					/*case GLFW_KEY_TAB:
 						activeEntity++;
 						if (activeEntity == worldentities.end()) {
 							activeEntity = worldentities.begin();
@@ -168,7 +171,7 @@ public:
 						break;
 					case GLFW_KEY_C:
 						editSRT = 0;
-						break;
+						break;*/
 					case GLFW_KEY_W:
 						freeCam.vel.z = editSpeed;
 						break;
@@ -184,11 +187,12 @@ public:
 					case GLFW_KEY_SPACE:
 						freeCam.vel.y = -editSpeed;
 						break;
-					case GLFW_KEY_LEFT_SHIFT:
+					case GLFW_KEY_LEFT_CONTROL:
 						freeCam.vel.y = editSpeed;
 						break;
 					case GLFW_KEY_V:
 						levelEditor->saveToFile(WORLD_FILE_NAME);
+						break;
 				}
 			}
 			if (action == GLFW_RELEASE) {
@@ -214,7 +218,7 @@ public:
 						freeCam.vel.x = 0.0;
 						break;
 					case GLFW_KEY_SPACE:
-					case GLFW_KEY_LEFT_SHIFT:
+					case GLFW_KEY_LEFT_CONTROL:
 						freeCam.vel.y = 0.0;
 						break;
 				}
@@ -535,23 +539,6 @@ public:
 		Projection->pushMatrix();
 		Projection->perspective(45.0f, aspect, 0.01f, 1000.0f);
 
-		// editor mode updates
-		if (editMode) {
-			switch (editSRT) {
-				case 0:
-					activeEntity->second->position += mobileVel * frametime;
-					break;
-				case 1:
-					activeEntity->second->rotX += mobileVel.x * frametime;
-					activeEntity->second->rotY += mobileVel.y * frametime;
-					activeEntity->second->rotZ += mobileVel.z * frametime;
-					break;
-				case 2:
-					activeEntity->second->scale += mobileVel.x * frametime;
-					activeEntity->second->scaleVec += mobileVel * frametime;
-					break;
-			}
-		}
 
 		// updates player motion
 		worldentities["bunny"]->updateMotion(frametime, hmap);
@@ -655,6 +642,27 @@ public:
 
 		// Pop matrix stacks.
 		Projection->popMatrix();
+
+		// editor mode 
+		if (editMode) {
+			leGUI->NewFrame();
+			leGUI->Update();
+			leGUI->Render();
+			switch (editSRT) {
+			case 0:
+				activeEntity->second->position += mobileVel * frametime;
+				break;
+			case 1:
+				activeEntity->second->rotX += mobileVel.x * frametime;
+				activeEntity->second->rotY += mobileVel.y * frametime;
+				activeEntity->second->rotZ += mobileVel.z * frametime;
+				break;
+			case 2:
+				activeEntity->second->scale += mobileVel.x * frametime;
+				activeEntity->second->scaleVec += mobileVel * frametime;
+				break;
+			}
+		}
 	}
 };
 
@@ -694,6 +702,8 @@ int main(int argc, char *argv[]) {
 	auto lastTime = chrono::high_resolution_clock::now();
 	application->activeEntity = worldentities.begin();
 
+	application->leGUI->Init(windowManager->getHandle());
+
 	// Loop until the user closes the window.
 	while (!glfwWindowShouldClose(windowManager->getHandle()))
 	{
@@ -718,6 +728,7 @@ int main(int argc, char *argv[]) {
 		activeCam->updateCamera(deltaTime);
 		// Render scene.
 		application->render(deltaTime);
+			
 
 		// Swap front and back buffers.
 		glfwSwapBuffers(windowManager->getHandle());
@@ -725,7 +736,9 @@ int main(int argc, char *argv[]) {
 		glfwPollEvents();
 	}
 
+	application->leGUI->Shutdown();
 	windowManager->shutdown();
+	
 
 	return 0;
 }
