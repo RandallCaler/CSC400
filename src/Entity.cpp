@@ -94,70 +94,56 @@ glm::mat4 Entity::generateModel() {
 	return modelMatrix;
 }
 
+void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec3 collisionNormal) {
+    float distance = m.curSpeed * deltaTime;
 
-void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap) {
-    // this method does not use the forward vector (simpler math)
-    // if entity == player
-        //rotY = m.curTurnSpeed * deltaTime;
-        float distance = m.curSpeed * deltaTime;
+    // movement and rotation
+    float deltaX = distance * sin(rotY);
+    float deltaZ = distance * cos(rotY);
+    vec3 oldPosition = position;
+    vec3 newPosition = position + vec3(deltaX, 0, deltaZ);
+    vec3 groundCheckPos = newPosition + vec3((distance + scale) * sin(rotY), 0, (distance + scale) * cos(rotY));
 
-        // movement and rotation
-        float deltaX = distance * sin(rotY);
-        float deltaZ = distance * cos(rotY);
-        vec3 oldPosition = position;
-        vec3 newPosition = position + vec3(deltaX, 0, deltaZ);
-        vec3 groundCheckPos = newPosition + vec3((distance + scale) * sin(rotY), 0, (distance + scale) * cos(rotY));
-
-        position = groundCheckPos;
-        
-		float groundHeight = collider->CheckGroundCollision(hmap);
-        float deltaY = groundHeight - position.y;
-
-        bool climbable = deltaY < SLOPE_TOLERANCE + EPSILON;
-        // printf("ground: %.4f, bunny: %.4f, dy %.4f, climb? %u, grounded? %u\n", groundHeight, oldPosition.y, deltaY, climbable, grounded);
-        if (climbable) {
-            position = newPosition;
-        }
-        else {
-            position = oldPosition;
-		    groundHeight = collider->CheckGroundCollision(hmap);
-        }
-
-        if (position.y > groundHeight) {
-            grounded = false;
-        }
-
-        // FALLING physics
-        if (!grounded) {
-            m.upwardSpeed += GRAVITY * deltaTime;
-            position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
-
-            // uses the terrain height to prevent character from indefinitely falling, will obviously have to be updated with 
-            // the height value at the corresponding location
-            if (position.y < groundHeight) {
-                grounded = true;
-                m.upwardSpeed = 0.0;
-                position.y = groundHeight;
-            }
-        }
-
-        // std::cout << "position in entity " << position.x << " " << position.y << " " << position.z << endl;
-
-
-        // float distance = sqrt((position.x * position.x) + (position.y * position.y) + (position.z * position.z));
-        // if(distance >= 19.5){
-        //     m.velocity *= -1;
-        // }
-        
-        // position += m.velocity * vec3(normalize(m.forward)) * deltaTime;
-//     float distance = sqrt((position.x * position.x) + (position.y * position.y) + (position.z * position.z));
-//     if(distance >= 19.5){
-//         m.velocity *= -1;
-//     }
+    position = groundCheckPos;
     
-//     position += m.velocity * vec3(normalize(m.forward)) * deltaTime;
+    float groundHeight = collider->CheckGroundCollision(hmap);
+    float distanceFromGround = groundHeight - position.y;
 
-    // std::cout << "deltaTime: " << deltaTime << "entity position:" << position.x << ", " << position.y << ", " << position.z << std::endl;
+    bool climbable = distanceFromGround < SLOPE_TOLERANCE + EPSILON;
+    if (climbable) {
+        position = newPosition;
+    }
+    else {
+        position = oldPosition;
+        groundHeight = collider->CheckGroundCollision(hmap);
+    }
+
+    if (position.y > groundHeight) {
+        grounded = false;
+    }
+    if (collisionNormal.y > EPSILON) {
+        grounded = true;
+    }
+
+    if (collisionNormal != vec3(0)) {
+        glm::vec3 delta = glm::vec3(deltaX, m.upwardSpeed * deltaTime, deltaZ);
+        glm::vec3 rev = glm::vec3(glm::dot(delta, glm::normalize(collisionNormal))) * collisionNormal;
+        position -= rev;
+    }
+
+    // FALLING physics
+    if (!grounded) {
+        m.upwardSpeed += GRAVITY * deltaTime;
+        position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
+
+        // uses the terrain height to prevent character from indefinitely falling, will obviously have to be updated with 
+        // the height value at the corresponding location
+        if (position.y < groundHeight) {
+            grounded = true;
+            m.upwardSpeed = 0.0;
+            position.y = groundHeight;
+        }
+    }
     
     // TODO add collision component
 }

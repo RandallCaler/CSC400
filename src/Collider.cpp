@@ -56,10 +56,55 @@ float Collider::distanceOnSeparationAxis(glm::vec3 T, glm::vec3 L, glm::vec3 dim
         std::abs(glm::dot(glm::vec3(rotB * glm::vec4(0,0,dimB.z,1)), L));
 }
 
-bool Collider::isColliding(std::shared_ptr<Entity> other) {
+glm::vec3 Collider::checkOpposingPlanes(glm::vec3 normal, glm::vec3 pointP, glm::vec3 pointN) {
+    glm::vec4 plane = glm::vec4(normal.x, normal.y, normal.z, glm::dot(normal, pointP));
+    float distanceP = glm::dot(plane, glm::vec4(owner->position, -1.0));
+    plane = glm::vec4(-normal.x, -normal.y, -normal.z, glm::dot(-normal, pointN));
+    float distanceN = glm::dot(plane, glm::vec4(owner->position, -1.0));
+
+    if (distanceP > 0 && distanceN < 0) {
+        return normal;
+    }
+    if (distanceN > 0 && distanceP < 0) {
+        return -normal;
+    }
+    
+    return glm::vec3(0);
+}
+
+glm::vec3 Collider::getCollisionNormal(glm::vec3 bbScale, glm::mat4 rot, std::shared_ptr<Entity> other) {
+    glm::vec3 Nx = glm::vec3(rot * glm::vec4(1,0,0,1));
+    glm::vec3 Ny = glm::vec3(rot * glm::vec4(0,1,0,1));
+    glm::vec3 Nz = glm::vec3(rot * glm::vec4(0,0,1,1));
+
+    glm::vec3 Ppx = other->position + glm::vec3(bbScale.x) * Nx;
+    glm::vec3 Ppy = other->position + glm::vec3(bbScale.y) * Ny;
+    glm::vec3 Ppz = other->position + glm::vec3(bbScale.z) * Nz;
+    glm::vec3 Pnx = other->position - glm::vec3(bbScale.x) * Nx;
+    glm::vec3 Pny = other->position - glm::vec3(bbScale.y) * Ny;
+    glm::vec3 Pnz = other->position - glm::vec3(bbScale.z) * Nz;
+
+    glm::vec3 normOut = checkOpposingPlanes(Nx, Ppx, Pnx);
+    if (normOut != glm::vec3(0)) {
+        return normOut;
+    }
+    normOut = checkOpposingPlanes(Ny, Ppy, Pny);
+    if (normOut != glm::vec3(0)) {
+        return normOut;
+    }
+    normOut = checkOpposingPlanes(Nz, Ppz, Pnz);
+    if (normOut != glm::vec3(0)) {
+        return normOut;
+    }
+
+    fprintf(stderr, "Collision normals failed to calculate.\n");
+    return glm::vec3(0);
+}
+
+glm::vec3 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> other) {
     int i = 0;
 
-    glm::vec3 T = other->position - owner->position;
+    glm::vec3 T = other->position - (owner->position + vec3(deltaTime) * other->m.velocity);
     // if(owner->id == 0) {
     //     printf("bunny xyz: %.2f %.2f %.2f cube xyz: %.2f %.2f %.2f \n", owner->position.x, owner->position.y, owner->position.z, other->position.x, other->position.y, other->position.z);
     // }
@@ -97,13 +142,8 @@ bool Collider::isColliding(std::shared_ptr<Entity> other) {
             (other->maxBB.z - other->minBB.z)/2*scalefactor2);
 
     glm::vec3 L = Ax;
-//     if (owner->id == 0){
-//         printf("\nT: %.2f %.2f %.2f \n", T.x, T.y, T.z);
-//         printf("case 0\n");
-// }
+    
     while (distanceOnSeparationAxis(T, L, sv1, sv2, ARot, BRot) > std::abs(glm::dot(T, L))) {
-        // if (owner->id == 0)
-        //     printf("current dist: %.2f\n", dot(T, L));
         switch (i) {
             case 0:
                 L = Ay;
@@ -174,24 +214,18 @@ bool Collider::isColliding(std::shared_ptr<Entity> other) {
                     break;
                 }
                 i++;
-            default:    
-                return true;
+            default:
+                // collision case: get the plane owner is colliding with
+                return getCollisionNormal(sv2, BRot, other);
         }
         
         i++;
-        // if (owner->id == 0) {
-        //     printf("case %u\n", i);
-        // }
     }
 
-    // if (owner->id == 0)
-    //         printf("current dist: %.2f\n", dot(T, L));
-    //     printf("case: %2u dist: %.2f\t\t margin: %.2f\t\t\t\n", i, distanceOnSeparationAxis(T, L, owner->maxBB, other->maxBB, ARot, BRot), glm::dot(T, L));
-    
-    return false;
+    return glm::vec3(0);
 }
 
-int Collider::CheckCollision(std::vector<std::shared_ptr<Entity>>& entities)
+glm::vec3 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<Entity>>& entities)
 {
     for(int i = 0; i < entities.size(); i++){
         // cout << "this id = " << cat->id << " and checking id " << entities[i].id << endl;
@@ -234,19 +268,17 @@ int Collider::CheckCollision(std::vector<std::shared_ptr<Entity>>& entities)
             //     (worldMin.x >= e->collider->worldMax.x &&
             //     worldMin.y >= e->collider->worldMax.y &&
             //     worldMin.z >= e->collider->worldMax.z);
-
-            if (isColliding(e)) {
+            glm::vec3 collisionNormal = orientedCollision(deltaTime, e);
+            if (collisionNormal != glm::vec3(0)) {
                 colliding = true;
-                printf("collision\n");
-                return i;
+                return collisionNormal;
             }
             else {
                 colliding = false;
             }
         }
     }
-    printf("no collision\n");
-    return -1;
+    return glm::vec3(0);
 }
 
 void Collider::UpdateColliderSize(){

@@ -53,7 +53,7 @@ public:
         float r3, float g3, float b3, float s);
     void setMaterials(int i, material& mat);
 
-    void updateMotion(float deltaTime, shared_ptr<Texture> hmap);
+    void updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec3 collisionNormal);
     void updateScale(float newScale);
 
   

@@ -560,7 +560,7 @@ public:
 		}
 
 		// updates player motion
-		worldentities["bunny"]->updateMotion(frametime, hmap);
+		// worldentities["bunny"]->updateMotion(frametime, hmap);
 		cam.player_pos = worldentities["bunny"]->position;
 		
 		//material shader first
@@ -612,14 +612,9 @@ public:
 			}
 
 			if (entity->collider) {
-				int col =entity->collider->CheckCollision(tempCollisionList);
-				// if (col == -1) {
-				// 	entity->updateMotion(frametime);
-				// }
-				if (col != -1) {
-					// printf("entity %u colliding with %u\n", entity->id, tempCollisionList[col]->id);
-					entity->m.forward.x = 0;
-					entity->m.forward.z = 0;
+				vec3 colNorm =entity->collider->CheckCollision(frametime, tempCollisionList);
+				if (entity->id == worldentities["bunny"]->id) {
+					entity->updateMotion(frametime, hmap, colNorm);
 				}
 			}
 			
