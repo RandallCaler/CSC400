@@ -28,34 +28,34 @@ C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputH
   PhysicalObject.cpp
   ShaderManager.cpp
   main.cpp
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(284,20): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(289,20): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(327,35): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(328,35): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(330,29): warning C4244: '=': conversion from 'const _Ty' to 'float', possible loss of data
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(330,29): warning C4244:         with
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(330,29): warning C4244:         [
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(330,29): warning C4244:             _Ty=double
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(330,29): warning C4244:         ]
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(429,45): warning C4305: 'argument': truncation from 'double' to 'T'
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(429,45): warning C4305:         with
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(429,45): warning C4305:         [
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(429,45): warning C4305:             T=float
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(429,45): warning C4305:         ]
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(448,30): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(449,31): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(460,30): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(461,31): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(490,27): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(568,32): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(568,37): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(693,11): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(707,11): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(707,11): warning C4244:         with
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(707,11): warning C4244:         [
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(707,11): warning C4244:             _Rep=__int64
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(707,11): warning C4244:         ]
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(709,24): warning C4305: '*=': truncation from 'double' to 'float'
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(291,20): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(296,20): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(334,35): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(335,35): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(337,29): warning C4244: '=': conversion from 'const _Ty' to 'float', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(337,29): warning C4244:         with
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(337,29): warning C4244:         [
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(337,29): warning C4244:             _Ty=double
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(337,29): warning C4244:         ]
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(436,45): warning C4305: 'argument': truncation from 'double' to 'T'
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(436,45): warning C4305:         with
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(436,45): warning C4305:         [
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(436,45): warning C4305:             T=float
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(436,45): warning C4305:         ]
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(457,30): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(458,31): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(476,30): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(477,31): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(511,27): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(594,32): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(594,37): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(719,11): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(733,11): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(733,11): warning C4244:         with
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(733,11): warning C4244:         [
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(733,11): warning C4244:             _Rep=__int64
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(733,11): warning C4244:         ]
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(735,24): warning C4305: '*=': truncation from 'double' to 'float'
   Generating Code...
   LINK : C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\build2\Debug\Camera.exe not found or not built by the last incremental link; performing full link
   Camera.vcxproj -> C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\build2\Debug\Camera.exe
