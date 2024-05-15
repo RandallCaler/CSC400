@@ -221,7 +221,7 @@ public:
 			}
 		}
 		else {
-			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding() && bounds < 1000){
+			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding()){
 				ih.inputStates[0] = 1;
 			}
 
@@ -229,7 +229,7 @@ public:
 				ih.inputStates[1] = 1;
 			}
 
-			if (key == GLFW_KEY_S && (action == GLFW_PRESS) && bounds < 1000){	
+			if (key == GLFW_KEY_S && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding()){	
 				ih.inputStates[2] = 1;
 			}
 
@@ -247,19 +247,19 @@ public:
 
 			// KEY RELEASED
 
-			if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding() && bounds < 1000){
+			if (key == GLFW_KEY_W && (action == GLFW_RELEASE)){
 				ih.inputStates[0] = 0;
 			}
 
-			if (key == GLFW_KEY_A && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_A && (action == GLFW_RELEASE)){
 				ih.inputStates[1] = 0;
 			}
 
-			if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 1000){
+			if (key == GLFW_KEY_S && (action == GLFW_RELEASE)){
 				ih.inputStates[2] = 0;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_RELEASE)){
 				ih.inputStates[3] = 0;
 			}
 
@@ -445,7 +445,7 @@ public:
 
 	//directly pass quad for the ground to the GPU
 	void initHMapGround() {
-		const float Y_MAX = 5;
+		const float Y_MAX = 50;
 		const float Y_MIN = -Y_MAX;
 
 		vector<float> vertices;
@@ -495,7 +495,7 @@ public:
 
 		g_GiboLen = indices.size();
 
-		worldentities["bunny"]->collider->SetGround(vec3(0,-2.5,0), vec3(1,10,1));
+		worldentities["bunny"]->collider->SetGround(vec3(0,0,0), vec3(1,100,1));
       }
 	
       //code to draw the ground plane
@@ -503,7 +503,7 @@ public:
      	glBindVertexArray(GroundVertexArrayID);
 
 		//draw the ground plane 
-  		curS->setModel(vec3(0, -2.5f, 0), 0, 0, 0, 1);
+  		curS->setModel(vec3(0, 0, 0), 0, 0, 0, 1);
   		glEnableVertexAttribArray(0);
   		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
   		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -612,7 +612,7 @@ public:
 			}
 
 			if (entity->collider) {
-				vec3 colNorm =entity->collider->CheckCollision(frametime, tempCollisionList);
+				vec4 colNorm =entity->collider->CheckCollision(frametime, tempCollisionList);
 				if (entity->id == worldentities["bunny"]->id) {
 					entity->updateMotion(frametime, hmap, colNorm);
 				}

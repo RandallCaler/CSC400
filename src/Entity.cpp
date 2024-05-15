@@ -94,7 +94,7 @@ glm::mat4 Entity::generateModel() {
 	return modelMatrix;
 }
 
-void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec3 collisionNormal) {
+void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 collisionPlane) {
     float distance = m.curSpeed * deltaTime;
 
     // movement and rotation
@@ -111,6 +111,7 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec3 c
 
     bool climbable = distanceFromGround < SLOPE_TOLERANCE + EPSILON;
     if (climbable) {
+        printf("climbable\n");
         position = newPosition;
     }
     else {
@@ -121,14 +122,16 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec3 c
     if (position.y > groundHeight) {
         grounded = false;
     }
-    if (collisionNormal.y > EPSILON) {
+    if (collisionPlane.y > -EPSILON && collisionPlane.w != 0) {
         grounded = true;
     }
 
-    if (collisionNormal != vec3(0)) {
+    if (collisionPlane != vec4(0)) {
+        printf("collision adjustment\n");
         glm::vec3 delta = glm::vec3(deltaX, m.upwardSpeed * deltaTime, deltaZ);
-        glm::vec3 rev = glm::vec3(glm::dot(delta, glm::normalize(collisionNormal))) * collisionNormal;
-        position -= rev;
+        float fP = dot((oldPosition + delta), vec3(collisionPlane));
+        glm::vec3 rev = (oldPosition + delta) + vec3(collisionPlane) * (fP - collisionPlane.w + (float)EPSILON);
+        position = rev;
     }
 
     // FALLING physics
