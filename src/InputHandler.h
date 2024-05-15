@@ -24,8 +24,7 @@ public:
     ~InputHandler();
     // void handleMotionPlayer();
     // void handleMotionCamera();
-    void handleInput(Entity *penguin, Camera *cam, float deltaTime);
-    void setRotation(Entity *penguin, float inc);
+    void handleInput(Entity* penguin, Camera* cam, float deltaTime);
 };
 
 #endif
