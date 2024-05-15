@@ -462,7 +462,7 @@ public:
 				float hval = (hvalr + hvalg + hvalb) / (3 * 255.0f);
 
 				vertices.push_back(j - hmap_dim.first / 2.0f);
-				vertices.push_back((hval / 255.0f) * (Y_MAX - Y_MIN) + Y_MIN);
+				vertices.push_back(hval * (Y_MAX - Y_MIN) + Y_MIN);
 				vertices.push_back(i - hmap_dim.second / 2.0f);
 
 				regions.push_back(hvalr / 255.0f);
@@ -518,7 +518,7 @@ public:
      	glBindVertexArray(GroundVertexArrayID);
 
 		//draw the ground plane 
-  		curS->setModel(vec3(0, -2.5f, 0), 0, 0, 0, 1);
+  		curS->setModel(vec3(0, -2.5, 0), 0, 0, 0, 1);
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
@@ -533,6 +533,7 @@ public:
   		glDrawElements(GL_TRIANGLES, g_GiboLen, GL_UNSIGNED_INT, 0);
 
   		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
   		curS->prog->unbind();
      }
 

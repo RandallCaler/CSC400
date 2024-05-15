@@ -1,33 +1,4 @@
-﻿  Collider.cpp
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Collider.cpp(45,81): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-  Entity.cpp
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.cpp(86,18): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.cpp(86,18): warning C4244:         with
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.cpp(86,18): warning C4244:         [
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.cpp(86,18): warning C4244:             T=float
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.cpp(86,18): warning C4244:         ]
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Entity.cpp(137,38): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-  GameObject.cpp
-  ImportExport.cpp
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\ImportExport.cpp(138,26): warning C4474: 'printf' : too many arguments passed for format string
-  C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\ImportExport.cpp(138,26):
-  placeholders and their parameters expect 12 variadic arguments, but 13 were provided
-  
-  InputHandler.cpp
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(53,30): warning C4305: 'argument': truncation from 'double' to '_Ty'
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(53,30): warning C4305:         with
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(53,30): warning C4305:         [
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(53,30): warning C4305:             _Ty=float
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(53,30): warning C4305:         ]
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(64,31): warning C4305: 'argument': truncation from 'double' to '_Ty'
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(64,31): warning C4305:         with
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(64,31): warning C4305:         [
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(64,31): warning C4305:             _Ty=float
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(64,31): warning C4305:         ]
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\InputHandler.cpp(20,11): warning C4101: 'distance': unreferenced local variable
-  PhysicalObject.cpp
-  ShaderManager.cpp
-  main.cpp
+﻿  main.cpp
 C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(291,20): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
 C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(296,20): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
 C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(334,35): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
@@ -47,15 +18,13 @@ C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.c
 C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(476,30): warning C4018: '<': signed/unsigned mismatch
 C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(477,31): warning C4018: '<': signed/unsigned mismatch
 C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(511,27): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(594,32): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(594,37): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(719,11): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(733,11): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(733,11): warning C4244:         with
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(733,11): warning C4244:         [
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(733,11): warning C4244:             _Rep=__int64
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(733,11): warning C4244:         ]
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(735,24): warning C4305: '*=': truncation from 'double' to 'float'
-  Generating Code...
-  LINK : C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\build2\Debug\Camera.exe not found or not built by the last incremental link; performing full link
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(595,32): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(595,37): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(720,11): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(734,11): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(734,11): warning C4244:         with
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(734,11): warning C4244:         [
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(734,11): warning C4244:             _Rep=__int64
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(734,11): warning C4244:         ]
+C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\main.cpp(736,24): warning C4305: '*=': truncation from 'double' to 'float'
   Camera.vcxproj -> C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\build2\Debug\Camera.exe
