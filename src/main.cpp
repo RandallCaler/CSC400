@@ -524,9 +524,9 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
 		glBindBuffer(GL_ARRAY_BUFFER, GrndRegionBuffObj);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
    		// draw!
   		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
