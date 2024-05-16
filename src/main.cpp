@@ -68,7 +68,7 @@ public:
 	const GLuint S_WIDTH = 1024, S_HEIGHT = 1024;
 	GLuint depthMap;
 
-	vec3 light_vec = vec3(-1.0, 1.5, 1.0);
+	vec3 light_vec = vec3(-1.0, 2.5, 1.0);
 
 	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities);
 
@@ -837,7 +837,7 @@ public:
 		vec3 lightLA = vec3(0.0);
     	vec3 lightUp = vec3(0, 1, 0);
 		mat4 LO, LV, LSpace;
-		cout << "before" << endl;
+		
 		glViewport(0, 0, S_WIDTH, S_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -850,7 +850,7 @@ public:
 		drawShadowMap();
 		DepthProg->unbind();
 		glCullFace(GL_BACK);
-		cout << "1 pass" << endl;
+		
 
       //this sets the output back to the screen
   	 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -887,7 +887,6 @@ public:
 		float aspect = width/(float)height;
 		drawObjects(aspect, LSpace, frametime);
 
-		cout << "2 passes" << endl;
 		
 	}
 };
