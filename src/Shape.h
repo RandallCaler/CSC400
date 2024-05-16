@@ -20,7 +20,7 @@ public:
 
 	void createShape(tinyobj::shape_t & shape, std::string filePath, std::string n);
 	void createShape(tinyobj::shape_t & shape);
-	void Shape::createShape(std::vector<float> pos, std::vector<unsigned int> ind);
+	void createShape(std::vector<float> pos, std::vector<unsigned int> ind);
 	void init();
 	void generateNormals();
 	void measure();
