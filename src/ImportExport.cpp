@@ -194,7 +194,7 @@ void ImporterExporter::loadEntity() {
 
 	float scaleX = readFloat();
 	newEntity->scaleVec.x = scaleX;
-	newEntity->scale = scaleX;
+	// newEntity->scale = scaleX;
 
 	newEntity->scaleVec.y = readFloat();
 	newEntity->scaleVec.z = readFloat();
@@ -281,8 +281,8 @@ string ImporterExporter::shapesToText(){
 		BRDFmaterial shapeMat = iter->second.second;
 		string mats = to_string(shapeMat.lightColor.r) + ' ' + to_string(shapeMat.lightColor.g) + ' ' + to_string(shapeMat.lightColor.b) + ' ' +
 					  to_string(shapeMat.albedo.r) + ' ' + to_string(shapeMat.albedo.g) + ' ' + to_string(shapeMat.albedo.b) + ' ' +
-					  to_string(shapeMat.reflectance.r) + ' ' + to_string(shapeMat.reflectance.g) + ' ' + to_string(shapeMat.reflectance.b) + ' ' + 
 					  to_string(shapeMat.emissivity.r) + ' ' + to_string(shapeMat.emissivity.g) + ' ' + to_string(shapeMat.emissivity.b) + ' ' + 
+					  to_string(shapeMat.reflectance.r) + ' ' + to_string(shapeMat.reflectance.g) + ' ' + to_string(shapeMat.reflectance.b) + ' ' + 
 					  to_string(shapeMat.roughness) + '\n';
 		
 		result = result + tag + mats;
