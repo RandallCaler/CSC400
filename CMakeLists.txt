@@ -22,7 +22,7 @@ file(GLOB_RECURSE GLSL "${CMAKE_SOURCE_DIR}/resources/*.glsl")
 include_directories("${CMAKE_SOURCE_DIR}/ext")
 include_directories("${CMAKE_SOURCE_DIR}/ext/glad/include")
 # Assuming Assimp headers are within the ext/assimp/include directory
-include_directories("${CMAKE_SOURCE_DIR}/ext/assimp/include")
+# include_directories("${CMAKE_SOURCE_DIR}/ext/assimp/include")
 include_directories("${CMAKE_SOURCE_DIR}/ext/imgui/include")
 
 # Set the executable.
@@ -31,7 +31,7 @@ add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLSL})
 # Helper function included from FindGfxLibs.cmake to find and configure GLFW3 and GLM
 findGLFW3(${CMAKE_PROJECT_NAME})
 findGLM(${CMAKE_PROJECT_NAME})
-findASSIMP(${CMAKE_PROJECT_NAME})
+# findASSIMP(${CMAKE_PROJECT_NAME})
 
 # OS specific options and libraries
 if(NOT WIN32)

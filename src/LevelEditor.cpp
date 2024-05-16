@@ -33,44 +33,7 @@ void LevelEditor::NewFrame()
 void LevelEditor::Update() {
     MeshList();
     EntityList();
-
-    //if (show_demo_window)
-    //    ImGui::ShowDemoWindow(&show_demo_window);
-
-    //// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-    //{
-    //    static float f = 0.0f;
-    //    static int counter = 0;
-
-    //    ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-    //    ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-    //    ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-    //    ImGui::Checkbox("Another Window", &show_another_window);
-
-    //    ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-    //    ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-    //    if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-    //        counter++;
-    //    ImGui::SameLine();
-    //    ImGui::Text("counter = %d", counter);
-
-    //    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-    //    ImGui::End();
-
-
-    //}
-
-    //// 3. Show another simple window.
-    //if (show_another_window)
-    //{
-    //    ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-    //    ImGui::Text("Hello from another window!");
-    //    if (ImGui::Button("Close Me"))
-    //        show_another_window = false;
-    //    ImGui::End();
-    //}
+    diableInput = ImGui::IsAnyItemActive() && (ImGui::IsWindowFocused(ImGuiFocusedFlags_AnyWindow) || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow));
 }
 
 void LevelEditor::FindMesh() {
@@ -93,20 +56,19 @@ void LevelEditor::FindMesh() {
                 }
             }
             else {
-                std::cerr << "Failed to get stats for " << fullPath << std::endl;
+                cerr << "Failed to get stats for " << fullPath << endl;
             }
         }
         closedir(dr);
     }
     else {
-        std::cerr << "Failed to open directory: " << resourceDir << std::endl;
+        cerr << "Failed to open directory: " << resourceDir << endl;
     }
 
 }
 
 void LevelEditor::MeshList() {
     ImGui::Begin("Mesh List"); // Begin ImGui window
-    static string cur_file = "";
 
     if (meshFiles.empty()) {
         ImGui::Text("No mesh files found.");
@@ -129,7 +91,6 @@ void LevelEditor::MeshList() {
 void LevelEditor::EntityList()
 {
     ImGui::Begin("Entity List"); // Begin ImGui window
-    static string cur_name = "";
 
     if (worldentities.empty()) {
 
@@ -149,33 +110,132 @@ void LevelEditor::EntityList()
 
     auto selectedEntity = worldentities.find(cur_name);
     if (selectedEntity != worldentities.end()) {
-        Inspector(selectedEntity->second);
-        cur_entity = selectedEntity->second;
+        cur_entity = Inspector(selectedEntity->second);
     }
 
     ImGui::End(); // End ImGui window
 }
 
-void LevelEditor::Inspector(shared_ptr<Entity> entity) {
-    Begin("Inspector");
 
-    //transform
-    Text("Transform");
+shared_ptr<Entity> LevelEditor::Inspector(shared_ptr<Entity> entity) {
+    ImGui::Begin("Inspector");
+
+    static char new_name[256] = ""; // Buffer for new cur_name input
+    static char new_tag[256] = ""; // Buffer for new tag input
+    static bool show_edit_tag_window = false; // Flag to show/hide the add tag window
+
+    strncpy(new_name, cur_name.c_str(), sizeof(new_name) - 1);
+    new_name[sizeof(new_name) - 1] = '\0';
+
+    ImGui::Text("Name");
+    if (ImGui::InputText("##entity_name", new_name, IM_ARRAYSIZE(new_name), ImGuiInputTextFlags_EnterReturnsTrue)) {
+        // Handle cur_name change logic here
+        string newNameStr(new_name);
+        if (newNameStr != cur_name && !newNameStr.empty()) {
+            // Check if the new cur_name already exists
+            if (worldentities.find(newNameStr) == worldentities.end()) {
+                // Update the entity cur_name in the map
+                auto selectedEntity = worldentities.find(cur_name);
+                if (selectedEntity != worldentities.end()) {
+                    worldentities.erase(selectedEntity);  // Remove the old entry
+                    worldentities[newNameStr] = entity;   // Insert the entity with the new cur_name
+                    cur_name = newNameStr;
+                    cout << "Entity cur_name changed to: " << cur_name << endl;
+                }
+            }
+            else {
+                cout << "cur_name already exists. Choose a different cur_name." << endl;
+            }
+        }
+    }
+
+    const char* current_tag = entity->tag.c_str();
+    ImGui::Text("Tag");
+    if (ImGui::BeginCombo("##entity_tag", current_tag)) {
+        for (const auto& tag : tagList) {
+            if (tag == "") {
+                if (ImGui::Selectable(" ")) {
+                    entity->tag = tag; // Update the entity's tag
+                }
+            }
+            else {
+                if (ImGui::Selectable(tag.c_str())) {
+                    entity->tag = tag; // Update the entity's tag
+                }
+            }
+            
+        }
+        ImGui::EndCombo();
+    }
+
+    if (ImGui::Button("Edit Tag")) {
+        show_edit_tag_window = true;
+    }
+
+    // Show the Add Tag window
+    if (show_edit_tag_window) {
+        static string selectedTag = " ";
+        ImGui::Begin("Edit Tag", &show_edit_tag_window);
+        for (const auto& tag : tagList) {
+            bool is_selected = (tag == selectedTag);
+            if (tag != "") {
+                if (ImGui::Selectable(tag.c_str(), is_selected)) {
+                    selectedTag = tag;
+                }
+            }
+            if (is_selected) {
+                ImGui::SetItemDefaultFocus();
+                if (ImGui::Button("Delete##")) {
+                    for (auto ent : worldentities) {
+                        if (ent.second->tag == tag) {
+                            ent.second->tag = "";
+                        }
+                   }
+                    tagList.erase(find(tagList.begin(), tagList.end(), tag));
+                    selectedTag = " ";
+                }
+            }      
+        }
+        ImGui::Text("Add Tag");
+        ImGui::InputText("##add_tag", new_tag, IM_ARRAYSIZE(new_tag));
+        if (ImGui::Button("Add")) {
+            string newTagStr(new_tag);
+            if (newTagStr.find(' ') == string::npos && find(tagList.begin(), tagList.end(), newTagStr) == tagList.end()) {
+                tagList.push_back(newTagStr);
+                cout << "New tag added: " << newTagStr << endl;
+            }
+            selectedTag = " ";
+            show_edit_tag_window = false;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Close")) {
+            selectedTag = " ";
+            show_edit_tag_window = false;
+        }
+
+        ImGui::End();
+    }
+    else {
+        new_tag[0] = '\0';
+    }
+
+    // Transform
+    ImGui::Text("Transform");
     ImGui::Separator();
-    ImGui::DragFloat3("Position", &entity->position[0], 0.01f, 0.0f, 0.0f, "%.2f");
-    glm::vec3 rotationDegrees = glm::vec3(
-        glm::degrees(entity->rotX),
-        glm::degrees(entity->rotY),
-        glm::degrees(entity->rotZ)
-    );
+    ImGui::DragFloat3("Position", glm::value_ptr(entity->position), 0.01f, 0.0f, 0.0f, "%.2f");
+    glm::vec3 rotationDegrees = glm::degrees(glm::vec3(entity->rotX, entity->rotY, entity->rotZ));
     if (ImGui::DragFloat3("Rotation", glm::value_ptr(rotationDegrees), 0.5f, 0.0f, 0.0f, "%.2f")) {
         entity->rotX = glm::radians(rotationDegrees.x);
         entity->rotY = glm::radians(rotationDegrees.y);
         entity->rotZ = glm::radians(rotationDegrees.z);
     }
-    ImGui::DragFloat3("Scale", &entity->scaleVec[0], 0.01f, 0.0f, 0.0f, "%.2f");
+    ImGui::DragFloat3("Scale", glm::value_ptr(entity->scaleVec), 0.01f, 0.0f, 0.0f, "%.2f");
+
     ImGui::End();
+    return entity;
 }
+
+
 
 void LevelEditor::Render() {
 	// Render dear imgui into screen

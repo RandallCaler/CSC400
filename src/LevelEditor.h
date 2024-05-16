@@ -19,6 +19,7 @@ using namespace ImGui;
 
 extern string resourceDir;
 extern map<string, shared_ptr<Entity>> worldentities;
+extern vector<string> tagList;;
 extern shared_ptr<Entity> cur_entity;
 
 class LevelEditor {
@@ -31,11 +32,14 @@ class LevelEditor {
 		void FindMesh();
 		void MeshList();
 		void EntityList();
-		void Inspector(shared_ptr<Entity> entity);
+		shared_ptr<Entity> Inspector(shared_ptr<Entity> entity);
 		void Render();
 		void Shutdown();
+		bool diableInput = false;
 
 	private:
+		string cur_name;
+		string cur_file;
 		bool show_demo_window = true;
 		bool show_another_window = false;
 		vector<std::string> meshFiles;
