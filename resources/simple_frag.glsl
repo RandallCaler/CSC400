@@ -81,7 +81,7 @@ float TestShadow(vec4 LSfPos) {
 void main() {
 
 	float Shade;
-	float amb = 0.3;
+	float amb = 0.5;
 
   	vec3 N = normalize(in_struct.fragNor);
 	vec3 L = normalize(in_struct.lightDir);
@@ -98,9 +98,9 @@ void main() {
 	//color = vec4(BRDF * lightColor, 1.0);
 
 
-	float x_val = max(emissivity.x, emissivity.x + BRDF.x * lightColor.x * max(0.005, dot(N, L)));
-	float y_val = max(emissivity.y, emissivity.y + BRDF.y * lightColor.y * max(0.005, dot(N, L))); 
-	float z_val = max(emissivity.z, emissivity.z + BRDF.z * lightColor.z * max(0.005, dot(N, L))); 
+	float x_val = max(amb*emissivity.x, emissivity.x + BRDF.x * lightColor.x * max(0.005, dot(N, L)));
+	float y_val = max(amb*emissivity.y, emissivity.y + BRDF.y * lightColor.y * max(0.005, dot(N, L))); 
+	float z_val = max(amb*emissivity.z, emissivity.z + BRDF.z * lightColor.z * max(0.005, dot(N, L))); 
 	vec4 baseColor = vec4(x_val, y_val, z_val, 1.0);
 
 
