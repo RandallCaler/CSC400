@@ -91,21 +91,11 @@ glm::vec4 Collider::getCollisionPlane(glm::vec3 bbScale, glm::mat4 rot, std::sha
     glm::vec3 Pny = other->position - glm::vec3(bbScale.y) * Ny;
     glm::vec3 Pnz = other->position - glm::vec3(bbScale.z) * Nz;
 
-    glm::vec4 normOut = checkOpposingPlanes(Nx, Ppx, Pnx);
-    if (normOut != glm::vec4(0)) {
-        return normOut;
-    }
-    normOut = checkOpposingPlanes(Ny, Ppy, Pny);
-    if (normOut != glm::vec4(0)) {
-        return normOut;
-    }
-    normOut = checkOpposingPlanes(Nz, Ppz, Pnz);
-    if (normOut != glm::vec4(0)) {
-        return normOut;
-    }
-
-    fprintf(stderr, "Collision normals failed to calculate.\n");
-    return glm::vec4(0);
+    glm::vec4 normOut = vec4(0);
+    normOut += checkOpposingPlanes(Nx, Ppx, Pnx);
+    normOut += checkOpposingPlanes(Ny, Ppy, Pny);
+    normOut += checkOpposingPlanes(Nz, Ppz, Pnz);
+    return normOut;
 }
 
 glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> other) {
