@@ -111,7 +111,6 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
 
     bool climbable = distanceFromGround < SLOPE_TOLERANCE + EPSILON;
     if (climbable) {
-        printf("climbable\n");
         position = newPosition;
     }
     else {
@@ -124,15 +123,24 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
     }
     if (collisionPlane.y > -EPSILON && collisionPlane.w != 0) {
         grounded = true;
+        m.upwardSpeed = 0.0;
     }
 
+    printf("\np: %.3f, %.3f, %.3f\n", position.x, position.y, position.z);
     if (collisionPlane != vec4(0)) {
-        printf("collision adjustment\n");
-        glm::vec3 delta = glm::vec3(deltaX, m.upwardSpeed * deltaTime, deltaZ);
-        float fP = dot((oldPosition + delta), vec3(collisionPlane));
-        glm::vec3 rev = (oldPosition + delta) + vec3(collisionPlane) * (fP - collisionPlane.w + (float)EPSILON);
-        position = rev;
+        position = oldPosition;
+        // printf("collision adjustment\n");
+        // printf("%.3fx + %.3fy + %.3fz = %.3f\n", collisionPlane.x, collisionPlane.y, collisionPlane.z, collisionPlane.w);
+        glm::vec3 delta = glm::vec3(deltaX, (m.upwardSpeed + GRAVITY *deltaTime) * deltaTime, deltaZ);
+        float fP = abs(dot(oldPosition, vec3(collisionPlane)) - collisionPlane.w) + float(EPSILON);
+        // printf("fp: %.3f\n");
+        // glm::vec3 rev = (oldPosition + delta) + normalize(vec3(collisionPlane)) * abs(collisionPlane.w - fP + (float)EPSILON);
+        vec3 rev = delta + vec3(collisionPlane) * fP;
+        position += rev;
+        
+        // printf("p': %.3f, %.3f, %.3f\n", position.x, position.y, position.z);
     }
+    else { printf("no collision\n"); }
 
     // FALLING physics
     if (!grounded) {
