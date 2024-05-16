@@ -1,9 +1,10 @@
 #include "ImportExport.h"
 
-ImporterExporter::ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities) {
+ImporterExporter::ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList) {
 	// mutable references to main's shaders and entities
 	this->shaders = shaders;
 	this->worldentities = worldentities;
+	this->tagList = tagList;
 }
 
 ImporterExporter::~ImporterExporter() {
@@ -150,6 +151,8 @@ void ImporterExporter::loadEntity() {
 	
 	string id = readString();
 
+	string tag = readString();
+
 	string shader = readString();
 
 	int numShapes = readInt();
@@ -182,6 +185,12 @@ void ImporterExporter::loadEntity() {
 	newEntity->initEntity(entityShapes, entityTextures);
 	newEntity->materials = entityMats;
 	newEntity->defaultShaderName = shader;
+
+	newEntity->tag = tag;
+	if (find(tagList->begin(), tagList->end(), tag) == tagList->end()) {
+		tagList->push_back(tag);
+	}
+
 
 	// import entity spatial properties
 	newEntity->position.x = readFloat();
@@ -291,11 +300,11 @@ string ImporterExporter::shapesToText(){
 	return result;
 }
 
-// Entities: 3 entityID numShapes [shapeID1...] transX transY transZ rotX rotY rotZ scaleX scaleY scaleZ
+// Entities: 3 entityID tag numShapes [shapeID1...] transX transY transZ rotX rotY rotZ scaleX scaleY scaleZ
 string ImporterExporter::entitiesToText(){
 	string result = "";
 	for (auto entityIter = worldentities->begin(); entityIter != worldentities->end(); entityIter++) {
-		string entityInfo = "3 " + entityIter->first + " " + entityIter->second->defaultShaderName + " " + to_string(entityIter->second->objs.size()) + " ";
+		string entityInfo = "3 " + entityIter->first + " " + entityIter->second->tag +  " " + entityIter->second->defaultShaderName + " " + to_string(entityIter->second->objs.size()) + " ";
 		for (auto shape : entityIter->second->objs) {
 			entityInfo += shape->getName() + " ";
 		}
