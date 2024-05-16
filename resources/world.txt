@@ -1,7 +1,7 @@
 1 hmap /hmap_vert.glsl /hmap_frag.glsl 6 LS M P V lightDir shadowDepth 2 vertNor vertPos 
 1 reg /simple_vert.glsl /simple_frag.glsl 11 LS M P V albedo emissivity lightColor lightDir reflectance roughness shadowDepth 3 vertNor vertPos vertTex 
 1 skybox /skybox_vert.glsl /skybox_frag.glsl 4 M P Texture0 V 3 vertNor vertPos vertTex 
-1 tex /tex_vert.glsl /tex_frag0.glsl 13 LS M P V flip lightDir Texture0 shadowDepth lightColor albedo emissivity reflectance roughness 3 vertNor vertPos vertTex
+1 tex /tex_vert.glsl /tex_frag0.glsl 13 LS M P Texture0 V albedo emissivity flip lightColor lightDir reflectance roughness shadowDepth 3 vertNor vertPos vertTex 
 4 cheeseTex /cheese_Base_color.png
 4 sky /sky.jpg
 2 bunny /bunny.obj Bunny 0.300000 0.300000 0.100000 0.500000 0.300000 0.400000 0.200000 0.230000 0.200000 0.600000 0.500000 0.500000 0.500000
@@ -15,9 +15,9 @@
 2 flowerB /flowernoNorm.obj flower 0.100000 0.100000 0.100000 0.940000 0.720000 0.220000 0.230000 0.230000 0.200000 100.000000 0.500000 0.500000 0.500000
 2 flowerC /flowernoNorm.obj flower 0.050000 0.150000 0.050000 0.240000 0.920000 0.410000 1.000000 1.000000 1.000000 1.000000 0.500000 0.500000 0.500000
 2 sphereSky /sphereWTex.obj Sphere 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000
-3 bunny player reg 1 bunny 0 12.089968 -6.153594 8.740821 0.000000 -6.963840 0.000000 1.000000 1.000000 1.000000
+3 bunny player reg 1 bunny 0 5.994925 -6.153594 8.989215 0.000000 4.847633 0.000000 1.000000 1.000000 1.000000
 3 butterfly1  reg 3 butterflyBody butterflyW1_A butterflyW2_A 0 2.380000 -5.010000 19.600000 0.000000 0.000000 0.000000 0.700000 0.720000 0.700000
-3 cheese  tex 1 cheeseShape 1 cheeseTex 0.000000 -6.280000 7.270000 0.000000 0.000000 0.000000 1.000000 1.000000 1.000000
+3 cheese  tex 1 cheeseShape 1 cheeseTex -1.510000 -3.760000 9.180000 0.331613 0.148353 -0.034907 1.000000 1.000000 1.000000
 3 cube1  reg 1 cubeG 0 0.950000 -6.210000 13.550000 0.000000 1.000000 0.000000 3.750000 0.530000 5.710000
 3 cube2  reg 1 cubeR 0 -1.540000 -4.350000 9.810000 0.235619 -1.117011 0.000000 2.840000 0.310000 3.040000
 3 cube3  reg 1 cubeR 0 -0.700000 -4.760000 17.200001 -0.357792 -0.759218 1.000000 0.400000 4.130000 1.880000
@@ -28,4 +28,4 @@
 3 flower5  reg 1 flowerB 0 12.450000 -6.330000 16.730000 0.000000 -0.200000 0.000000 1.000000 1.000000 1.000000
 3 flower6  reg 1 flowerC 0 9.070000 -6.250000 19.000000 0.000000 0.700000 0.000000 1.000000 1.000000 1.000000
 3 flower7  reg 1 flowerA 0 2.500000 -4.790000 16.260000 0.000000 -0.162839 0.000000 1.000000 1.000000 1.000000
-3 skybox  skybox 1 sphereSky 1 sky 0 0 0 0.000000 0.000000 0.000000 1000.000000 1000.000000 1000.000000
+3 skybox  skybox 1 sphereSky 1 sky -0.135843 -1.614871 13.953816 0.000000 0.000000 0.000000 1000.000000 1000.000000 1000.000000

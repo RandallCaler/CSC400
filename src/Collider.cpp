@@ -75,7 +75,6 @@ glm::vec4 Collider::checkOpposingPlanes(glm::vec3 normal, glm::vec3 pointP, glm:
     if (distanceN > 0 && distanceP < 0) {
         return planeN;
     }
-    
     return glm::vec4(0);
 }
 
@@ -92,17 +91,34 @@ glm::vec4 Collider::getCollisionPlane(glm::vec3 bbScale, glm::mat4 rot, std::sha
     glm::vec3 Pnz = other->position - glm::vec3(bbScale.z) * Nz;
 
     glm::vec4 normOut = vec4(0);
-    normOut += checkOpposingPlanes(Nx, Ppx, Pnx);
-    normOut += checkOpposingPlanes(Ny, Ppy, Pny);
-    normOut += checkOpposingPlanes(Nz, Ppz, Pnz);
+    glm::vec4 x = checkOpposingPlanes(Nx, Ppx, Pnx);
+    if (x == vec4(0)) {
+        // printf("no x\n");
+    }
+    normOut += x;
+    x = checkOpposingPlanes(Ny, Ppy, Pny);
+    if (x == vec4(0)) {
+        // printf("no y\n");
+    }
+    normOut += x;
+    x = checkOpposingPlanes(Nz, Ppz, Pnz);
+    if (x == vec4(0)) {
+        // printf("no z\n");
+    }
+    normOut += x;
+    // printf("%.3fx + %.3fy + %.3fz = %.3f\n", normOut.x, normOut.y, normOut.z, normOut.w);
     return normOut;
 }
 
 glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> other) {
     int i = 0;
     float distance = owner->m.curSpeed * deltaTime;
-
     glm::vec3 ownerVel = glm::vec3(distance * sin(owner->rotY), (owner->m.upwardSpeed + GRAVITY * deltaTime) * deltaTime, distance * cos(owner->rotY));
+    
+    if (owner->id == 0) {
+        
+    // printf("direction: %.3f %.3f %.3f\n", ownerVel.x,  ownerVel.y,  ownerVel.z);
+    }
     glm::vec3 T = other->position - (owner->position + owner->m.velocity);
     // if(owner->id == 0) {
     //     printf("bunny xyz: %.2f %.2f %.2f cube xyz: %.2f %.2f %.2f \n", owner->position.x, owner->position.y, owner->position.z, other->position.x, other->position.y, other->position.z);
@@ -220,53 +236,16 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
         
         i++;
     }
-
+    // if (owner->id == 0)
+    //     printf("distance on sep axis: %.4f\n", distanceOnSeparationAxis(T, L, sv1, sv2, ARot, BRot));
     return glm::vec4(0);
 }
 
 glm::vec4 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<Entity>>& entities)
 {
     for(int i = 0; i < entities.size(); i++){
-        // cout << "this id = " << cat->id << " and checking id " << entities[i].id << endl;
-        // /*cout << "this id = " << thisID << " and checking entities pos " << i << endl;*/
-        // //if(entities[i].id != this->entityId) // exclude self when checking collisions
-        // //{
-        //     cout << "other entity name is " << entities[i].collider->entityName << endl;
-            
-        //     cout << "my type " << cat->collider->entityName << endl;
-        //     cout << "here" << endl;
-        //     /*cout << "this id = " << thisID << " and checking id " << entities[i].id << endl;
-        //     cout << "this id = " << thisID << " and checking entities pos " << i << endl; */
-        //     cout << "entity pos x = " << entities[i].position.x << endl;
-        //     cout << "player pos x = " << cat->position.x << endl;
-        //     cout << "entity pos z = " << entities[i].position.z << endl;
-        //     cout << "player pos z = " << cat->position.z << endl;
-            
-
-            //float distance = std::sqrt(
-            //(entities[i].position.x - cat->position.x) * (entities[i].position.x - cat->position.x) + 
-            //(entities[i].position.z - cat->position.z) * (entities[i].position.z - cat->position.z)
-            //);
-            //distance = std::abs(distance);
-            //if(distance < entities[i].collider->GetRadial() + cat->collider->GetRadial()){
-            //    // update this to account for butterfly collection
-            //    colliding = true;
-            //    return i;
-            //}
-            //else {
-            //    colliding = false;
-            //}
-        //} 
-
         shared_ptr<Entity> e = entities[i];
         if (entityId != e->id) {
-            // bool iscolliding =
-            //     (worldMax.x >= e->collider->worldMin.x &&
-            //     worldMax.y >= e->collider->worldMin.y &&
-            //     worldMax.z >= e->collider->worldMin.z) ||
-            //     (worldMin.x >= e->collider->worldMax.x &&
-            //     worldMin.y >= e->collider->worldMax.y &&
-            //     worldMin.z >= e->collider->worldMax.z);
             glm::vec4 collisionPlane = orientedCollision(deltaTime, e);
             if (collisionPlane != glm::vec4(0)) {
                 colliding = true;
