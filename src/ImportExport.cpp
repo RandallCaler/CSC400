@@ -109,7 +109,7 @@ void ImporterExporter::loadSingleShape() {
 				newShape->createShape(shape, resourceDir + meshFile, id);
 				newShape->measure();
 				newShape->init();
-				material newMat = material();
+				BPmaterial newMat = material();
 				shapeLibrary[id] = make_pair(newShape, newMat);
 				break;
 			}
@@ -150,7 +150,7 @@ void ImporterExporter::loadEntity() {
 	int numShapes = readInt();
 	printf("%s %s %i ", id.c_str(), shader.c_str(), numShapes);
 
-	// lists of meshes and material properties
+	// lists of meshes and BPmaterial properties
 	vector<shared_ptr<Shape>> entityShapes;
 	vector<shared_ptr<Texture>> entityTextures;
 	vector<material> entityMats;
@@ -204,7 +204,7 @@ void ImporterExporter::loadEntity() {
 }
 
 void ImporterExporter::loadFromFile(string path) {
-	// ID-indexed library of mesh-material pairs, for building entities from shape data
+	// ID-indexed library of mesh-BPmaterial pairs, for building entities from shape data
 
 	printf("begin load from save at %s\n", (resourceDir+path).c_str());
 	ifstream saveFile(resourceDir + path);
@@ -273,7 +273,7 @@ string ImporterExporter::shapesToText(){
 		string tag = "2 " + iter->first + ' ' + findFilename(iter->second.first.get()->getFilePath()) + ' ' 
 			+ iter->second.first.get()->getShapeName() + ' ';
 		
-		material shapeMat = iter->second.second;
+		BPmaterial shapeMat = iter->second.second;
 		string mats = to_string(shapeMat.amb.r) + ' ' + to_string(shapeMat.amb.g) + ' ' + to_string(shapeMat.amb.b) + ' ' +
 					  to_string(shapeMat.dif.r) + ' ' + to_string(shapeMat.dif.g) + ' ' + to_string(shapeMat.dif.b) + ' ' +
 					  to_string(shapeMat.spec.r) + ' ' + to_string(shapeMat.spec.g) + ' ' + to_string(shapeMat.spec.b) + ' ' + 

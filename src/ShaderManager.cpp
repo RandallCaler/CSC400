@@ -60,7 +60,7 @@ void Shader::addTexture(const std::string &f) {
     textures.push_back(texture0);
 }
 
-void Shader::setMaterial(material material) {
+void Shader::setMaterial(BPmaterial material) {
     if (prog->getUniform("MatAmb") > 0) {
         glUniform3f(prog->getUniform("MatAmb"), material.amb.r, material.amb.g, material.amb.b);
     }

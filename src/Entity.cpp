@@ -29,7 +29,7 @@ void Entity::initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<
     maxBB = vec3((std::numeric_limits<float>::min)());
 
     for (int i = 0; i < shapes.size(); i++) {
-        material m;
+        BPmaterial m;
         materials.push_back(m);
 
         if (minBB.x > shapes[i]->min.x) minBB.x = shapes[i]->min.x;

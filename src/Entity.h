@@ -21,7 +21,7 @@ typedef struct color {
 } color;
 
 
-typedef struct material {
+typedef struct BPmaterial {
     color amb;
     color dif;
     color spec;
