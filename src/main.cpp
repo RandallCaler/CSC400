@@ -125,7 +125,7 @@ public:
 
 	// hmap for terrain
 	shared_ptr<Texture> hmap;
-	vec3 groundPos = vec3(0);
+	vec3 groundPos = vec3(0, 0, 0);
 	
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -487,6 +487,8 @@ public:
 				unsigned char hvalg = *(hmap_data + 3 * (i * hmap_dim.first + j) + 1);
 				unsigned char hvalb = *(hmap_data + 3 * (i * hmap_dim.first + j) + 2);
 				float hval = (hvalr + hvalg + hvalb) / (3 * 255.0f);
+				//float hval = (std::max)(hvalr, (std::max)(hvalg, hvalb)) / 255.0f;
+				
 				pit = hval < .01;
 
 

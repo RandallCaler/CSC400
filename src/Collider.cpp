@@ -47,6 +47,7 @@ float Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap) {
         float g = (float)texData[index + 1];
         float b = (float)texData[index + 2];
         
+        //float p0 = (std::max)(r, (std::max)(g, b)) / 3;
         float p0 = (r + g + b) / 3;
         
         return (p0 / UCHAR_MAX - 0.5) * ground.scale.y + ground.origin.y;
