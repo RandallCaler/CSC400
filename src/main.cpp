@@ -76,8 +76,6 @@ public:
 	GLuint depthMap;
 
 	vec3 light_vec = vec3(-1.0, 2.5, 1.0);
-
-	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities);
   
 	LevelEditor* leGUI = new LevelEditor();
 
@@ -625,7 +623,7 @@ public:
 		butterfly_loc[2] = vec3(4, -1, 4);
  
 
-		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["butterfly1"], worldentities["bunny"]};
+		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["butterfly1"], player};
 
 		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -664,7 +662,7 @@ public:
 		DepthProg->unbind();
 
 
-		// int collided = worldentities["bunny"]->collider->CheckCollision(tempCollisionList);
+		// int collided = player->collider->CheckCollision(tempCollisionList);
 
 
 		bounds = std::sqrt(   //update cat's distance from skybox
@@ -747,7 +745,7 @@ public:
 
 			if (entity->collider) {
 				vec4 colNorm =entity->collider->CheckCollision(deltaTime, tempCollisionList);
-				if (entity->id == player]->id) {
+				if (entity->id == player->id) {
 					entity->updateMotion(deltaTime, hmap, colNorm);
 				}
 			}
@@ -841,26 +839,9 @@ public:
 		glActiveTexture(GL_TEXTURE1);
   		glBindTexture(GL_TEXTURE_2D, depthMap);
 		
-		//worldentities["bunny"]->updateMotion(frametime, hmap);
-		cam.player_pos = worldentities["bunny"]->position;
+		//player->updateMotion(frametime, hmap);
+		cam.player_pos = player->position;
 
-		//Use the matrix stack for Lab 6
-		if (editMode) {
-			switch (editSRT) {
-				case 0:
-					activeEntity->second->position += mobileVel * frametime;
-					break;
-				case 1:
-					activeEntity->second->rotX += mobileVel.x * frametime;
-					activeEntity->second->rotY += mobileVel.y * frametime;
-					activeEntity->second->rotZ += mobileVel.z * frametime;
-					break;
-				case 2:
-					// activeEntity->second->scale += mobileVel.x * frametime;
-					activeEntity->second->scaleVec += mobileVel * frametime;
-					break;
-			}
-		}
 		
       	LSpace = LO*LV;
 		float aspect = width/(float)height;
