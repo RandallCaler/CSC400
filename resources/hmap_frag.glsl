@@ -45,9 +45,9 @@ void main() {
 
   Shade = TestShadow(in_struct.fPosLS);
 
-    color = amb*(vec4(vec3(h_vert), 1)) + (1.0-Shade)*vec4(vec3(h_vert), 1);
+    // color = amb*(vec4(vec3(h_vert), 1)) + (1.0-Shade)*vec4(vec3(h_vert), 1);
 	vec3 testLightDir = normalize(vec3(1, -1, 0.5));
 	float intensity = max(-dot(testLightDir, fragNor), 0);
-	// color = vec4(vec3(intensity) * regionColor, 1.0);
+	color = vec4(vec3(intensity) * regionColor, 1.0);
 }
 
