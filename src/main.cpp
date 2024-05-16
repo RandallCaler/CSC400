@@ -470,6 +470,10 @@ public:
 		worldentities["cube2"]->collider->SetEntityID(worldentities["cube2"]->id);
 		worldentities["cube2"]->collider->entityName = 'c';
 
+		worldentities["cube3"]->collider = new Collider(worldentities["cube3"].get());
+		worldentities["cube3"]->collider->SetEntityID(worldentities["cube3"]->id);
+		worldentities["cube3"]->collider->entityName = 'c';
+
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initHMapGround();
@@ -716,7 +720,7 @@ public:
 		butterfly_loc[2] = vec3(4, -1, 4);
  
 
-		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["cube2"], player};
+		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["cube2"], worldentities["cube3"], player};
 
 		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
