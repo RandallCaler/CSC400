@@ -28,9 +28,21 @@ void Entity::initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<
     minBB = vec3((std::numeric_limits<float>::max)());
     maxBB = vec3((std::numeric_limits<float>::min)());
 
+    id = NEXT_ID++;
+    defaultShaderName = "";
+
+    //generate color for color picking based on entity id
+    int r = ((id * 10) & 0x000000FF) >>  0;
+    int g = ((id * 10) & 0x0000FF00) >>  8;
+    int b = ((id * 10) & 0x00FF0000) >> 16;
+
     for (int i = 0; i < shapes.size(); i++) {
         material m;
         materials.push_back(m);
+
+        // set diffuse mats, converting from [0,255]i to [0,1]f
+        material em = {0, 0, 0, r/255.0f, g/255.0f, b/255.0f, 0, 0, 0, 0};
+        editorMaterials.push_back(em);
 
         if (minBB.x > shapes[i]->min.x) minBB.x = shapes[i]->min.x;
         if (minBB.y > shapes[i]->min.y) minBB.y = shapes[i]->min.y;
@@ -40,8 +52,7 @@ void Entity::initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<
         if (maxBB.z < shapes[i]->max.z) maxBB.z = shapes[i]->max.z;
     }
 
-    id = NEXT_ID++;
-    defaultShaderName = "";
+    
 }
 
 void Entity::setMaterials(int i, float r1, float g1, float b1, float r2, float g2, float b2, 

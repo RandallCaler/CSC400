@@ -100,7 +100,7 @@ public:
 
 	double cursor_x = 0;
 	double cursor_y = 0;
-  
+
 	//bounds for world
 	double bounds;
 
@@ -302,6 +302,14 @@ public:
 			if (button == GLFW_MOUSE_BUTTON_LEFT) {
 				glfwGetCursorPos(window, &posX, &posY);
 				cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
+
+				//editor mode selection
+				if(editMode){
+					// Get the window height
+					int windowHeight;
+					glfwGetWindowSize(window, NULL, &windowHeight);
+					selectEntity(posX, posY, windowHeight);
+				}
 			}
 			else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
 				int cursor_mode = glfwGetInputMode(window, GLFW_CURSOR);
@@ -336,6 +344,37 @@ public:
   }
 
 #pragma endregion
+	void selectEntity(int x, int y, int windowHeight){
+		glFlush();
+		glFinish(); 
+
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		// Read the pixel at location x,y
+		int glY = windowHeight - y;
+		unsigned char data[3];
+		glReadPixels(x, glY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, data);
+		cout << "r: " << +data[0] << "   g: " << +data[1] << "   b: " << +data[2] << endl;
+
+		// convert color to entity id
+		int pickedID = 
+			data[0]/10 + 
+			data[1]/10 * 256 +
+			data[2]/10 * 256*256;
+
+		cout << "pickedId = " << pickedID << endl;
+		
+		// find the entity with that id (if an entity was clicked) and set as active
+		map<string, shared_ptr<Entity>>::iterator i;
+		for (i = worldentities.begin(); i != worldentities.end(); i++) {
+			shared_ptr<Entity> entity = i->second;
+			if(entity->id == pickedID){
+				activeEntity = i;
+				cout << "active entity is now " << pickedID << endl;
+				break;
+			}
+		}
+	}
 
 	void init(const std::string& resourceDirectory)
 	{
@@ -622,8 +661,18 @@ public:
 					curS->flip(1);
         			entity->textures[i]->bind(curS->prog->getUniform("Texture0"));
 				}
-				curS->setMaterial(entity->materials[i]);
+
+				if(editMode)
+				{
+					curS->setMaterial(entity->editorMaterials[i]);
+				}
+				else
+				{
+					curS->setMaterial(entity->materials[i]);
+				}
+
 				entity->objs[i]->draw(curS->prog);
+				
 				if (curS->has_texture) {
     				entity->textures[i]->unbind();
 					curS->unbindTexture(0);
