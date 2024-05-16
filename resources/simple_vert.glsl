@@ -28,7 +28,7 @@ void main() {
 	/* the position in world coordinates */
   out_struct.fPos = (M*vec4(vertPos, 1.0)).xyz;
 	/* the normal */
-  out_struct.fragNor = (M*vec4(vertNor, 0.0)).xyz;
+  out_struct.fragNor = normalize((M*vec4(vertNor, 0.0)).xyz);
   /* pass through the texture coordinates to be interpolated */
   out_struct.vTexCoord = vertTex;
   /* The vertex in light space TODO: fill in appropriately */
