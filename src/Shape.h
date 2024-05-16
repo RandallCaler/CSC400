@@ -20,6 +20,7 @@ public:
 
 	void createShape(tinyobj::shape_t & shape, std::string filePath, std::string n);
 	void createShape(tinyobj::shape_t & shape);
+	void Shape::createShape(std::vector<float> pos, std::vector<unsigned int> ind);
 	void init();
 	void generateNormals();
 	void measure();
@@ -30,6 +31,7 @@ public:
 	std::string getFilePath();
 	std::string getShapeName();
 	std::string getName();
+	std::vector<float> getNormals() { return norBuf; }
 
 	glm::vec3 min = glm::vec3(0);
 	glm::vec3 max = glm::vec3(0);
