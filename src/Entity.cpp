@@ -125,8 +125,17 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
 
     // FALLING physics
     // uses the terrain height to prevent character from indefinitely falling
+
+     // FALLING physics
+    if (!grounded) {
+
+       
+    }
+
+
     if (position.y < groundHeight + entityHeight) {
         grounded = true;
+        gliding = false;
         m.upwardSpeed = 0.0;
         position.y = groundHeight + entityHeight;
     }
@@ -134,9 +143,15 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
         grounded = false;
     }
 
-    m.upwardSpeed += GRAVITY * deltaTime;
     if (!grounded) {
-        position.y += m.upwardSpeed * deltaTime;
+
+        if (gliding == true) {
+            position += vec3(0.0f, (GRAVITY - AIR_RESISTANCE) * deltaTime, 0.0f);
+        }
+        else {
+            m.upwardSpeed += GRAVITY * deltaTime;
+            position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
+        }
     }
 
     // oriented bounding box restrictions
