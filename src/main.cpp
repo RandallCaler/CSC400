@@ -837,7 +837,7 @@ public:
 		vec3 lightLA = vec3(0.0);
     	vec3 lightUp = vec3(0, 1, 0);
 		mat4 LO, LV, LSpace;
-		cout << "before" << endl;
+		// cout << "before" << endl;
 		glViewport(0, 0, S_WIDTH, S_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -850,7 +850,7 @@ public:
 		drawShadowMap();
 		DepthProg->unbind();
 		glCullFace(GL_BACK);
-		cout << "1 pass" << endl;
+		// cout << "1 pass" << endl;
 
       //this sets the output back to the screen
   	 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -877,7 +877,7 @@ public:
 					activeEntity->second->rotZ += mobileVel.z * frametime;
 					break;
 				case 2:
-					activeEntity->second->scale += mobileVel.x * frametime;
+					// activeEntity->second->scale += mobileVel.x * frametime;
 					activeEntity->second->scaleVec += mobileVel * frametime;
 					break;
 			}
@@ -887,7 +887,7 @@ public:
 		float aspect = width/(float)height;
 		drawObjects(aspect, LSpace, frametime);
 
-		cout << "2 passes" << endl;
+		// cout << "2 passes" << endl;
 		
 	}
 };
