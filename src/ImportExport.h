@@ -46,7 +46,7 @@ class ImporterExporter {
     private:
         map<string, shared_ptr<Shader>>* shaders; // reference to main shader list
         map<string, shared_ptr<Entity>>* worldentities; // reference to main entity list
-        map<string, pair<shared_ptr<Shape>, material>> shapeLibrary;
+        map<string, pair<shared_ptr<Shape>, BRDFmaterial>> shapeLibrary;
 	    map<string, shared_ptr<Texture>> textureLibrary;
 	    string buffer; // input data stream
         size_t delimit; // reusable tracker for delimiter locations

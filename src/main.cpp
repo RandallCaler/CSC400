@@ -645,7 +645,7 @@ public:
 
 		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["butterfly1"], worldentities["bunny"]};
 
-		// BPmaterial imported from save file
+		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
 		map<string, shared_ptr<Entity>>::iterator i;
 
@@ -713,7 +713,7 @@ public:
 		// updates player motion
 		
 		
-		//BPmaterial shader first
+		//BRDFmaterial shader first
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog);
@@ -734,7 +734,7 @@ public:
 
 		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["butterfly1"], worldentities["bunny"]};
 
-		// BPmaterial imported from save file
+		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
 		map<string, shared_ptr<Entity>>::iterator i;
 

@@ -60,18 +60,21 @@ void Shader::addTexture(const std::string &f) {
     textures.push_back(texture0);
 }
 
-void Shader::setMaterial(BPmaterial material) {
-    if (prog->getUniform("MatAmb") > 0) {
-        glUniform3f(prog->getUniform("MatAmb"), material.amb.r, material.amb.g, material.amb.b);
+void Shader::setMaterial(BRDFmaterial material) {
+    if (prog->getUniform("lightColor") > 0) {
+        glUniform3f(prog->getUniform("lightColor"), material.lightColor.r, material.lightColor.g, material.lightColor.b);
     }
-    if (prog->getUniform("MatDif") > 0) {
-        glUniform3f(prog->getUniform("MatDif"), material.dif.r, material.dif.g, material.dif.b);
+    if (prog->getUniform("albedo") > 0) {
+        glUniform3f(prog->getUniform("albedo"), material.albedo.r, material.albedo.g, material.albedo.b);
     }
-    if (prog->getUniform("MatSpec") > 0) {
-        glUniform3f(prog->getUniform("MatSpec"), material.spec.r, material.spec.g, material.spec.b);
+    if (prog->getUniform("reflectance") > 0) {
+        glUniform3f(prog->getUniform("reflectance"), material.reflectance.r, material.reflectance.g, material.reflectance.b);
     }
-    if (prog->getUniform("MatShine") > 0) {
-        glUniform1f(prog->getUniform("MatShine"), material.shine);
+    if (prog->getUniform("emissivity") > 0) {
+        glUniform3f(prog->getUniform("emissivity"), material.emissivity.r, material.emissivity.g, material.emissivity.b);
+    }
+    if (prog->getUniform("roughness") > 0) {
+        glUniform1f(prog->getUniform("roughness"), material.roughness);
     }
 }
 
