@@ -55,12 +55,20 @@ class Application : public EventCallbacks
 public:
 	WindowManager * windowManager = nullptr;
 	// Our shader program - use this one for Blinn-Phong has diffuse
-	shared_ptr<Shader> reg;
-	shared_ptr<Shader> proghmap;
+	//shared_ptr<Shader> reg;
+	//shared_ptr<Shader> depth;
+	//shared_ptr<Shader> proghmap;
 	//Our shader program for textures
 	// shared_ptr<Shader> tex;
 
 	bool editMode = false;
+
+	shared_ptr<Program> DepthProg;
+	GLuint depthMapFBO;
+	const GLuint S_WIDTH = 1024, S_HEIGHT = 1024;
+	GLuint depthMap;
+
+	vec3 light_vec = vec3(-1.0, -1.0, 1.0);
 
 	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities);
 
@@ -241,6 +249,10 @@ public:
 			if (key == GLFW_KEY_SPACE && (action == GLFW_PRESS)){
 				ih.inputStates[4] = 1;
 			}
+
+			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_PRESS)){
+				ih.inputStates[5] = 1;
+			}
 	
 			if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -266,6 +278,10 @@ public:
 
 			if (key == GLFW_KEY_SPACE && (action == GLFW_RELEASE)){
 				ih.inputStates[4] = 0;
+			}
+
+			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_RELEASE)){
+				ih.inputStates[5] = 0;
 			}
 			
 			if (key == GLFW_KEY_F1 && action == GLFW_RELEASE) {
@@ -338,6 +354,32 @@ public:
 
 #pragma endregion
 
+
+	void initShadow() {
+
+		//generate the FBO for the shadow depth
+		glGenFramebuffers(1, &depthMapFBO);
+
+		//generate the texture
+		glGenTextures(1, &depthMap);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, S_WIDTH, S_HEIGHT, 
+			0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		//bind with framebuffer's depth buffer
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	}
+
 	void init(const std::string& resourceDirectory)
 	{
 		GLSL::checkVersion();
@@ -347,6 +389,17 @@ public:
 		// Enable z-buffer test.
 		glEnable(GL_DEPTH_TEST);
 		// glEnable(GL_CLIP_DISTANCE0);
+
+		DepthProg = make_shared<Program>();
+		DepthProg->setVerbose(true);
+		DepthProg->setShaderNames(resourceDirectory + "/depth_vert.glsl", resourceDirectory + "/depth_frag.glsl");
+		DepthProg->init();
+		DepthProg->addUniform("LP");
+		DepthProg->addUniform("LV");
+		DepthProg->addUniform("M");
+		DepthProg->addAttribute("vertPos");
+		DepthProg->addAttribute("vertNor");
+		DepthProg->addAttribute("vertTex");
 
 		shaders["skybox"]->has_texture = true;
 		shaders["tex"]->has_texture = true;
@@ -361,6 +414,7 @@ public:
 		hmap = make_shared<Texture>();
 		hmap->setFilename(resourceDirectory + "/hmap.png");
 		hmap->initHmap();
+		initShadow();
 	}
 
 	void initGeom(const std::string& resourceDirectory)
@@ -561,21 +615,88 @@ public:
   		curS->prog->unbind();
      }
 
-	void render(float frametime) {
-		// Get current frame buffer size.
-		int width, height;
+
+
+	mat4 SetOrthoMatrix(shared_ptr<Program> curShade) {
+		mat4 ortho = glm::ortho(-15.0, 15.0, -15.0, 15.0, 0.1, 20.0);
+
+		glUniformMatrix4fv(curShade->getUniform("LP"), 1, GL_FALSE, value_ptr(ortho));
+		return ortho;
+	}
+
+
+	mat4 SetLightView(shared_ptr<Program> curShade, vec3 pos, vec3 LA, vec3 up) {
+		mat4 Cam = glm::lookAt(pos, LA, up);
+
+		glUniformMatrix4fv(curShade->getUniform("LV"), 1, GL_FALSE, value_ptr(Cam));
+		return Cam;
+	}
+
+
+	void drawShadowMap() {
+
+		float butterfly_height[3] = {1.1, 1.7, 1.5};
+
+		vec3 butterfly_loc[3];
+		butterfly_loc[0] = vec3(-2.3, -1, 3);
+		butterfly_loc[1] = vec3(-2, -1.2, -3);
+		butterfly_loc[2] = vec3(4, -1, 4);
+ 
+
+		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["butterfly1"], worldentities["bunny"]};
+
+		// material imported from save file
+		shaders["skybox"]->prog->setVerbose(false);
+		map<string, shared_ptr<Entity>>::iterator i;
+
+		for (i = worldentities.begin(); i != worldentities.end(); i++) {
+			shared_ptr<Entity> entity = i->second;
+			entity->generateModel();
+		}
+		// for (i = worldentities.begin(); i != worldentities.end(); i++) {
+		// 	shared_ptr<Entity> entity = i->second;
+		// 	if (entity->collider) {
+		// 		entity->collider->CalculateBoundingBox(entity->modelMatrix);
+		// 	}
+		// }
+
+		for (i = worldentities.begin(); i != worldentities.end(); i++) {
+			shared_ptr<Entity> entity = i->second;
+
+			// if (entity->collider) {
+			// 	int col =entity->collider->CheckCollision(tempCollisionList);
+			// 	if (col == -1) {
+			// 		entity->updateMotion(frametime);
+			// 	}
+			// 	else {
+			// 		printf("entity %u colliding with %u\n", entity->id, col);
+			// 	}
+			// }
+			// curS->setModel(*entity);
+			for (int i = 0; i < entity->objs.size(); i++) {	
+				entity->objs[i]->draw(DepthProg);
+			}
+		}
+		
+
+		DepthProg->unbind();
+
+
+		// int collided = worldentities["bunny"]->collider->CheckCollision(tempCollisionList);
+
+
+		bounds = std::sqrt(   //update cat's distance from skybox
+			cam.player_pos[0] * cam.player_pos[0]
+			+ cam.player_pos[2] * cam.player_pos[2]
+		);
+
+		// Pop matrix stacks.
+	}
+
+
+	void drawObjects(float aspect, mat4 LSpace) {
+	
 		shared_ptr<Shader> curS = shaders["reg"];
-		glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
-		glViewport(0, 0, width, height);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
-		// Clear framebuffer.
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		//Use the matrix stack for Lab 6
-		float aspect = width/(float)height;
 
 		// Create the matrix stacks - please leave these alone for now
 		auto Projection = make_shared<MatrixStack>();
@@ -587,26 +708,10 @@ public:
 		Projection->perspective(45.0f, aspect, 0.01f, 1000.0f);
 
 		// editor mode updates
-		if (editMode) {
-			switch (editSRT) {
-				case 0:
-					activeEntity->second->position += mobileVel * frametime;
-					break;
-				case 1:
-					activeEntity->second->rotX += mobileVel.x * frametime;
-					activeEntity->second->rotY += mobileVel.y * frametime;
-					activeEntity->second->rotZ += mobileVel.z * frametime;
-					break;
-				case 2:
-					activeEntity->second->scale += mobileVel.x * frametime;
-					activeEntity->second->scaleVec += mobileVel * frametime;
-					break;
-			}
-		}
+		
 
 		// updates player motion
-		worldentities["bunny"]->updateMotion(frametime, hmap);
-		cam.player_pos = worldentities["bunny"]->position;
+		
 		
 		//material shader first
 		curS->prog->bind();
@@ -614,7 +719,10 @@ public:
 		activeCam->SetView(curS->prog);
 
 		// directional light
-		glUniform3f(curS->prog->getUniform("lightDir"), -1.0f, 1.0f, -1.0f);
+		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
+		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
+      	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
+
 
 		float butterfly_height[3] = {1.1, 1.7, 1.5};
 
@@ -665,6 +773,12 @@ public:
 			// 		printf("entity %u colliding with %u\n", entity->id, col);
 			// 	}
 			// }
+			glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
+			glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
+			glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
+
+			
+			
 			
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
 			// curS->setModel(*entity);
@@ -693,6 +807,9 @@ public:
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog);
+		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
+		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
+      	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 		drawGround(curS);  //draw ground here
 
 
@@ -706,6 +823,69 @@ public:
 
 		// Pop matrix stacks.
 		Projection->popMatrix();
+	}
+	
+
+	void render(float frametime) {
+		// Get current frame buffer size.
+		int width, height;
+		glfwGetFramebufferSize(windowManager->getHandle(), &width, &height);
+
+		vec3 lightLA = vec3(0.0);
+    	vec3 lightUp = vec3(0, 1, 0);
+		mat4 LO, LV, LSpace;
+		cout << "before" << endl;
+		glViewport(0, 0, S_WIDTH, S_HEIGHT);
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glCullFace(GL_FRONT);
+
+		DepthProg->bind();
+		  //TODO you will need to fix these
+		LO = SetOrthoMatrix(DepthProg);
+		LV = SetLightView(DepthProg, light_vec, lightLA, lightUp);
+		drawShadowMap();
+		DepthProg->unbind();
+		glCullFace(GL_BACK);
+		cout << "1 pass" << endl;
+
+      //this sets the output back to the screen
+  	 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		glViewport(0, 0, width, height);
+		// Clear framebuffer.
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glActiveTexture(GL_TEXTURE1);
+  		glBindTexture(GL_TEXTURE_2D, depthMap);
+		
+		worldentities["bunny"]->updateMotion(frametime, hmap);
+		cam.player_pos = worldentities["bunny"]->position;
+
+		//Use the matrix stack for Lab 6
+		if (editMode) {
+			switch (editSRT) {
+				case 0:
+					activeEntity->second->position += mobileVel * frametime;
+					break;
+				case 1:
+					activeEntity->second->rotX += mobileVel.x * frametime;
+					activeEntity->second->rotY += mobileVel.y * frametime;
+					activeEntity->second->rotZ += mobileVel.z * frametime;
+					break;
+				case 2:
+					activeEntity->second->scale += mobileVel.x * frametime;
+					activeEntity->second->scaleVec += mobileVel * frametime;
+					break;
+			}
+		}
+		
+      	LSpace = LO*LV;
+		float aspect = width/(float)height;
+		drawObjects(aspect, LSpace);
+
+		cout << "2 passes" << endl;
+		
 	}
 };
 
