@@ -14,6 +14,7 @@ out OUT_struct {
 	vec3 fragNor;
 	vec4 fPosLS;
 	vec3 vColor;
+    vec3 lightDir;
 } out_struct;
 
 out float h_vert;
@@ -37,6 +38,7 @@ void main() {
     out_struct.fPosLS = LS*M*vec4(vertPos.xyz, 1.0);
     /* a color that could be blended - or be shading */
     out_struct.vColor = vec3(max(dot(out_struct.fragNor, normalize(lightDir)), 0));
+    out_struct.lightDir = lightDir;
 
 }
  
