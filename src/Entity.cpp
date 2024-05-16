@@ -101,6 +101,7 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
     // movement and rotation
     float deltaX = distance * sin(rotY);
     float deltaZ = distance * cos(rotY);
+    
     vec3 oldPosition = position;
     vec3 newPosition = position + vec3(deltaX, 0, deltaZ);
     vec3 groundCheckPos = newPosition + vec3((distance + scaleVec.z) * sin(rotY), 0, (distance + scaleVec.z) * cos(rotY));
@@ -125,8 +126,17 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
 
     // FALLING physics
     // uses the terrain height to prevent character from indefinitely falling
+
+     // FALLING physics
+    if (!grounded) {
+
+       
+    }
+
+
     if (position.y < groundHeight + entityHeight) {
         grounded = true;
+        gliding = false;
         m.upwardSpeed = 0.0;
         position.y = groundHeight + entityHeight;
     }
@@ -134,14 +144,20 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
         grounded = false;
     }
 
-    m.upwardSpeed += GRAVITY * deltaTime;
     if (!grounded) {
-        position.y += m.upwardSpeed * deltaTime;
+
+        if (gliding == true) {
+            position += vec3(0.0f, (GRAVITY - AIR_RESISTANCE) * deltaTime, 0.0f);
+        }
+        else {
+            m.upwardSpeed += GRAVITY * deltaTime;
+            position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
+        }
     }
 
     // oriented bounding box restrictions
     if (collisionPlane != vec4(0)) {
-        // 
+        // handle gravity response when colliding with y planes
         if (collisionPlane.y > EPSILON) {
             grounded = true;
             m.upwardSpeed = std::max(0.0f, m.upwardSpeed);

@@ -4,6 +4,14 @@ uniform sampler2D shadowDepth;
 
 out vec4 Outcolor;
 
+
+uniform vec3 lightColor;
+uniform vec3 albedo;
+uniform vec3 emissivity;
+uniform vec3 reflectance;
+uniform float roughness;
+
+
 in OUT_struct {
    vec3 fPos;
    vec3 fragNor;
@@ -33,6 +41,14 @@ float TestShadow(vec4 LSfPos) {
 	//4: return 1 if the point is shadowed
 
 }
+
+
+//Fresnel Schlick function for specular
+vec3 F (vec3 F0, vec3 V, vec3 N) {
+	return F0 + (vec3(1.0) - F0) * pow(1 - max(0, dot(V, N)), 5.0);
+}
+
+
 
 void main() {
 

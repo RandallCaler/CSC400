@@ -13,6 +13,7 @@ in OUT_struct {
    vec3 fragNor;
    vec4 fPosLS;
    vec3 vColor;
+   vec3 lightDir;
 } in_struct;
 
 
@@ -45,9 +46,13 @@ void main() {
 
   Shade = TestShadow(in_struct.fPosLS);
 
-    // color = amb*(vec4(vec3(h_vert), 1)) + (1.0-Shade)*vec4(vec3(h_vert), 1);
-	vec3 testLightDir = normalize(vec3(1, -1, 0.5));
-	float intensity = max(-dot(testLightDir, fragNor), 0);
-	color = vec4(vec3(intensity) * regionColor, 1.0);
+  // color = amb*(vec4(vec3(h_vert), 1)) + (1.0-Shade)*vec4(vec3(h_vert), 1);
+  //vec3 testLightDir = normalize(vec3(1, -1, 0.5));
+  
+  float intensity = max(dot(in_struct.lightDir, normalize(in_struct.fragNor)), 0);
+  
+  //amb*(baseColor) + (1.0-Shade)*baseColor
+  color = vec4(vec3(1.0-Shade) * vec3(intensity) * regionColor + amb*regionColor, 1.0);
+  color = vec4(vec3(regionColor) * intensity, 1.0);
 }
 
