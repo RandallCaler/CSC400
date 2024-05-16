@@ -109,8 +109,7 @@ void main() {
 
 	Shade = TestShadow(in_struct.fPosLS);
 
-	//Outcolor = amb*(baseColor) + (1.0-Shade)*baseColor;
-	Outcolor = baseColor;
+	Outcolor = amb*(baseColor) + (1.0-Shade)*baseColor;
 	
 }
 

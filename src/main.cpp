@@ -583,7 +583,7 @@ public:
 
 		g_GiboLen = indices.size();
 
-		worldentities["bunny"]->collider->SetGround(vec3(0,-2.5,0), vec3(1,18,1));
+		worldentities["bunny"]->collider->SetGround(vec3(0,-2.5,0), vec3(1,21,1));
       }
 	
       //code to draw the ground plane
