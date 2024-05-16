@@ -446,7 +446,7 @@ public:
 
 	//directly pass quad for the ground to the GPU
 	void initHMapGround() {
-		const float Y_MAX = 5;
+		const float Y_MAX = 10;
 		const float Y_MIN = -Y_MAX;
 
 		vector<float> vertices;
@@ -455,10 +455,12 @@ public:
 		auto hmap_data = hmap->getData();
 		for (unsigned int i = 0; i < hmap_dim.second; i++) {
 			for (unsigned int j = 0; j < hmap_dim.first; j++) {
+				bool pit;
 				unsigned char hvalr = *(hmap_data + 3 * (i * hmap_dim.first + j));
 				unsigned char hvalg = *(hmap_data + 3 * (i * hmap_dim.first + j) + 1);
 				unsigned char hvalb = *(hmap_data + 3 * (i * hmap_dim.first + j) + 2);
 				float hval = (hvalr + hvalg + hvalb) / (3 * 255.0f);
+				pit = hval < .01;
 
 
 
@@ -466,9 +468,9 @@ public:
 				vertices.push_back(hval * (Y_MAX - Y_MIN) + Y_MIN);
 				vertices.push_back(i - hmap_dim.second / 2.0f);
 
-				regions.push_back(hvalr / 255.0f);
+				regions.push_back((pit ? 72 : hvalr) / 255.0f);
 				regions.push_back(hvalg / 255.0f);
-				regions.push_back(hvalb / 255.0f);
+				regions.push_back((pit ? 100 : hvalb) / 255.0f);
 			}
 		}
 		// hmap->freeData();
@@ -482,13 +484,32 @@ public:
 				int v3 = i * hmap_dim.first + j + 1;
 
 				indices.push_back(v0);
-				indices.push_back(v3);
-				indices.push_back(v1);
-				indices.push_back(v3);
 				indices.push_back(v2);
+				indices.push_back(v3);
+				//glm::vec3 e1(vertices[3 * v2] - vertices[3 * v0], vertices[3 * v2 + 1] - vertices[3 * v0 + 1], vertices[3 * v2 + 2] - vertices[3 * v0 + 2]);
+				//glm::vec3 e2(vertices[3 * v3] - vertices[3 * v0], vertices[3 * v3 + 1] - vertices[3 * v0 + 1], vertices[3 * v3 + 2] - vertices[3 * v0 + 2]);
+				//glm::vec3 f1N = glm::normalize(glm::cross(e1, e2));
+				//normals.push_back(f1N.x);
+				//normals.push_back(f1N.y);
+				//normals.push_back(f1N.z);
+
+				indices.push_back(v0);
 				indices.push_back(v1);
+				indices.push_back(v2);
+				//e1 = glm::vec3(vertices[3 * v1] - vertices[3 * v0], vertices[3 * v1 + 1] - vertices[3 * v0 + 1], vertices[3 * v1 + 2] - vertices[3 * v0 + 2]);
+				//e2 = glm::vec3(vertices[3 * v2] - vertices[3 * v0], vertices[3 * v2 + 1] - vertices[3 * v0 + 1], vertices[3 * v2 + 2] - vertices[3 * v0 + 2]);
+				//glm::vec3 f2N = glm::normalize(glm::cross(e1, e2));
+				//normals.push_back(f2N.x);
+				//normals.push_back(f2N.y);
+				//normals.push_back(f2N.z);
+
 			}
 		}
+
+		Shape terrain;
+		terrain.createShape(vertices, indices);
+		terrain.generateNormals();
+		std::vector<float> normals = terrain.getNormals();
 
 		std::cout << "vert size : " << vertices.size() << " ind size: " << indices.size() << std::endl;
 
@@ -503,6 +524,10 @@ public:
 		glGenBuffers(1, &GrndRegionBuffObj);
       	glBindBuffer(GL_ARRAY_BUFFER, GrndRegionBuffObj);
       	glBufferData(GL_ARRAY_BUFFER, regions.size() * sizeof(float), regions.data(), GL_STATIC_DRAW);
+
+		glGenBuffers(1, &GrndNorBuffObj);
+      	glBindBuffer(GL_ARRAY_BUFFER, GrndNorBuffObj);
+      	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), normals.data(), GL_STATIC_DRAW);
 
       	glGenBuffers(1, &GIndxBuffObj);
      	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
@@ -524,8 +549,13 @@ public:
   		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 		
 		glEnableVertexAttribArray(1);
-  		glBindBuffer(GL_ARRAY_BUFFER, GrndRegionBuffObj);
+  		glBindBuffer(GL_ARRAY_BUFFER, GrndNorBuffObj);
   		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		
+		glEnableVertexAttribArray(2);
+  		glBindBuffer(GL_ARRAY_BUFFER, GrndRegionBuffObj);
+  		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		
 
    		// draw!
   		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
@@ -533,6 +563,7 @@ public:
 
   		glDisableVertexAttribArray(0);
   		glDisableVertexAttribArray(1);
+  		glDisableVertexAttribArray(2);
   		curS->prog->unbind();
      }
 
