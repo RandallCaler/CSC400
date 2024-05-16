@@ -140,6 +140,7 @@ public:
 				activeCam = &cam;
 			}
 		}
+
 		// KEY PRESSED
 
 		if (editMode) {
@@ -230,19 +231,19 @@ public:
 			}
 		}
 		else {
-			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding() && bounds < 1000){
+			if (key == GLFW_KEY_W && (action == GLFW_PRESS)) {
 				ih.inputStates[0] = 1;
 			}
 
-			if (key == GLFW_KEY_A && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_A && (action == GLFW_PRESS)) {
 				ih.inputStates[1] = 1;
 			}
 
-			if (key == GLFW_KEY_S && (action == GLFW_PRESS) && bounds < 1000){	
+			if (key == GLFW_KEY_S && (action == GLFW_PRESS)) {	
 				ih.inputStates[2] = 1;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_PRESS)) {
 				ih.inputStates[3] = 1;
 			}
 
@@ -260,19 +261,19 @@ public:
 
 			// KEY RELEASED
 
-			if (key == GLFW_KEY_W && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding() && bounds < 1000){
+			if (key == GLFW_KEY_W && (action == GLFW_RELEASE)){
 				ih.inputStates[0] = 0;
 			}
 
-			if (key == GLFW_KEY_A && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_A && (action == GLFW_RELEASE)){
 				ih.inputStates[1] = 0;
 			}
 
-			if (key == GLFW_KEY_S && (action == GLFW_RELEASE) && bounds < 1000){
+			if (key == GLFW_KEY_S && (action == GLFW_RELEASE)){
 				ih.inputStates[2] = 0;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_RELEASE) && !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_RELEASE)){
 				ih.inputStates[3] = 0;
 			}
 
@@ -486,7 +487,13 @@ public:
 		worldentities["bunny"]->collider = new Collider(worldentities["bunny"].get());
 		worldentities["bunny"]->collider->SetEntityID(worldentities["bunny"]->id);
 		//cout << "cat " << worldentities["bunny"]->id << endl;
-		worldentities["bunny"]->collider->entityName = 'c';
+		worldentities["bunny"]->collider->entityName = 'p';
+
+		
+		worldentities["cube1"]->collider = new Collider(worldentities["cube1"].get());
+		worldentities["cube1"]->collider->SetEntityID(worldentities["cube1"]->id);
+		//cout << "cat " << worldentities["bunny"]->id << endl;
+		worldentities["cube1"]->collider->entityName = 'c';
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initHMapGround();
@@ -591,7 +598,7 @@ public:
      	glBindVertexArray(GroundVertexArrayID);
 
 		//draw the ground plane 
-  		curS->setModel(vec3(0, -2.5f, 0), 0, 0, 0, 1);
+  		curS->setModel(vec3(0, 0, 0), 0, 0, 0, 1);
   		glEnableVertexAttribArray(0);
   		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
   		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -712,7 +719,6 @@ public:
 
 		// updates player motion
 		
-		
 		//material shader first
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
@@ -732,7 +738,7 @@ public:
 		butterfly_loc[2] = vec3(4, -1, 4);
  
 
-		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["butterfly1"], worldentities["bunny"]};
+		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["bunny"]};
 
 		// material imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -764,24 +770,19 @@ public:
 				glDepthFunc(GL_LEQUAL);
 			}
 
-			// if (entity->collider) {
-			// 	int col =entity->collider->CheckCollision(tempCollisionList);
-			// 	if (col == -1) {
-			// 		entity->updateMotion(frametime);
-			// 	}
-			// 	else {
-			// 		printf("entity %u colliding with %u\n", entity->id, col);
-			// 	}
-			// }
+			if (entity->collider) {
+				vec4 colNorm =entity->collider->CheckCollision(frametime, tempCollisionList);
+				if (entity->id == worldentities["bunny"]->id) {
+					entity->updateMotion(frametime, hmap, colNorm);
+				}
+			}
+      
 			glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 			glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
 			glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
-
-			
-			
-			
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
 			// curS->setModel(*entity);
+      
 			for (int i = 0; i < entity->objs.size(); i++) {
 				if (curS->has_texture) {
 					curS->flip(1);
@@ -859,7 +860,7 @@ public:
 		glActiveTexture(GL_TEXTURE1);
   		glBindTexture(GL_TEXTURE_2D, depthMap);
 		
-		worldentities["bunny"]->updateMotion(frametime, hmap);
+		//worldentities["bunny"]->updateMotion(frametime, hmap);
 		cam.player_pos = worldentities["bunny"]->position;
 
 		//Use the matrix stack for Lab 6

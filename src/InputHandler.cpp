@@ -26,14 +26,14 @@ void InputHandler::handleInput(Entity* penguin, Camera* cam, float deltaTime) {
     for (int i = 0; i < IN_SIZE; i++) {
         if (inputStates[i] == 1) {
             q.push(i);
-            std::cout << "key pressed: " << i << std::endl;
+            // std::cout << "key pressed: " << i << std::endl;
         }
     }
 
 
     // must be tested with space bar and diagonal motion
-    while (q.size() > 3) {
-        std::cout << "key discarded: " << q.front() << std::endl;
+    while(q.size() > 3) {
+        // std::cout << "key discarded: " << q.front() << std::endl;
         q.pop();
     }
 
@@ -80,19 +80,19 @@ void InputHandler::handleInput(Entity* penguin, Camera* cam, float deltaTime) {
 
     float sum = 0;
 
-    cout << "start" << endl;
+    // cout << "start" << endl;
     for (int i = 0; i < angles.size(); i++) {
         sum += angles[i];
-        cout << angles[i] << endl;
+        // cout << angles[i] << endl;
         penguin->m.curSpeed = WALK_SPEED;
     }
-    cout << "end" << endl;
+    // cout << "end" << endl;
 
 
 
     if (angles.size() > 0) {
         penguin->rotY = sum / angles.size();
-        cout << sum / angles.size() << endl;
+        // cout << sum / angles.size() << endl;
     }
     else {
         penguin->rotY = 0;
