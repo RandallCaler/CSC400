@@ -30,6 +30,14 @@ void Shape::createShape(tinyobj::shape_t & shape)
 	eleBuf = shape.mesh.indices;
 }
 
+void Shape::createShape(std::vector<float> pos, std::vector<unsigned int> ind)
+{
+	posBuf = pos;
+	norBuf = {};
+	texBuf = {};
+	eleBuf = ind;
+}
+
 void Shape::measure()
 {
 	float minX, minY, minZ;

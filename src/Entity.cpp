@@ -11,7 +11,7 @@ using namespace glm;
 
 int Entity::NEXT_ID = 0;
 
-Entity::Entity(){
+Entity::Entity() {
     m.curSpeed = 0.0;
     m.curTurnSpeed = 0.0;
     m.upwardSpeed = 0.0;
@@ -22,7 +22,7 @@ Entity::Entity(){
     grounded = true;
 };
 
-void Entity::initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<std::shared_ptr<Texture>> textures){
+void Entity::initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<std::shared_ptr<Texture>> textures) {
     objs = shapes;
     this->textures = textures;
     minBB = vec3((std::numeric_limits<float>::max)());
@@ -44,59 +44,58 @@ void Entity::initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<
     defaultShaderName = "";
 }
 
-void Entity::setMaterials(int i, float r1, float g1, float b1, float r2, float g2, float b2, 
+void Entity::setMaterials(int i, float r1, float g1, float b1, float r2, float g2, float b2,
     float r3, float g3, float b3, float s) {
-        materials[i].amb.r = r1;
-        materials[i].amb.g = g1;
-        materials[i].amb.b = b1;
-        materials[i].dif.r = r2;
-        materials[i].dif.g = g2;
-        materials[i].dif.b = b2;
-        materials[i].spec.r = r3;
-        materials[i].spec.g = g3;
-        materials[i].spec.b = b3;
-        materials[i].shine = s;
+    materials[i].amb.r = r1;
+    materials[i].amb.g = g1;
+    materials[i].amb.b = b1;
+    materials[i].dif.r = r2;
+    materials[i].dif.g = g2;
+    materials[i].dif.b = b2;
+    materials[i].spec.r = r3;
+    materials[i].spec.g = g3;
+    materials[i].spec.b = b3;
+    materials[i].shine = s;
 }
 
 void Entity::setMaterials(int i, material& mat) {
     materials[i] = mat;
 }
 
-void Entity::updateScale(float newScale){
+void Entity::updateScale(float newScale) {
     scale = newScale;
 }
 
 glm::mat4 Entity::generateModel() {
     MatrixStack* M = new MatrixStack();
-	M->pushMatrix();
+    M->pushMatrix();
     M->loadIdentity();
-	// move to parent socket / world location 
-	M->translate(position);
+    // move to parent socket / world location 
+    M->translate(position);
 
-	// rotate about origin
-	if (abs(rotX) >= EPSILON)
-		M->rotate(rotX, vec3(1,0,0));
-	if (abs(rotY) >= EPSILON)
-		M->rotate(rotY, vec3(0,1,0));
-	if (abs(rotZ) >= EPSILON)
-		M->rotate(rotZ, vec3(0,0,1));
+    // rotate about origin
+    if (abs(rotX) >= EPSILON)
+        M->rotate(rotX, vec3(1, 0, 0));
+    if (abs(rotY) >= EPSILON)
+        M->rotate(rotY, vec3(0, 1, 0));
+    if (abs(rotZ) >= EPSILON)
+        M->rotate(rotZ, vec3(0, 0, 1));
 
-	// move object to origin and scale to a standard size, then scale to specifications
-    M->scale(scaleVec * 
-        vec3(1.0/std::max(std::max(maxBB.x - minBB.x, 
-            maxBB.y - minBB.y), 
+    // move object to origin and scale to a standard size, then scale to specifications
+    M->scale(scaleVec *
+        vec3(1.0 / std::max(std::max(maxBB.x - minBB.x,
+            maxBB.y - minBB.y),
             maxBB.z - minBB.z)));
-    M->translate(-vec3(0.5)*(minBB + maxBB));
-	
-	modelMatrix = M->topMatrix();
-	M->popMatrix();
+    M->translate(-vec3(0.5) * (minBB + maxBB));
 
-	return modelMatrix;
+    modelMatrix = M->topMatrix();
+    M->popMatrix();
+
+    return modelMatrix;
 }
 
 void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 collisionPlane) {
     float distance = m.curSpeed * deltaTime;
-
     // movement and rotation
     float deltaX = distance * sin(rotY);
     float deltaZ = distance * cos(rotY);
@@ -148,9 +147,5 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
         float fP = abs(dot(delta, vec3(collisionPlane))) + (float)EPSILON;
         position += delta + vec3(collisionPlane) * fP;
     }
-
-    
-    // TODO add collision component
 }
-
 

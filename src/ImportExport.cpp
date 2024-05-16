@@ -77,9 +77,11 @@ void ImporterExporter::loadTexture() {
     shared_ptr<Texture> texture = make_shared<Texture>();
     texture->setFilename(resourceDir + textFile);
     texture->setName(id);
+    texture->setName(id);
     texture->init();
     texture->setUnit(0);
     texture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+    textureLibrary[id] = texture;
     textureLibrary[id] = texture;
 }
 

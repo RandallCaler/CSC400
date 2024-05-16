@@ -9,9 +9,9 @@
 #include "Components.h"
 #include "MatrixStack.h"
 
+#define GRAVITY -18.0
+#define AIR_RESISTANCE -14.0
 #define EPSILON 0.0001
-#define GRAVITY -10.0
-#define TERRAIN_HEIGHT -0.1
 #define SLOPE_TOLERANCE 0.5
 
 typedef struct color {
@@ -34,7 +34,7 @@ struct motion {
     // the velocity of the obstacles will be a constant speed in the forward direction
     glm::vec3 velocity;
     // a vector to inform which direction the object is facing
-    glm::vec4 forward; 
+    glm::vec4 forward;
 
     float curSpeed;
     float curTurnSpeed;
@@ -46,17 +46,17 @@ class Collider; // forward declaration to enable use of this class in Collider c
 class Entity {
 public:
     Entity();
-        
+
     void initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<std::shared_ptr<Texture>> textures);
 
-    void setMaterials(int i, float r1, float g1, float b1, float r2, float g2, float b2, 
+    void setMaterials(int i, float r1, float g1, float b1, float r2, float g2, float b2,
         float r3, float g3, float b3, float s);
     void setMaterials(int i, material& mat);
 
     void updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 collisionPlane);
     void updateScale(float newScale);
 
-  
+
     glm::mat4 generateModel();
 
     static int NEXT_ID; // initializes to 0 and increments with every call to initEntity()
@@ -73,6 +73,7 @@ public:
     float rotY;
     float rotZ;
     bool grounded = false;
+    bool gliding = false;
     string defaultShaderName;
     glm::mat4 modelMatrix;
 
@@ -81,5 +82,4 @@ public:
 };
 
 #endif
-
 
