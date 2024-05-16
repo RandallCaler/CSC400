@@ -121,6 +121,7 @@ public:
 
 	// hmap for terrain
 	shared_ptr<Texture> hmap;
+	vec3 groundPos = vec3(0);
 	
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -590,7 +591,7 @@ public:
 
 		g_GiboLen = indices.size();
 
-		worldentities["bunny"]->collider->SetGround(vec3(0,-2.5,0), vec3(1,18,1));
+		worldentities["bunny"]->collider->SetGround(groundPos, vec3(1,Y_MAX-Y_MIN,1));
       }
 	
       //code to draw the ground plane
@@ -598,7 +599,7 @@ public:
      	glBindVertexArray(GroundVertexArrayID);
 
 		//draw the ground plane 
-  		curS->setModel(vec3(0, 0, 0), 0, 0, 0, 1);
+  		curS->setModel(groundPos, 0, 0, 0, 1);
   		glEnableVertexAttribArray(0);
   		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
   		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -701,7 +702,7 @@ public:
 	}
 
 
-	void drawObjects(float aspect, mat4 LSpace) {
+	void drawObjects(float aspect, mat4 LSpace, float deltaTime) {
 	
 		shared_ptr<Shader> curS = shaders["reg"];
 
@@ -771,9 +772,9 @@ public:
 			}
 
 			if (entity->collider) {
-				vec4 colNorm =entity->collider->CheckCollision(frametime, tempCollisionList);
+				vec4 colNorm =entity->collider->CheckCollision(deltaTime, tempCollisionList);
 				if (entity->id == worldentities["bunny"]->id) {
-					entity->updateMotion(frametime, hmap, colNorm);
+					entity->updateMotion(deltaTime, hmap, colNorm);
 				}
 			}
       
@@ -883,7 +884,7 @@ public:
 		
       	LSpace = LO*LV;
 		float aspect = width/(float)height;
-		drawObjects(aspect, LSpace);
+		drawObjects(aspect, LSpace, frametime);
 
 		cout << "2 passes" << endl;
 		
