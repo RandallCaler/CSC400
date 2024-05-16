@@ -53,12 +53,12 @@ void MatrixStack::scale(const glm::vec3 &scaleV)
 	top *= s;
 }
 
-void MatrixStack::scale(float size)
-{
-	glm::mat4 &top = stack.top();
-	glm::mat4 s = glm::scale(glm::mat4(1.f), glm::vec3(size));
-	top *= s;
-}
+// void MatrixStack::scale(float size)
+// {
+// 	glm::mat4 &top = stack.top();
+// 	glm::mat4 s = glm::scale(glm::mat4(1.f), glm::vec3(size));
+// 	top *= s;
+// }
 
 void MatrixStack::rotate(float angle, const glm::vec3 &axis)
 {
