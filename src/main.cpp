@@ -474,6 +474,10 @@ public:
 		worldentities["cube3"]->collider->SetEntityID(worldentities["cube3"]->id);
 		worldentities["cube3"]->collider->entityName = 'c';
 
+		worldentities["cheese"]->collider = new Collider(worldentities["cheese"].get(), true);
+		worldentities["cheese"]->collider->SetEntityID(worldentities["cheese"]->id);
+		worldentities["cheese"]->collider->entityName = 'c';
+
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initHMapGround();
