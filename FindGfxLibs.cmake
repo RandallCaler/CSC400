@@ -50,6 +50,56 @@ function(_findGLFW3_sourcepkg target)
 
 endfunction(_findGLFW3_sourcepkg)
 
+# findAssimp helper function
+function(_findASSIMP_vsbinary target)
+
+    FILE(GLOB ASSIMP_VC_LIB_DIRS "${ASSIMP_DIR}/lib-vc*")
+    
+    if(NOT ASSIMP_VC_LIB_DIRS)
+        message(FATAL_ERROR "ASSIMP_DIR contains neither a CMakeLists.txt nor pre-compiled libraries for visual studio")
+    endif()
+
+    set(ASSIMP_INCLUDE_DIRS "${ASSIMP_DIR}/include/")
+
+    function(addMSVCPreCompiled version)
+        if(NOT EXISTS "${ASSIMP_DIR}/build/lib/Debug/lib-vc${version}/assimp-vc143-mtd.lib")
+        message(FATAL_ERROR "Missing required visual studio pre-compiled library!")
+        endif()
+        set(GLFW_LIBRARIES "${ASSIMP_DIR}/lib-vc${version}/glfw3.lib" PARENT_SCOPE)
+    endfunction()
+
+    if(MSVC_VERSION GREATER_EQUAL 1920)
+        addMSVCPreCompiled("2019")
+    elseif(MSVC_VERSION GREATER_EQUAL 1910)
+        addMSVCPreCompiled("2017")
+    elseif(MSVC_VERSION GREATER_EQUAL 1900)
+        addMSVCPreCompiled("2015")
+    elseif(MSVC_VERSION LESS 1900)
+        message(FATAL_ERROR "Visual Studio version is less than minimum (VS 2015)")
+    endif()
+
+    set(GLFW_LIBRARIES ${ASSIMP_LIBRARIES} PARENT_SCOPE)
+    message(STATUS "Set ASSIMP_LIBRARIES: ${ASSIMP_LIBRARIES}")
+
+endfunction(_findASSIMP_vsbinary)
+
+# findAssimp helper function
+function(_findASSIMP_sourcepkg target)
+
+    option(ASSIMP_BUILD_EXAMPLES "ASSIMP_BUILD_EXAMPLES" OFF)
+    option(ASSIMP_BUILD_TESTS "ASSIMP_BUILD_TESTS" OFF)
+    option(ASSIMP_BUILD_DOCS "ASSIMP_BUILD_DOCS" OFF)
+
+    if(CMAKE_BUILD_TYPE MATCHES Release)
+        add_subdirectory(${ASSIMP_DIR} ${ASSIMP_DIR}/release)
+    else()
+        add_subdirectory(${ASSIMP_DIR} ${ASSIMP_DIR}/debug)
+    endif()
+
+    set(ASSIMP_LIBRARIES assimp PARENT_SCOPE)
+
+endfunction(_findASSIMP_sourcepkg)
+
 
 # Find and add GLFW3 using find_package or environment variable 
 function(findGLFW3 target)
@@ -104,3 +154,35 @@ function(findGLM target)
     
 endfunction(findGLM)
 
+function(findASSIMP target)
+    find_package(assimp QUIET)
+    
+    if(assimp_FOUND)
+
+        # Include paths are added automatically by the glfw3 find_package
+        target_link_libraries(${CMAKE_PROJECT_NAME} assimp)
+
+    elseif(DEFINED ENV{ASSIMP_DIR})
+        set(ASSIMP_DIR "$ENV{ASSIMP_DIR}")
+        message(STATUS "ASSIMP environment variable found. Attempting use...")
+
+        if(NOT EXISTS "${ASSIMP_DIR}/CMakeLists.txt" AND WIN32)
+            _findASSIMP_vsbinary(target) 
+        elseif(EXISTS "${ASSIMP_DIR}/CMakeLists.txt")
+            _findASSIMP_sourcepkg(target)
+        else()
+            message(FATAL_ERROR "ASSIMP environment variable 'ASSIMP_DIR' found, but points to a directory which is not a source package containing 'CMakeLists.txt'.")
+        endif()
+
+        if(ASSIMP_LIBRARIES)
+            target_include_directories(${target} PUBLIC "${ASSIMP_DIR}/include")
+            target_link_libraries(${target} "${ASSIMP_LIBRARIES}")
+        else()
+            message(FATAL_ERROR "Internal Error! ASSIMP_LIBRARIES variable did not get set! Contact your TA, this is their fault.")
+        endif()
+
+    else()
+        message(FATAL_ERROR "assimp could not be found through find_package or environment varaible 'ASSIMP_DIR'! assimp must be installed!")
+    endif()
+
+endfunction(findASSIMP)

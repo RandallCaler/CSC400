@@ -77,9 +77,11 @@ void ImporterExporter::loadTexture() {
     shared_ptr<Texture> texture = make_shared<Texture>();
     texture->setFilename(resourceDir + textFile);
     texture->setName(id);
+    texture->setName(id);
     texture->init();
     texture->setUnit(0);
     texture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+    textureLibrary[id] = texture;
     textureLibrary[id] = texture;
 }
 
@@ -107,7 +109,7 @@ void ImporterExporter::loadSingleShape() {
 				newShape->createShape(shape, resourceDir + meshFile, id);
 				newShape->measure();
 				newShape->init();
-				material newMat = material();
+				BRDFmaterial newMat = material();
 				shapeLibrary[id] = make_pair(newShape, newMat);
 				break;
 			}
@@ -116,26 +118,31 @@ void ImporterExporter::loadSingleShape() {
 	}
 
 	// import lighting properties
-	shapeLibrary[id].second.amb.r = readFloat();
-	shapeLibrary[id].second.amb.g = readFloat();
-	shapeLibrary[id].second.amb.b = readFloat();
-	
-	shapeLibrary[id].second.dif.r = readFloat();
-	shapeLibrary[id].second.dif.g = readFloat();
-	shapeLibrary[id].second.dif.b = readFloat();
+	shapeLibrary[id].second.lightColor.r = readFloat();
+	shapeLibrary[id].second.lightColor.g = readFloat();
+	shapeLibrary[id].second.lightColor.b = readFloat();
 
-	shapeLibrary[id].second.spec.r = readFloat();
-	shapeLibrary[id].second.spec.g = readFloat();
-	shapeLibrary[id].second.spec.b = readFloat();
+	shapeLibrary[id].second.albedo.r = readFloat();
+	shapeLibrary[id].second.albedo.g = readFloat();
+	shapeLibrary[id].second.albedo.b = readFloat();
 	
-	shapeLibrary[id].second.shine = readFloat();
+	shapeLibrary[id].second.emissivity.r = readFloat();
+	shapeLibrary[id].second.emissivity.g = readFloat();
+	shapeLibrary[id].second.emissivity.b = readFloat();
 
-	printf("%s %s %s %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n", 
+	shapeLibrary[id].second.reflectance.r = readFloat();
+	shapeLibrary[id].second.reflectance.g = readFloat();
+	shapeLibrary[id].second.reflectance.b = readFloat();
+	
+	shapeLibrary[id].second.roughness = readFloat();
+
+	printf("%s %s %s %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n", 
 		id.c_str(), meshFile.c_str(), shapeName.c_str(),
-		shapeLibrary[id].second.amb.r, shapeLibrary[id].second.amb.g, shapeLibrary[id].second.amb.b,
-		shapeLibrary[id].second.dif.r, shapeLibrary[id].second.dif.g, shapeLibrary[id].second.dif.b,
-		shapeLibrary[id].second.spec.r, shapeLibrary[id].second.spec.g, shapeLibrary[id].second.spec.b,
-		shapeLibrary[id].second.shine);
+		shapeLibrary[id].second.lightColor.r, shapeLibrary[id].second.lightColor.g, shapeLibrary[id].second.lightColor.b,
+		shapeLibrary[id].second.albedo.r, shapeLibrary[id].second.albedo.g, shapeLibrary[id].second.albedo.b,
+		shapeLibrary[id].second.emissivity.r, shapeLibrary[id].second.emissivity.g, shapeLibrary[id].second.emissivity.b,
+		shapeLibrary[id].second.reflectance.r, shapeLibrary[id].second.reflectance.g, shapeLibrary[id].second.reflectance.b,
+		shapeLibrary[id].second.roughness);
 }
 
 void ImporterExporter::loadEntity() {
@@ -148,10 +155,10 @@ void ImporterExporter::loadEntity() {
 	int numShapes = readInt();
 	printf("%s %s %i ", id.c_str(), shader.c_str(), numShapes);
 
-	// lists of meshes and material properties
+	// lists of meshes and BRDFmaterial properties
 	vector<shared_ptr<Shape>> entityShapes;
 	vector<shared_ptr<Texture>> entityTextures;
-	vector<material> entityMats;
+	vector<BRDFmaterial>  entityMats;
 	
 	// extract meshes and materials from the shape library
 	for (int i = 0; i < numShapes; i++) {
@@ -187,7 +194,7 @@ void ImporterExporter::loadEntity() {
 
 	float scaleX = readFloat();
 	newEntity->scaleVec.x = scaleX;
-	newEntity->scale = scaleX;
+	// newEntity->scale = scaleX;
 
 	newEntity->scaleVec.y = readFloat();
 	newEntity->scaleVec.z = readFloat();
@@ -202,7 +209,7 @@ void ImporterExporter::loadEntity() {
 }
 
 void ImporterExporter::loadFromFile(string path) {
-	// ID-indexed library of mesh-material pairs, for building entities from shape data
+	// ID-indexed library of mesh-BRDFmaterial pairs, for building entities from shape data
 
 	printf("begin load from save at %s\n", (resourceDir+path).c_str());
 	ifstream saveFile(resourceDir + path);
@@ -267,15 +274,16 @@ string ImporterExporter::shapesToText(){
 	string result = "";
 
 	//create set of shapes w/ materials from entities
-	for(auto iter = shapeLibrary.begin(); iter != shapeLibrary.end(); iter++){ // map<string, pair<shared_ptr<Shape>, material>>
+	for(auto iter = shapeLibrary.begin(); iter != shapeLibrary.end(); iter++){ // map<string, pair<shared_ptr<Shape>, BRDFmaterial >
 		string tag = "2 " + iter->first + ' ' + findFilename(iter->second.first.get()->getFilePath()) + ' ' 
 			+ iter->second.first.get()->getShapeName() + ' ';
 		
-		material shapeMat = iter->second.second;
-		string mats = to_string(shapeMat.amb.r) + ' ' + to_string(shapeMat.amb.g) + ' ' + to_string(shapeMat.amb.b) + ' ' +
-					  to_string(shapeMat.dif.r) + ' ' + to_string(shapeMat.dif.g) + ' ' + to_string(shapeMat.dif.b) + ' ' +
-					  to_string(shapeMat.spec.r) + ' ' + to_string(shapeMat.spec.g) + ' ' + to_string(shapeMat.spec.b) + ' ' + 
-					  to_string(shapeMat.shine) + '\n';
+		BRDFmaterial shapeMat = iter->second.second;
+		string mats = to_string(shapeMat.lightColor.r) + ' ' + to_string(shapeMat.lightColor.g) + ' ' + to_string(shapeMat.lightColor.b) + ' ' +
+					  to_string(shapeMat.albedo.r) + ' ' + to_string(shapeMat.albedo.g) + ' ' + to_string(shapeMat.albedo.b) + ' ' +
+					  to_string(shapeMat.emissivity.r) + ' ' + to_string(shapeMat.emissivity.g) + ' ' + to_string(shapeMat.emissivity.b) + ' ' + 
+					  to_string(shapeMat.reflectance.r) + ' ' + to_string(shapeMat.reflectance.g) + ' ' + to_string(shapeMat.reflectance.b) + ' ' + 
+					  to_string(shapeMat.roughness) + '\n';
 		
 		result = result + tag + mats;
 	}
