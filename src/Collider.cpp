@@ -40,8 +40,15 @@ float Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap) {
 
     unsigned char* texData = hMap->getData();
     if (pixelSpaceX >= 0 && pixelSpaceX <= texDim.first && pixelSpaceZ >= 0 && pixelSpaceZ <= texDim.second) {
-        unsigned char p0 = texData[3*((int)pixelSpaceZ * texDim.first + (int)pixelSpaceX)];
-        // printf("height %i %i: %u -> %.2f\n", (int)pixelSpaceX, (int)pixelSpaceZ, texData[3*((int)pixelSpaceZ * texDim.first + (int)pixelSpaceX)], (float)(texData[3*((int)pixelSpaceZ * texDim.first + (int)pixelSpaceX)]) * scale.y / UCHAR_MAX);
+
+        int index = 3 * ((int)pixelSpaceZ * texDim.first + (int)pixelSpaceX);
+
+        unsigned char r = texData[index];
+        unsigned char g = texData[index + 1];
+        unsigned char b = texData[index + 2];
+        
+        unsigned char p0 = (r + g + b) / (3);
+        
         return ((float)p0 / UCHAR_MAX - 0.5) * ground.scale.y + ground.origin.y + owner->scale;
     }
     return -1;

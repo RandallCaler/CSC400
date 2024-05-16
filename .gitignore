@@ -6,3 +6,4 @@ x64/
 cmake-build-debug/
 resources/testOut.txt
 resources/testOut.txt
+build2/
