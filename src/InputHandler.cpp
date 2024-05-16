@@ -2,21 +2,21 @@
 
 #define WALK_SPEED 7.0
 #define TURN_SPEED 25.0
-#define JUMP_HEIGHT 8.0
+#define JUMP_HEIGHT 14.0
 
-InputHandler::InputHandler(){
+InputHandler::InputHandler() {
     for (int i = 0; i < IN_SIZE; i++) {
         inputStates[i] = 0;
     }
     // camRot = 0;
 };
 
-InputHandler::~InputHandler(){
+InputHandler::~InputHandler() {
 };
 
 // trying method in ex video
 
-void InputHandler::handleInput(Entity *penguin, Camera *cam, float deltaTime) {
+void InputHandler::handleInput(Entity* penguin, Camera* cam, float deltaTime) {
     float distance;
     penguin->m.curSpeed = 0.0;
     std::queue<int> q;
@@ -24,16 +24,16 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam, float deltaTime) {
 
     bool backwards = false;
     for (int i = 0; i < IN_SIZE; i++) {
-        if(inputStates[i] == 1){
+        if (inputStates[i] == 1) {
             q.push(i);
-            std::cout << "key pressed: " << i << std::endl;
+            // std::cout << "key pressed: " << i << std::endl;
         }
     }
 
 
     // must be tested with space bar and diagonal motion
     while(q.size() > 3) {
-        std::cout << "key discarded: " << q.front() << std::endl;
+        // std::cout << "key discarded: " << q.front() << std::endl;
         q.pop();
     }
 
@@ -44,64 +44,71 @@ void InputHandler::handleInput(Entity *penguin, Camera *cam, float deltaTime) {
         q.push(x);
 
         switch (x) {
-            case 0:
-                //north
-                angles.push_back(0);
-                break;
-            case 1:
-                //west
-                angles.push_back(1.57);
-                break;
-            case 2:
-                //south
+        case 0:
+            //north
+            angles.push_back(0);
+            break;
+        case 1:
+            //west
+            angles.push_back(1.57);
+            break;
+        case 2:
+            //south
+            if (!penguin->gliding) {
                 angles.push_back(0);
                 backwards = true;
-                break;
-            case 3:
-                //east
-                angles.push_back(-1.57);
-                break;
-            case 4:
-                 //jump
-                if (penguin->grounded) {
-                    penguin->m.upwardSpeed = JUMP_HEIGHT;
-                    penguin->grounded = false;
-                }
-                break;
+            }
+            break;
+        case 3:
+            //east
+            angles.push_back(-1.57);
+            break;
+        case 4:
+            //jump
+            if (penguin->grounded) {
+                penguin->m.upwardSpeed = JUMP_HEIGHT;
+                penguin->grounded = false;
+            }
+            break;
+        case 5:
+            if (!(penguin->grounded)) {
+                penguin->m.upwardSpeed = 1.0;
+                penguin->gliding = true;
+            }
         }
     }
 
     float sum = 0;
 
-    cout << "start" << endl;
+    // cout << "start" << endl;
     for (int i = 0; i < angles.size(); i++) {
         sum += angles[i];
-        cout << angles[i] << endl;
+        // cout << angles[i] << endl;
         penguin->m.curSpeed = WALK_SPEED;
     }
-    cout << "end" << endl;
+    // cout << "end" << endl;
 
-    if (backwards) {
-        penguin->m.curSpeed = -WALK_SPEED;
-        sum = -1 * sum;
-    }
+
 
     if (angles.size() > 0) {
         penguin->rotY = sum / angles.size();
-        cout << sum / angles.size() << endl;
+        // cout << sum / angles.size() << endl;
     }
     else {
         penguin->rotY = 0;
     }
+    if (backwards) {
+        penguin->m.curSpeed = -WALK_SPEED;
+        sum = -1 * sum;
+    }
+    if (penguin->gliding && !penguin->grounded) {
+        penguin->m.curSpeed /= 2;
+    }
     angles.clear();
     // penguin->rotY += (sum != 0 ? 0 : cam->angle);
     penguin->rotY += cam->angle;
-    
-    }
+
+}
 
 
-// void InputHandler::setRotation(Entity *penguin, Camera *cam, float inc) {
-//     // cam->angle += inc;
-//     penguin->rotY = cam->angle;
-// }
 

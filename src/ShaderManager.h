@@ -23,7 +23,7 @@ class Shader {
 
         void addTexture(const std::string &f);
 
-        void setMaterial(material material);
+        void setMaterial(BRDFmaterial material);
 
         void flip(int f);
 
