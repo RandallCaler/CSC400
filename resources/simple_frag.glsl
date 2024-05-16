@@ -86,8 +86,8 @@ void main() {
   	vec3 N = normalize(in_struct.fragNor);
 	
 	//  temporarily set light dir to constant vector
-	// vec3 L = normalize(in_struct.lightDir);
-	vec3 L = normalize(vec3(.5, 1.0, -0.5));
+	vec3 L = normalize(in_struct.lightDir);
+	//vec3 L = normalize(vec3(.5, 1.0, -0.5));
 	vec3 V = normalize(in_struct.EPos * -1);
 	vec3 H = normalize(L + V);
 	

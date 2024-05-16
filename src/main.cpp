@@ -75,7 +75,7 @@ public:
 	const GLuint S_WIDTH = 1024, S_HEIGHT = 1024;
 	GLuint depthMap;
 
-	vec3 light_vec = vec3(1.0, 2.5, 0);
+	vec3 light_vec = vec3(1.0, 2.5, 1.0);
   
 	LevelEditor* leGUI = new LevelEditor();
 
