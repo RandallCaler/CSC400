@@ -46,8 +46,8 @@ float Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap) {
         unsigned char r = texData[index];
         unsigned char g = texData[index + 1];
         unsigned char b = texData[index + 2];
-
-        unsigned char p0 = ((std::max)(r, (std::max)(g, b)))/255.0;
+        
+        unsigned char p0 = (r + g + b) / (3);
         
         return ((float)p0 / UCHAR_MAX - 0.5) * ground.scale.y + ground.origin.y + owner->scale;
     }

@@ -1,4 +1,3 @@
 ﻿  Collider.cpp
-C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Collider.cpp(50,26): warning C4244: 'initializing': conversion from 'double' to 'unsigned char', possible loss of data
 C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\src\Collider.cpp(52,81): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
   Camera.vcxproj -> C:\Users\Claire E Ogawa\OneDrive - Cal Poly\CSC476\PenguinProj\CSC400\build2\Debug\Camera.exe
