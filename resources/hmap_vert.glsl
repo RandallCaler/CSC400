@@ -8,10 +8,12 @@ uniform mat4 M;
 
 out float h_vert;
 out vec3 regionColor;
+out vec3 fragNor;
 
 void main() {
     regionColor = region;
-    h_vert = (vertPos.y + 1)/2;
+    fragNor = vertNor;
+    h_vert = vertPos.y;
 
     // complete vertex shading
     gl_Position = P * V * M * vec4(vertPos, 1);
