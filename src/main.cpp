@@ -75,7 +75,7 @@ public:
 	const GLuint S_WIDTH = 1024, S_HEIGHT = 1024;
 	GLuint depthMap;
 
-	vec3 light_vec = vec3(-1.0, 2.5, 1.0);
+	vec3 light_vec = vec3(1.0, 2.5, 0);
   
 	LevelEditor* leGUI = new LevelEditor();
 
@@ -464,8 +464,16 @@ public:
 		
 		worldentities["cube1"]->collider = new Collider(worldentities["cube1"].get());
 		worldentities["cube1"]->collider->SetEntityID(worldentities["cube1"]->id);
-		//cout << "cat " << player->id << endl;
 		worldentities["cube1"]->collider->entityName = 'c';
+
+		worldentities["cube2"]->collider = new Collider(worldentities["cube2"].get());
+		worldentities["cube2"]->collider->SetEntityID(worldentities["cube2"]->id);
+		worldentities["cube2"]->collider->entityName = 'c';
+
+		worldentities["cube3"]->collider = new Collider(worldentities["cube3"].get());
+		worldentities["cube3"]->collider->SetEntityID(worldentities["cube3"]->id);
+		worldentities["cube3"]->collider->entityName = 'c';
+
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initHMapGround();
@@ -714,7 +722,7 @@ public:
 		butterfly_loc[2] = vec3(4, -1, 4);
  
 
-		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], player};
+		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["cube2"], worldentities["cube3"], player};
 
 		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);

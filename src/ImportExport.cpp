@@ -225,7 +225,6 @@ void ImporterExporter::loadFromFile(string path) {
 
 	// parse each line in the savefile
 	while (getline(saveFile, buffer)) {
-		cout << "this happened" << endl;
 		// interpret line according to syntax designator at the start of the line
 		char type = buffer[0];
 		buffer = buffer.substr(2);
@@ -254,7 +253,7 @@ string ImporterExporter::shadersToText(){
 	// iterate through every shader and convert its properties to a string
 	for (auto shaderIter = shaders->begin(); shaderIter != shaders->end(); shaderIter++) {
         string tag = "1 " + shaderIter->first + ' ';
-        string files = "/" + findFilename(shaderIter->second->prog->getVShaderName()) + " /" 
+        string files = findFilename(shaderIter->second->prog->getVShaderName()) + " " 
 			+ findFilename(shaderIter->second->prog->getFShaderName()) + " ";
 
 		// process the uniforms
