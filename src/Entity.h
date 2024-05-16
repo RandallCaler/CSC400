@@ -21,11 +21,12 @@ typedef struct color {
 } color;
 
 
-typedef struct material {
-    color amb;
-    color dif;
-    color spec;
-    float shine;
+typedef struct BRDFmaterial {
+    color lightColor;
+    color albedo;
+    color reflectance;
+    color emissivity;
+    float roughness;
 } material;
 
 // to avoid making a separate player class, I added a few extra variables to the motion struct for the player specifically
@@ -63,7 +64,7 @@ public:
     int id;
     std::vector<std::shared_ptr<Shape>> objs;
     std::vector<std::shared_ptr<Texture>> textures;
-    std::vector<material> materials;
+    std::vector<BRDFmaterial> materials;
     Collider* collider = NULL;
     glm::vec3 position = glm::vec3(0);
     glm::vec3 scaleVec = glm::vec3(1);

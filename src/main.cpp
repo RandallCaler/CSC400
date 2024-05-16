@@ -653,7 +653,7 @@ public:
 
 		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["butterfly1"], worldentities["bunny"]};
 
-		// material imported from save file
+		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
 		map<string, shared_ptr<Entity>>::iterator i;
 
@@ -720,6 +720,7 @@ public:
 
 		// updates player motion
 		
+		
 		//material shader first
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
@@ -741,7 +742,7 @@ public:
 
 		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["bunny"]};
 
-		// material imported from save file
+		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
 		map<string, shared_ptr<Entity>>::iterator i;
 
