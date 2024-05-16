@@ -131,6 +131,7 @@ public:
 				activeCam = &cam;
 			}
 		}
+
 		// KEY PRESSED
 
 		if (editMode) {
@@ -221,19 +222,19 @@ public:
 			}
 		}
 		else {
-			if (key == GLFW_KEY_W && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_W && (action == GLFW_PRESS)) {
 				ih.inputStates[0] = 1;
 			}
 
-			if (key == GLFW_KEY_A && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_A && (action == GLFW_PRESS)) {
 				ih.inputStates[1] = 1;
 			}
 
-			if (key == GLFW_KEY_S && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding()){	
+			if (key == GLFW_KEY_S && (action == GLFW_PRESS)) {	
 				ih.inputStates[2] = 1;
 			}
 
-			if (key == GLFW_KEY_D && (action == GLFW_PRESS) && !worldentities["bunny"]->collider->IsColliding()){
+			if (key == GLFW_KEY_D && (action == GLFW_PRESS)) {
 				ih.inputStates[3] = 1;
 			}
 

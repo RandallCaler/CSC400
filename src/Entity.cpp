@@ -118,43 +118,37 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
         groundHeight = collider->CheckGroundCollision(hmap);
     }
 
-    if (position.y > groundHeight) {
-        grounded = false;
-    }
-    if (collisionPlane.y > -EPSILON && collisionPlane.w != 0) {
-        grounded = true;
+    if (abs(collisionPlane.y) > EPSILON && collisionPlane.w != 0) {
         m.upwardSpeed = 0.0;
     }
 
-    printf("\np: %.3f, %.3f, %.3f\n", position.x, position.y, position.z);
-    if (collisionPlane != vec4(0)) {
-        position = oldPosition;
-        // printf("collision adjustment\n");
-        // printf("%.3fx + %.3fy + %.3fz = %.3f\n", collisionPlane.x, collisionPlane.y, collisionPlane.z, collisionPlane.w);
-        glm::vec3 delta = glm::vec3(deltaX, (m.upwardSpeed + GRAVITY *deltaTime) * deltaTime, deltaZ);
-        float fP = abs(dot(oldPosition, vec3(collisionPlane)) - collisionPlane.w) + float(EPSILON);
-        // printf("fp: %.3f\n");
-        // glm::vec3 rev = (oldPosition + delta) + normalize(vec3(collisionPlane)) * abs(collisionPlane.w - fP + (float)EPSILON);
-        vec3 rev = delta + vec3(collisionPlane) * fP;
-        position += rev;
-        
-        // printf("p': %.3f, %.3f, %.3f\n", position.x, position.y, position.z);
+    // falling response
+    if (position.y > groundHeight) {
+        grounded = false;
     }
-    else { printf("no collision\n"); }
-
     // FALLING physics
-    if (!grounded) {
-        m.upwardSpeed += GRAVITY * deltaTime;
-        position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
 
-        // uses the terrain height to prevent character from indefinitely falling, will obviously have to be updated with 
-        // the height value at the corresponding location
-        if (position.y < groundHeight) {
-            grounded = true;
-            m.upwardSpeed = 0.0;
-            position.y = groundHeight;
-        }
+    // uses the terrain height to prevent character from indefinitely falling, will obviously have to be updated with 
+    // the height value at the corresponding location
+    if (position.y < groundHeight) {
+        grounded = true;
+        m.upwardSpeed = 0.0;
+        position.y = groundHeight;
     }
+
+    m.upwardSpeed += GRAVITY * deltaTime;
+    if (!grounded) {
+        position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
+    }
+
+    // oriented bounding box restrictions
+    if (collisionPlane != vec4(0)) {
+        vec3 delta = position - oldPosition;
+        position = oldPosition;
+        float fP = abs(dot(delta, vec3(collisionPlane))) + (float)EPSILON;
+        position += delta + vec3(collisionPlane) * fP;
+    }
+
     
     // TODO add collision component
 }
