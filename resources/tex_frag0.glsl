@@ -1,4 +1,58 @@
-#version 330 core 
+#version 330 core
+uniform sampler2D Texture0;
+uniform sampler2D shadowDepth;
+
+out vec4 Outcolor;
+
+in OUT_struct {
+   vec3 fPos;
+   vec3 fragNor;
+   vec2 vTexCoord;
+   vec4 fPosLS;
+   vec3 vColor;
+} in_struct;
+
+/* returns 1 if shadowed */
+/* called with the point projected into the light's coordinate space */
+float TestShadow(vec4 LSfPos) {
+
+  //0.005 * tan (acos(nDotl)) is better/more precise
+  float depth_buffer = 0.009;
+
+	//1: shift the coordinates from -1, 1 to 0, 1
+  vec3 fLS = (vec3(LSfPos) + vec3(1.0)) * 0.5;
+
+	//2: read off the stored depth (.) from the ShadowDepth, using the shifted.xy 
+  float depth = texture(shadowDepth, fLS.xy).r;
+
+	//3: compare to the current depth (.z) of the projected depth
+  if (fLS.z > depth + depth_buffer)
+    return 1.0;
+  return 0.0;
+
+	//4: return 1 if the point is shadowed
+
+}
+
+void main() {
+
+  float Shade;
+  float amb = 0.3;
+
+  vec4 BaseColor = vec4(in_struct.vColor, 1);
+  vec4 texColor0 = texture(Texture0, in_struct.vTexCoord);
+
+  Shade = TestShadow(in_struct.fPosLS);
+
+  Outcolor = amb*(texColor0) + (1.0-Shade)*texColor0*BaseColor;
+}
+
+
+
+
+
+
+/*#version 330 core 
 
 out vec4 color;
 
@@ -39,3 +93,4 @@ void main() {
 //   if (flip > 0)
 //   	color = floor(color * 4 + 4) / 8.7; // using cel shading for cat!
 }
+*/

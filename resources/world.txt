@@ -1,7 +1,7 @@
-1 hmap ///hmap_vert.glsl ///hmap_frag.glsl 3 M P V 1 vertPos 
-1 reg ///simple_vert.glsl ///simple_frag.glsl 8 M MatAmb MatDif MatShine MatSpec P V lightDir 3 vertNor vertPos vertTex 
+1 hmap ///hmap_vert.glsl ///hmap_frag.glsl 6 P V M LS lightDir shadowDepth 2 vertPos vertNor
+1 reg ///simple_vert.glsl ///simple_frag.glsl 10 P V M MatAmb MatDif MatSpec MatShine lightDir LS shadowDepth 3 vertPos vertNor vertTex
 1 skybox ///skybox_vert.glsl ///skybox_frag.glsl 4 M P Texture0 V 3 vertNor vertPos vertTex 
-1 tex ///tex_vert.glsl ///tex_frag0.glsl 10 M MatAmb MatDif MatShine MatSpec P Texture0 V flip lightDir 3 vertNor vertPos vertTex 
+1 tex ///tex_vert.glsl ///tex_frag0.glsl 12 P V M LS lightDir shadowDepth MatAmb MatDif MatSpec MatShine flip Texture0 3 vertPos vertNor vertTex
 4 sky /sky.jpg
 2 bunny /bunny.obj Bunny 0.200000 0.300000 0.300000 0.200000 0.730000 0.800000 0.900000 0.230000 0.200000 0.600000
 2 butterflyBody /butterfly.obj obj1 0.100000 0.100000 0.100000 0.020000 0.020000 0.020000 0.250000 0.230000 0.300000 9.000000
