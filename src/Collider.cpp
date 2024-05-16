@@ -43,13 +43,13 @@ float Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap) {
 
         int index = 3 * ((int)pixelSpaceZ * texDim.first + (int)pixelSpaceX);
 
-        unsigned char r = texData[index];
-        unsigned char g = texData[index + 1];
-        unsigned char b = texData[index + 2];
+        float r = (float)texData[index];
+        float g = (float)texData[index + 1];
+        float b = (float)texData[index + 2];
         
-        unsigned char p0 = (r + g + b) / (3);
+        float p0 = (r + g + b) / 3;
         
-        return ((float)p0 / UCHAR_MAX - 0.5) * ground.scale.y + ground.origin.y + owner->scale;
+        return (p0 / UCHAR_MAX - 0.5) * ground.scale.y + ground.origin.y;
     }
     return -1;
 }

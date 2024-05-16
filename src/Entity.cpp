@@ -64,9 +64,9 @@ void Entity::setMaterials(int i, material& mat) {
     materials[i] = mat;
 }
 
-void Entity::updateScale(float newScale) {
-    scale = newScale;
-}
+// void Entity::updateScale(float newScale) {
+//     scale = newScale;
+// }
 
 glm::mat4 Entity::generateModel() {
     MatrixStack* M = new MatrixStack();
@@ -103,50 +103,55 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
     float deltaZ = distance * cos(rotY);
     vec3 oldPosition = position;
     vec3 newPosition = position + vec3(deltaX, 0, deltaZ);
-    vec3 groundCheckPos = newPosition + vec3((distance + scale) * sin(rotY), 0, (distance + scale) * cos(rotY));
+    vec3 groundCheckPos = newPosition + vec3((distance + scaleVec.z) * sin(rotY), 0, (distance + scaleVec.z) * cos(rotY));
 
-    position = groundCheckPos;
-    
+    // get ground samples
+    float groundHeight0 = collider->CheckGroundCollision(hmap);
+    position = groundCheckPos;    
     float groundHeight = collider->CheckGroundCollision(hmap);
-    float distanceFromGround = groundHeight - position.y;
+    float entityHeight = scaleVec.y/2;
+    float distanceFromGround = groundHeight - (position.y - entityHeight);
 
-    bool climbable = distanceFromGround < SLOPE_TOLERANCE + EPSILON;
-    if (climbable) {
+    // ground climbing
+    bool climbable = groundHeight - groundHeight0 < SLOPE_TOLERANCE;
+    if (climbable || !grounded) {
         position = newPosition;
     }
+    // if the area of ground ahead cannot be climbed, return to previous position
     else {
         position = oldPosition;
-        groundHeight = collider->CheckGroundCollision(hmap);
+        groundHeight = groundHeight0;
     }
 
-    if (abs(collisionPlane.y) > EPSILON && collisionPlane.w != 0) {
-        m.upwardSpeed = 0.0;
-    }
-
-    // falling response
-    if (position.y > groundHeight) {
-        grounded = false;
-    }
     // FALLING physics
-
-    // uses the terrain height to prevent character from indefinitely falling, will obviously have to be updated with 
-    // the height value at the corresponding location
-    if (position.y < groundHeight) {
+    // uses the terrain height to prevent character from indefinitely falling
+    if (position.y < groundHeight + entityHeight) {
         grounded = true;
         m.upwardSpeed = 0.0;
-        position.y = groundHeight;
+        position.y = groundHeight + entityHeight;
+    }
+    if (position.y > groundHeight + entityHeight) {
+        grounded = false;
     }
 
     m.upwardSpeed += GRAVITY * deltaTime;
     if (!grounded) {
-        position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
+        position.y += m.upwardSpeed * deltaTime;
     }
 
     // oriented bounding box restrictions
     if (collisionPlane != vec4(0)) {
+        // 
+        if (collisionPlane.y > EPSILON) {
+            grounded = true;
+            m.upwardSpeed = std::max(0.0f, m.upwardSpeed);
+        }
+        if (collisionPlane.y < -EPSILON) {
+            m.upwardSpeed = 0.0f;
+        }
         vec3 delta = position - oldPosition;
         position = oldPosition;
-        float fP = abs(dot(delta, vec3(collisionPlane))) + (float)EPSILON;
+        float fP = abs(dot(delta, vec3(collisionPlane)));
         position += delta + vec3(collisionPlane) * fP;
     }
 }

@@ -55,7 +55,7 @@ public:
     void setMaterials(int i, material& mat);
 
     void updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 collisionPlane);
-    void updateScale(float newScale);
+    // void updateScale(float newScale);
 
 
     glm::mat4 generateModel();
@@ -68,7 +68,7 @@ public:
     Collider* collider = NULL;
     glm::vec3 position = glm::vec3(0);
     glm::vec3 scaleVec = glm::vec3(1);
-    float scale;
+    // float scale;
     motion m;
     float rotX;
     float rotY;
