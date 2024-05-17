@@ -128,12 +128,6 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
     // uses the terrain height to prevent character from indefinitely falling
 
      // FALLING physics
-    if (!grounded) {
-
-       
-    }
-
-
     if (position.y < groundHeight + entityHeight) {
         grounded = true;
         gliding = false;
@@ -145,14 +139,14 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
     }
 
     if (!grounded) {
-
         if (gliding == true) {
-            position += vec3(0.0f, (GRAVITY - AIR_RESISTANCE) * deltaTime, 0.0f);
+            m.upwardSpeed = std::max(m.upwardSpeed + (GRAVITY - AIR_RESISTANCE) * deltaTime, -3.0f);
+            printf("%.3f\n", m.upwardSpeed);
         }
         else {
             m.upwardSpeed += GRAVITY * deltaTime;
-            position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
         }
+        position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
     }
 
     // oriented bounding box restrictions

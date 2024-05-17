@@ -9,8 +9,8 @@
 #include "Components.h"
 #include "MatrixStack.h"
 
-#define GRAVITY -18.0
-#define AIR_RESISTANCE -14.0
+#define GRAVITY -18.0f
+#define AIR_RESISTANCE -14.0f
 #define EPSILON 0.0001
 #define SLOPE_TOLERANCE 0.5
 
