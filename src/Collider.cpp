@@ -65,6 +65,12 @@ float Collider::distanceOnSeparationAxis(glm::vec3 T, glm::vec3 L, glm::vec3 dim
         std::abs(glm::dot(glm::vec3(rotB * glm::vec4(0,0,dimB.z,1)), L));
 }
 
+bool compareVec3(vec3 a, vec3 b) {
+    return abs(a.x - b.x) < EPSILON &&
+        abs(a.y - b.y) < EPSILON &&
+        abs(a.z - b.z) < EPSILON;
+}
+
 glm::vec4 Collider::checkOpposingPlanes(glm::vec3 normal, glm::vec3 pointP, glm::vec3 pointN) {
     glm::vec4 planeP = glm::vec4(normal.x, normal.y, normal.z, glm::dot(normal, pointP));
     float distanceP = glm::dot(planeP, glm::vec4(owner->position, -1.0));
@@ -108,7 +114,7 @@ glm::vec4 Collider::getCollisionPlane(glm::vec3 bbScale, glm::mat4 rot, std::sha
         // printf("no z\n");
     }
     normOut += x;
-    // printf("%.3fx + %.3fy + %.3fz = %.3f\n", normOut.x, normOut.y, normOut.z, normOut.w);
+    printf("%.3fx + %.3fy + %.3fz = %.3f\n", normOut.x, normOut.y, normOut.z, normOut.w);
     return normOut;
 }
 
@@ -178,55 +184,57 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
                 L = Bz;
                 break;
             case 5:
-                if (Ax != Bx) {
+                if (!compareVec3(Ax, Bx)) {
                     L = glm::cross(Ax, Bx);
                     break;
                 }
                 i++;
             case 6:
-                if (Ax != By) {
+                if (!compareVec3(Ax, By)) {
                     L = glm::cross(Ax, By);
                     break;
                 }
                 i++;
             case 7:
-                if (Ax != Bz) {
+                if (!compareVec3(Ax, Bz)) {
                     L = glm::cross(Ax, Bz);
                     break;
                 }
                 i++;
             case 8:
-                if (Ay != Bx) {
+                if (!compareVec3(Ay, Bx)) {
                    L = glm::cross(Ay, Bx);
                     break;
                 }
                 i++;
             case 9:
-                if (Ay != By) {
+                if (!compareVec3(Ay, By)) {
+                    printf("cross Ay By\nAy: %.4f %.4f %.4f\nBy: %.4f %.4f %.4f\n", Ay.x, Ay.y, Ay.z, By.x, By.y, By.z);
                     L = glm::cross(Ay, By);
                     break;
                 }
                 i++;
             case 10:
-                if (Ay != Bz) {
+                if (!compareVec3(Ay, Bz)) {
+                    printf("cross Ay Bz\n");
                     L = glm::cross(Ay, Bz);
                     break;
                 }
                 i++;
             case 11:
-                if (Az != Bx) {
+                if (!compareVec3(Az, Bx)) {
                     L = glm::cross(Az, Bx);
                     break;
                 }
                 i++;
             case 12:
-                if (Az != By) {
+                if (!compareVec3(Az, By)) {
                     L = glm::cross(Az, By);
                     break;
                 }
                 i++;
             case 13:
-                if (Az != Bz) {
+                if (!compareVec3(Az, Bz)) {
                     L = glm::cross(Az, Bz);
                     break;
                 }

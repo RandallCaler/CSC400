@@ -495,9 +495,9 @@ public:
 		for (unsigned int i = 0; i < hmap_dim.second; i++) {
 			for (unsigned int j = 0; j < hmap_dim.first; j++) {
 				bool pit;
-				unsigned char hvalr = *(hmap_data + 3 * (i * hmap_dim.first + j));
-				unsigned char hvalg = *(hmap_data + 3 * (i * hmap_dim.first + j) + 1);
-				unsigned char hvalb = *(hmap_data + 3 * (i * hmap_dim.first + j) + 2);
+				float hvalr = (float)*(hmap_data + 3 * (i * hmap_dim.first + j));
+				float hvalg = (float)*(hmap_data + 3 * (i * hmap_dim.first + j) + 1);
+				float hvalb = (float)*(hmap_data + 3 * (i * hmap_dim.first + j) + 2);
 				float hval = (hvalr + hvalg + hvalb) / (3 * 255.0f);
 				//float hval = (std::max)(hvalr, (std::max)(hvalg, hvalb)) / 255.0f;
 				
