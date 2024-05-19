@@ -1,6 +1,8 @@
 #include "Collider.h"
 #include "Entity.h"
 
+#include <math.h>
+
 
 Collider::Collider(){};
 
@@ -42,14 +44,53 @@ float Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap) {
     unsigned char* texData = hMap->getData();
     if (pixelSpaceX >= 0 && pixelSpaceX <= texDim.first && pixelSpaceZ >= 0 && pixelSpaceZ <= texDim.second) {
 
-        int index = 3 * ((int)pixelSpaceZ * texDim.first + (int)pixelSpaceX);
-
-        float r = (float)texData[index];
-        float g = (float)texData[index + 1];
-        float b = (float)texData[index + 2];
+        int pixelIndexZ = (int)roundf(pixelSpaceZ);
+        int pixelIndexX = (int)roundf(pixelSpaceX);
+        int index = 3 * (pixelIndexZ * texDim.first + pixelIndexX);
         
+        // float weights[4];
+
+        // weights[0] = std::max(1 - glm::length(vec2(pixelIndexX - 1 - pixelSpaceX, pixelIndexZ - 1 - pixelSpaceZ)), 0.0f);
+        // weights[1] = std::max(1 - glm::length(vec2(pixelIndexX - pixelSpaceX, pixelIndexZ - 1 - pixelSpaceZ)), 0.0f);
+        // weights[2] = std::max(1 - glm::length(vec2(pixelIndexX - 1 - pixelSpaceX, pixelIndexZ - pixelSpaceZ)), 0.0f);
+        // weights[3] = std::max(1 - glm::length(vec2(pixelIndexX - pixelSpaceX, pixelIndexZ - pixelSpaceZ)), 0.0f);
+        // printf("weights: %.3f %.3f %.3f %.3f \n", weights[0], weights[1], weights[2], weights[3]);
+        float r, g, b = 0.0f;
+
+        // if (pixelIndexX > 0 && pixelIndexZ > 0) {
+        //     int index = 3 * ((pixelIndexZ - 1) * texDim.first + pixelIndexX - 1);
+        //     r += (float)texData[index] * weights[0];
+        //     g += (float)texData[index + 1] * weights[0];
+        //     b += (float)texData[index + 2] * weights[0];
+        // }
+
+        // if (pixelIndexX < texDim.first && pixelIndexZ > 0) {
+        //     int index = 3 * ((pixelIndexZ - 1) * texDim.first + pixelIndexX);
+        //     r += (float)texData[index] * weights[1];
+        //     g += (float)texData[index + 1] * weights[1];
+        //     b += (float)texData[index + 2] * weights[1];
+        // }
+        
+        // if (pixelIndexX > 0 && pixelIndexZ < texDim.second) {
+        //     int index = 3 * ((pixelIndexZ) * texDim.first + pixelIndexX - 1);
+        //     r += (float)texData[index] * weights[2];
+        //     g += (float)texData[index + 1] * weights[2];
+        //     b += (float)texData[index + 2] * weights[2];
+        // }
+
+        // if (pixelIndexX < texDim.first && pixelIndexZ < texDim.second) {
+        //     int index = 3 * ((pixelIndexZ) * texDim.first + pixelIndexX);
+        //     r += (float)texData[index] * weights[3];
+        //     g += (float)texData[index + 1] * weights[3];
+        //     b += (float)texData[index + 2] * weights[3];
+        // }
+
+        r = (float)texData[index];
+        g = (float)texData[index + 1];
+        b = (float)texData[index + 2];
+
         //float p0 = (std::max)(r, (std::max)(g, b)) / 3;
-        float p0 = (r + g + b) / 3;
+        float p0 = (r + g + b) / 3;// / (weights[0] + weights[1] + weights[2] + weights[3]);
         
         return (p0 / UCHAR_MAX - 0.5) * ground.scale.y + ground.origin.y;
     }
@@ -114,7 +155,6 @@ glm::vec4 Collider::getCollisionPlane(glm::vec3 bbScale, glm::mat4 rot, std::sha
         // printf("no z\n");
     }
     normOut += x;
-    printf("%.3fx + %.3fy + %.3fz = %.3f\n", normOut.x, normOut.y, normOut.z, normOut.w);
     return normOut;
 }
 
@@ -209,14 +249,12 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
                 i++;
             case 9:
                 if (!compareVec3(Ay, By)) {
-                    printf("cross Ay By\nAy: %.4f %.4f %.4f\nBy: %.4f %.4f %.4f\n", Ay.x, Ay.y, Ay.z, By.x, By.y, By.z);
                     L = glm::cross(Ay, By);
                     break;
                 }
                 i++;
             case 10:
                 if (!compareVec3(Ay, Bz)) {
-                    printf("cross Ay Bz\n");
                     L = glm::cross(Ay, Bz);
                     break;
                 }

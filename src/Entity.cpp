@@ -104,14 +104,22 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
     
     vec3 oldPosition = position;
     vec3 newPosition = position + vec3(deltaX, 0, deltaZ);
-    vec3 groundCheckPos = newPosition + vec3((distance + scaleVec.z) * sin(rotY), 0, (distance + scaleVec.z) * cos(rotY));
+    vec3 groundCheckPos = newPosition + vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
 
     // get ground samples
     float groundHeight0 = collider->CheckGroundCollision(hmap);
+    printf("ground at %.3f\n", groundHeight0);
     position = groundCheckPos;    
     float groundHeight = collider->CheckGroundCollision(hmap);
+    groundCheckPos = newPosition - vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
+    position = groundCheckPos;    
+    float groundHeightB = collider->CheckGroundCollision(hmap);
+    if (groundHeight < groundHeightB) {
+        printf("diff: %.5f %.5f %.5f \n", groundHeightB, groundHeight, groundHeightB-groundHeight);
+        groundHeight = groundHeightB;
+    }
     float entityHeight = scaleVec.y/2;
-    float distanceFromGround = groundHeight - (position.y - entityHeight);
+    // float distanceFromGround = groundHeight - (position.y - entityHeight);
 
     // ground climbing
     bool climbable = groundHeight - groundHeight0 < SLOPE_TOLERANCE;
@@ -128,6 +136,7 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
     // uses the terrain height to prevent character from indefinitely falling
 
      // FALLING physics
+    //  printf("y: %.3f \n", position.y);
     if (position.y < groundHeight + entityHeight) {
         grounded = true;
         gliding = false;
