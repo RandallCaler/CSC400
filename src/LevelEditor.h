@@ -6,9 +6,7 @@
 #include <imgui_impl_opengl3.h>
 #include <stdio.h>
 #include <iostream>
-#include <sys/stat.h>
-#include "dirent.h"
-#include <conio.h>
+#include <filesystem>
 #include <string>
 #include <map>
 #include "Entity.h"

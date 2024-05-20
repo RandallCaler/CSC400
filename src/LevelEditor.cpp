@@ -37,34 +37,29 @@ void LevelEditor::Update() {
 }
 
 void LevelEditor::FindMesh() {
-    struct dirent* d;
-    struct stat dst;
-    DIR* dr;
-    
-    dr = opendir(resourceDir.c_str());
+    namespace fs = filesystem;
+    vector<string> meshFiles;
 
-    if (dr != NULL) {
-        for (d = readdir(dr); d != NULL; d = readdir(dr)) {
-            string fileName = d->d_name;
-            if (fileName == "." || fileName == "..") continue;
-            string fullPath = resourceDir + "/" + fileName;
-            if (stat(fullPath.c_str(), &dst) == 0) {  // Check file status; ensure stat call is successful
-                if (S_ISREG(dst.st_mode)) {  // Check if it's a regular file
-                    if (fullPath.substr(fullPath.length() - 4) == ".obj") {  // Check for .obj extension
-                        meshFiles.push_back(fileName);  // Add to list if it's an .obj file
-                    }
+    try {
+        fs::path resourcePath(resourceDir);
+
+        if (fs::exists(resourcePath) && fs::is_directory(resourcePath)) {
+            for (const auto& entry : fs::directory_iterator(resourcePath)) {
+                if (entry.is_regular_file() && entry.path().extension() == ".obj") {
+                    meshFiles.push_back(entry.path().filename().string());
                 }
             }
-            else {
-                cerr << "Failed to get stats for " << fullPath << endl;
-            }
         }
-        closedir(dr);
+        else {
+            cerr << "Failed to open directory: " << resourceDir << endl;
+        }
     }
-    else {
-        cerr << "Failed to open directory: " << resourceDir << endl;
+    catch (const fs::filesystem_error& e) {
+        cerr << "Filesystem error: " << e.what() << endl;
     }
 
+    // Assuming you want to store the meshFiles in the class member
+    this->meshFiles = meshFiles;
 }
 
 void LevelEditor::MeshList() {
