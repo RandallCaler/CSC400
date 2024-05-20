@@ -20,12 +20,10 @@
 #include "ImportExport.h"
 #include "Camera.h"
 #include "LevelEditor.h"
+#include "EventManager.h"
 
 #include <chrono>
 #include <array>
-
-#define MINIAUDIO_IMPLEMENTATION
-#include "../ext/miniaudio/miniaudio.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
@@ -56,6 +54,8 @@ float deltaTime;
 Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
 Camera freeCam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5), true);
 Camera* activeCam = &cam;
+
+ma_engine engine;
 
 class Application : public EventCallbacks
 {
@@ -391,6 +391,20 @@ public:
 				player = ent.second;
 			}
 		}
+
+	}
+
+	int initSoundEngines(){
+		ma_result result = ma_engine_init(NULL, &engine);
+		if (result != MA_SUCCESS) {
+			printf("Failed to initialize audio engine.");
+			return -1;
+		}
+		return 0;
+	}
+
+	void uninitSoundEngines(){
+		ma_engine_uninit(&engine);
 	}
 
 	void initGeom(const std::string& resourceDirectory)
@@ -900,16 +914,13 @@ int main(int argc, char *argv[]) {
 
 	application->init(resourceDir);
 	application->initGeom(resourceDir);
+	application->initSoundEngines();
 
 	ma_result result;
-	ma_engine engine;
+	ma_sound sound;
 
-	result = ma_engine_init(NULL, &engine);
-	if (result != MA_SUCCESS) {
-		printf("Failed to initialize audio engine.");
-		return -1;
-	}
-
+	ma_sound_init_from_file(&engine, "../resources/cute-world.mp3", 0, NULL, NULL, &sound);
+	ma_sound_start(&sound);
 	ma_engine_play_sound(&engine, "../resources/music.mp3", NULL);
 
 	float dt = 1 / 60.0;
@@ -947,8 +958,7 @@ int main(int argc, char *argv[]) {
 		glfwPollEvents();
 	}
 
-	ma_engine_uninit(&engine);
-
+	application->uninitSoundEngines();
 	application->leGUI->Shutdown();
 	windowManager->shutdown();
 	
