@@ -25,7 +25,7 @@
 #include <array>
 
 #define MINIAUDIO_IMPLEMENTATION
-#include "miniaudio.h"
+#include "../ext/miniaudio/miniaudio.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
@@ -869,19 +869,6 @@ public:
 	}
 };
 
-void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
-{
-    ma_decoder* pDecoder = (ma_decoder*)pDevice->pUserData;
-    if (pDecoder == NULL) {
-        return;
-    }
-
-    ma_decoder_read_pcm_frames(pDecoder, pOutput, frameCount, NULL);
-
-    (void)pInput;
-}
-
-
 
 int main(int argc, char *argv[]) {
 	// Where the resources are loaded from
@@ -890,12 +877,6 @@ int main(int argc, char *argv[]) {
 	if (argc >= 2) {
 		resourceDir = argv[1];
 	}
-
-	ma_result result;
-    ma_decoder decoder;
-    ma_device_config deviceConfig;
-    ma_device device;
-
 
 	// printf("OpenGL Version: %s\n", glGetString(GL_VERSION));
 	// printf("Renderer: %s\n", glGetString(GL_RENDERER));
@@ -920,37 +901,21 @@ int main(int argc, char *argv[]) {
 	application->init(resourceDir);
 	application->initGeom(resourceDir);
 
+	ma_result result;
+	ma_engine engine;
+
+	result = ma_engine_init(NULL, &engine);
+	if (result != MA_SUCCESS) {
+		printf("Failed to initialize audio engine.");
+		return -1;
+	}
+
+	ma_engine_play_sound(&engine, "../resources/music.mp3", NULL);
+
 	float dt = 1 / 60.0;
 	auto lastTime = chrono::high_resolution_clock::now();
 
 	application->leGUI->Init(windowManager->getHandle());
-
-	result = ma_decoder_init_file("jazz.wav", NULL, &decoder);
-    if (result != MA_SUCCESS) {
-        cout << "file not init: " << ma_result_description(result) << endl;
-        return -2;
-    }
-
-	deviceConfig = ma_device_config_init(ma_device_type_playback);
-    deviceConfig.playback.format   = decoder.outputFormat;
-    deviceConfig.playback.channels = decoder.outputChannels;
-    deviceConfig.sampleRate        = decoder.outputSampleRate;
-    deviceConfig.dataCallback      = data_callback;
-    deviceConfig.pUserData         = &decoder;
-
-    if (ma_device_init(NULL, &deviceConfig, &device) != MA_SUCCESS) {
-        printf("Failed to open playback device.\n");
-        ma_decoder_uninit(&decoder);
-        return -3;
-    }
-
-    if (ma_device_start(&device) != MA_SUCCESS) {
-        printf("Failed to start playback device.\n");
-        ma_device_uninit(&device);
-        ma_decoder_uninit(&decoder);
-        return -4;
-    }
-
 
 	// Loop until the user closes the window.
 	while (!glfwWindowShouldClose(windowManager->getHandle()))
@@ -982,8 +947,7 @@ int main(int argc, char *argv[]) {
 		glfwPollEvents();
 	}
 
-	ma_device_uninit(&device);
-    ma_decoder_uninit(&decoder);
+	ma_engine_uninit(&engine);
 
 	application->leGUI->Shutdown();
 	windowManager->shutdown();
