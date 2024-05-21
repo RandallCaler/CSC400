@@ -4,9 +4,10 @@
 
 Collider::Collider(){};
 
-Collider::Collider(Entity *owner) : worldMin(owner->minBB), worldMax(owner->maxBB)
+Collider::Collider(Entity *owner, bool collectible) : worldMin(owner->minBB), worldMax(owner->maxBB)
 {
     this->owner = owner;
+    this->collectible = collectible;
 }
 
 //void Collider::CheckCollision(std::vector<Entity> entities, int thisID)
@@ -244,20 +245,24 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
 
 glm::vec4 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<Entity>>& entities)
 {
-    for(int i = 0; i < entities.size(); i++){
+    glm::vec4 collisionPlane = vec4(0);
+    colliding = false;
+    for(int i = 0; i < entities.size(); i++) {
         shared_ptr<Entity> e = entities[i];
         if (entityId != e->id) {
-            glm::vec4 collisionPlane = orientedCollision(deltaTime, e);
-            if (collisionPlane != glm::vec4(0)) {
-                colliding = true;
-                return collisionPlane;
-            }
-            else {
-                colliding = false;
+            glm::vec4 newCPlane = orientedCollision(deltaTime, e);
+            collisionPlane += newCPlane;
+            if (newCPlane != glm::vec4(0)) {
+                if (e->id == 0 && collectible) {
+                    owner->position.y += 100;
+                }
+                else {
+                    colliding = true;
+                }
             }
         }
     }
-    return glm::vec4(0);
+    return collisionPlane;
 }
 
 void Collider::UpdateColliderSize(){
