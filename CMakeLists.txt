@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.4)
 include("${CMAKE_SOURCE_DIR}/FindGfxLibs.cmake")
 
 # Name of the project
-project(Camera)
+project(Penguin)
 
 # Enforce use of C++14
-set(CMAKE_CXX_STANDARD_REQUIRED 14)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED 17)
+set(CMAKE_CXX_STANDARD 17)
 
 # Use glob to get the list of all source files.
 file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp" "${CMAKE_SOURCE_DIR}/ext/*/*.cpp" "${CMAKE_SOURCE_DIR}/ext/glad/src/*.c")
