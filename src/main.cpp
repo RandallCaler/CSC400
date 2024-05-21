@@ -19,6 +19,7 @@
 #include "ShaderManager.h"
 #include "ImportExport.h"
 #include "Camera.h"
+#include "LevelEditor.h"
 
 #include <chrono>
 #include <array>
@@ -39,9 +40,13 @@ using namespace glm;
 // Where the resources are loaded from
 std::string resourceDir = "../resources";
 std::string WORLD_FILE_NAME = "/world.txt";
+bool editMode = false;
 
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Entity>> worldentities;
+vector<string> tagList = { "" };
+
+shared_ptr<Entity> cur_entity = NULL;
 
 float deltaTime;
 // 	view pitch dist angle playerpos playerrot animate g_eye
@@ -61,16 +66,18 @@ public:
 	//Our shader program for textures
 	// shared_ptr<Shader> tex;
 
-	bool editMode = false;
+	shared_ptr<Entity> player;
+
+	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities, &tagList);
 
 	shared_ptr<Program> DepthProg;
 	GLuint depthMapFBO;
 	const GLuint S_WIDTH = 1024, S_HEIGHT = 1024;
 	GLuint depthMap;
 
-	vec3 light_vec = vec3(-1.0, -1.0, 1.0);
-
-	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities);
+	vec3 light_vec = vec3(1.0, 2.5, 1.0);
+  
+	LevelEditor* leGUI = new LevelEditor();
 
 	std::vector<shared_ptr<Shape>> butterfly;
 
@@ -113,15 +120,12 @@ public:
 	//bounds for world
 	double bounds;
 
-	// temp variables, should be incorporated into controller
-	map<string, shared_ptr<Entity>>::iterator activeEntity;
 	float editSpeed = 2.0;
 	int editSRT = 0; // 0 - translation, 1 - rotation, 2 - scale
-	vec3 mobileVel = vec3(0);
 
 	// hmap for terrain
 	shared_ptr<Texture> hmap;
-	vec3 groundPos = vec3(0);
+	vec3 groundPos = vec3(0, 0, 0);
 	
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -130,7 +134,7 @@ public:
 			glfwSetWindowShouldClose(window, GL_TRUE);
 		}
 
-		if (key == GLFW_KEY_CAPS_LOCK && action == GLFW_PRESS) {
+		if (key == GLFW_KEY_L && action == GLFW_PRESS && !leGUI->diableInput) {
 			editMode = !editMode;
 			editSRT = 0;
 			editSpeed = 2.0;
@@ -139,47 +143,20 @@ public:
 			}
 			else {
 				activeCam = &cam;
+				for (auto ent : worldentities) {
+					if (ent.second->tag == "player") {
+						player = ent.second;
+					}
+				}
 			}
 		}
 
 		// KEY PRESSED
 
 		if (editMode) {
-			if (action == GLFW_PRESS) {
+			if (!leGUI->diableInput) {
+				if (action == GLFW_PRESS) {
 				switch (key) {
-					case GLFW_KEY_TAB:
-						activeEntity++;
-						if (activeEntity == worldentities.end()) {
-							activeEntity = worldentities.begin();
-						}
-						break;
-					case GLFW_KEY_UP:
-						mobileVel.z = editSpeed;
-						break;
-					case GLFW_KEY_DOWN:
-						mobileVel.z = -editSpeed;
-						break;
-					case GLFW_KEY_LEFT:
-						mobileVel.x = editSpeed;
-						break;
-					case GLFW_KEY_RIGHT:
-						mobileVel.x = -editSpeed;
-						break;
-					case GLFW_KEY_E:
-						mobileVel.y = editSpeed;
-						break;
-					case GLFW_KEY_Q:
-						mobileVel.y = -editSpeed;
-						break;
-					case GLFW_KEY_Z:
-						editSRT = 2;
-						break;
-					case GLFW_KEY_X:
-						editSRT = 1;
-						break;
-					case GLFW_KEY_C:
-						editSRT = 0;
-						break;
 					case GLFW_KEY_W:
 						freeCam.vel.z = editSpeed;
 						break;
@@ -192,30 +169,22 @@ public:
 					case GLFW_KEY_D:
 						freeCam.vel.x = editSpeed;
 						break;
-					case GLFW_KEY_SPACE:
-						freeCam.vel.y = -editSpeed;
-						break;
-					case GLFW_KEY_LEFT_SHIFT:
-						freeCam.vel.y = editSpeed;
-						break;
 					case GLFW_KEY_V:
 						levelEditor->saveToFile(WORLD_FILE_NAME);
+						break;
+					case GLFW_KEY_F:
+						if (cur_entity != NULL) {
+							freeCam.cameraPos = cur_entity->position + vec3(0,2,2);
+							freeCam.pitch = atan((freeCam.cameraPos.z - cur_entity->position.z) /
+								(freeCam.cameraPos.y - cur_entity->position.y));
+							freeCam.angle = 0;
+						}
+						break;
+					}
 				}
-			}
+			}			
 			if (action == GLFW_RELEASE) {
 				switch (key) {
-					case GLFW_KEY_UP:
-					case GLFW_KEY_DOWN:
-						mobileVel.z = 0.0;
-						break;
-					case GLFW_KEY_LEFT:
-					case GLFW_KEY_RIGHT:
-						mobileVel.x = 0.0;
-						break;
-					case GLFW_KEY_E:
-					case GLFW_KEY_Q:
-						mobileVel.y = 0.0;
-						break;
 					case GLFW_KEY_W:
 					case GLFW_KEY_S:
 						freeCam.vel.z = 0.0;
@@ -223,10 +192,6 @@ public:
 					case GLFW_KEY_A:
 					case GLFW_KEY_D:
 						freeCam.vel.x = 0.0;
-						break;
-					case GLFW_KEY_SPACE:
-					case GLFW_KEY_LEFT_SHIFT:
-						freeCam.vel.y = 0.0;
 						break;
 				}
 			}
@@ -291,7 +256,7 @@ public:
 			}
 
 			// Entity *catptr = &catEnt;
-			ih.handleInput(worldentities["bunny"].get(), &cam, deltaTime);
+			ih.handleInput(player.get(), &cam, deltaTime);
 		}
 	}
 
@@ -301,12 +266,12 @@ public:
 			// cout << "INSIDE SCROLL CALLBACK BUNNY MOVEMENT" << endl;
 			//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
 			cam.angle -= 10 * (deltaX / 57.296);
-			// ih.setRotation(worldentities["bunny"].get(), -10 * (deltaX / 57.296));
+			// ih.setRotation(player.get(), -10 * (deltaX / 57.296));
 
 		}
 		else {
 			cam.angle -= 10 * (deltaX / 57.296);
-			// ih.setRotation(worldentities["bunny"].get(), -10 * (deltaX / 57.296));
+			// ih.setRotation(player.get(), -10 * (deltaX / 57.296));
 
 		}
 
@@ -459,6 +424,12 @@ public:
 		hmap->setFilename(resourceDirectory + "/hmap.png");
 		hmap->initHmap();
 		initShadow();
+
+		for (auto ent : worldentities) {
+			if (ent.second->tag == "player") {
+				player = ent.second;
+			}
+		}
 	}
 
 	void initGeom(const std::string& resourceDirectory)
@@ -524,19 +495,31 @@ public:
 		}
     
 		// IMPORT BUNNY
-		worldentities["bunny"]->m.forward = vec4(0, 0, 0.1, 1);
-		worldentities["bunny"]->m.velocity = vec3(0.1) * vec3(worldentities["bunny"]->m.forward);
+		player->m.forward = vec4(0, 0, 0.1, 1);
+		player->m.velocity = vec3(0.1) * vec3(player->m.forward);
 
-		worldentities["bunny"]->collider = new Collider(worldentities["bunny"].get());
-		worldentities["bunny"]->collider->SetEntityID(worldentities["bunny"]->id);
-		//cout << "cat " << worldentities["bunny"]->id << endl;
-		worldentities["bunny"]->collider->entityName = 'p';
+		player->collider = new Collider(player.get());
+		player->collider->SetEntityID(player->id);
+		//cout << "cat " << player->id << endl;
+		player->collider->entityName = 'p';
 
 		
 		worldentities["cube1"]->collider = new Collider(worldentities["cube1"].get());
 		worldentities["cube1"]->collider->SetEntityID(worldentities["cube1"]->id);
-		//cout << "cat " << worldentities["bunny"]->id << endl;
 		worldentities["cube1"]->collider->entityName = 'c';
+
+		worldentities["cube2"]->collider = new Collider(worldentities["cube2"].get());
+		worldentities["cube2"]->collider->SetEntityID(worldentities["cube2"]->id);
+		worldentities["cube2"]->collider->entityName = 'c';
+
+		worldentities["cube3"]->collider = new Collider(worldentities["cube3"].get());
+		worldentities["cube3"]->collider->SetEntityID(worldentities["cube3"]->id);
+		worldentities["cube3"]->collider->entityName = 'c';
+
+		worldentities["cheese"]->collider = new Collider(worldentities["cheese"].get(), true);
+		worldentities["cheese"]->collider->SetEntityID(worldentities["cheese"]->id);
+		worldentities["cheese"]->collider->entityName = 'c';
+
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initHMapGround();
@@ -558,6 +541,8 @@ public:
 				unsigned char hvalg = *(hmap_data + 3 * (i * hmap_dim.first + j) + 1);
 				unsigned char hvalb = *(hmap_data + 3 * (i * hmap_dim.first + j) + 2);
 				float hval = (hvalr + hvalg + hvalb) / (3 * 255.0f);
+				//float hval = (std::max)(hvalr, (std::max)(hvalg, hvalb)) / 255.0f;
+				
 				pit = hval < .01;
 
 
@@ -633,7 +618,8 @@ public:
 
 		g_GiboLen = indices.size();
 
-		worldentities["bunny"]->collider->SetGround(groundPos, vec3(1,Y_MAX-Y_MIN,1));
+		player->collider->SetGround(groundPos, vec3(1,Y_MAX-Y_MIN,1));
+
       }
 	
       //code to draw the ground plane
@@ -693,7 +679,7 @@ public:
 		butterfly_loc[2] = vec3(4, -1, 4);
  
 
-		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["butterfly1"], worldentities["bunny"]};
+		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["butterfly1"], player};
 
 		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -732,7 +718,7 @@ public:
 		DepthProg->unbind();
 
 
-		// int collided = worldentities["bunny"]->collider->CheckCollision(tempCollisionList);
+		// int collided = player->collider->CheckCollision(tempCollisionList);
 
 
 		bounds = std::sqrt(   //update cat's distance from skybox
@@ -781,7 +767,7 @@ public:
 		butterfly_loc[2] = vec3(4, -1, 4);
  
 
-		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["bunny"]};
+		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["cube2"], worldentities["cube3"], player};
 
 		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -797,7 +783,6 @@ public:
 		// 		entity->collider->CalculateBoundingBox(entity->modelMatrix);
 		// 	}
 		// }
-
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 			if (shaders[entity->defaultShaderName] != curS) {
@@ -806,7 +791,7 @@ public:
 				curS->prog->bind();
 				glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 				activeCam->SetView(curS->prog);
-			}
+			}	
 			if (shaders["skybox"] == curS) {
 				entity->position = activeCam->cameraPos;
 				// skybox is always the furthest surface away
@@ -815,7 +800,7 @@ public:
 
 			if (entity->collider) {
 				vec4 colNorm =entity->collider->CheckCollision(deltaTime, tempCollisionList);
-				if (entity->id == worldentities["bunny"]->id) {
+				if (entity->id == player->id) {
 					entity->updateMotion(deltaTime, hmap, colNorm);
 				}
 			}
@@ -934,7 +919,6 @@ public:
 	
 
 		curS->prog->unbind();
-
 		curS = shaders["hmap"];
 
 		curS->prog->bind();
@@ -946,7 +930,7 @@ public:
 		drawGround(curS);  //draw ground here
 
 
-		// int collided = worldentities["bunny"]->collider->CheckCollision(tempCollisionList);
+		// int collided = player->collider->CheckCollision(tempCollisionList);
 
 
 		bounds = std::sqrt(   //update cat's distance from skybox
@@ -956,6 +940,13 @@ public:
 
 		// Pop matrix stacks.
 		Projection->popMatrix();
+
+		// editor mode 
+		if (editMode) {
+			leGUI->NewFrame();
+			leGUI->Update();
+			leGUI->Render();
+		}
 	}
 	
 
@@ -992,26 +983,9 @@ public:
 		glActiveTexture(GL_TEXTURE1);
   		glBindTexture(GL_TEXTURE_2D, depthMap);
 		
-		//worldentities["bunny"]->updateMotion(frametime, hmap);
-		cam.player_pos = worldentities["bunny"]->position;
+		//player->updateMotion(frametime, hmap);
+		cam.player_pos = player->position;
 
-		//Use the matrix stack for Lab 6
-		if (editMode) {
-			switch (editSRT) {
-				case 0:
-					activeEntity->second->position += mobileVel * frametime;
-					break;
-				case 1:
-					activeEntity->second->rotX += mobileVel.x * frametime;
-					activeEntity->second->rotY += mobileVel.y * frametime;
-					activeEntity->second->rotZ += mobileVel.z * frametime;
-					break;
-				case 2:
-					// activeEntity->second->scale += mobileVel.x * frametime;
-					activeEntity->second->scaleVec += mobileVel * frametime;
-					break;
-			}
-		}
 		
       	LSpace = LO*LV;
 		float aspect = width/(float)height;
@@ -1061,7 +1035,8 @@ int main(int argc, char *argv[]) {
 
 	float dt = 1 / 60.0;
 	auto lastTime = chrono::high_resolution_clock::now();
-	application->activeEntity = worldentities.begin();
+
+	application->leGUI->Init(windowManager->getHandle());
 
 	// Loop until the user closes the window.
 	while (!glfwWindowShouldClose(windowManager->getHandle()))
@@ -1086,6 +1061,7 @@ int main(int argc, char *argv[]) {
 		activeCam->updateCamera(deltaTime);
 		// Render scene.
 		application->render(deltaTime);
+			
 
 		// Swap front and back buffers.
 		glfwSwapBuffers(windowManager->getHandle());
@@ -1093,7 +1069,9 @@ int main(int argc, char *argv[]) {
 		glfwPollEvents();
 	}
 
+	application->leGUI->Shutdown();
 	windowManager->shutdown();
+	
 
 	return 0;
 }

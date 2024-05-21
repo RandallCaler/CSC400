@@ -78,9 +78,11 @@ public:
     bool gliding = false;
     string defaultShaderName;
     glm::mat4 modelMatrix;
+    string tag;
 
     glm::vec3 minBB;
     glm::vec3 maxBB;
+
 };
 
 #endif

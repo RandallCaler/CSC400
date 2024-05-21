@@ -1,9 +1,10 @@
 #include "ImportExport.h"
 
-ImporterExporter::ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities) {
+ImporterExporter::ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList) {
 	// mutable references to main's shaders and entities
 	this->shaders = shaders;
 	this->worldentities = worldentities;
+	this->tagList = tagList;
 }
 
 ImporterExporter::~ImporterExporter() {
@@ -150,6 +151,8 @@ void ImporterExporter::loadEntity() {
 	
 	string id = readString();
 
+	string tag = readString();
+
 	string shader = readString();
 
 	int numShapes = readInt();
@@ -182,6 +185,12 @@ void ImporterExporter::loadEntity() {
 	newEntity->initEntity(entityShapes, entityTextures);
 	newEntity->materials = entityMats;
 	newEntity->defaultShaderName = shader;
+
+	newEntity->tag = tag;
+	if (find(tagList->begin(), tagList->end(), tag) == tagList->end()) {
+		tagList->push_back(tag);
+	}
+
 
 	// import entity spatial properties
 	newEntity->position.x = readFloat();
@@ -216,7 +225,6 @@ void ImporterExporter::loadFromFile(string path) {
 
 	// parse each line in the savefile
 	while (getline(saveFile, buffer)) {
-		cout << "this happened" << endl;
 		// interpret line according to syntax designator at the start of the line
 		char type = buffer[0];
 		buffer = buffer.substr(2);
@@ -245,7 +253,7 @@ string ImporterExporter::shadersToText(){
 	// iterate through every shader and convert its properties to a string
 	for (auto shaderIter = shaders->begin(); shaderIter != shaders->end(); shaderIter++) {
         string tag = "1 " + shaderIter->first + ' ';
-        string files = "/" + findFilename(shaderIter->second->prog->getVShaderName()) + " /" 
+        string files = findFilename(shaderIter->second->prog->getVShaderName()) + " " 
 			+ findFilename(shaderIter->second->prog->getFShaderName()) + " ";
 
 		// process the uniforms
@@ -291,11 +299,11 @@ string ImporterExporter::shapesToText(){
 	return result;
 }
 
-// Entities: 3 entityID numShapes [shapeID1...] transX transY transZ rotX rotY rotZ scaleX scaleY scaleZ
+// Entities: 3 entityID tag numShapes [shapeID1...] transX transY transZ rotX rotY rotZ scaleX scaleY scaleZ
 string ImporterExporter::entitiesToText(){
 	string result = "";
 	for (auto entityIter = worldentities->begin(); entityIter != worldentities->end(); entityIter++) {
-		string entityInfo = "3 " + entityIter->first + " " + entityIter->second->defaultShaderName + " " + to_string(entityIter->second->objs.size()) + " ";
+		string entityInfo = "3 " + entityIter->first + " " + entityIter->second->tag +  " " + entityIter->second->defaultShaderName + " " + to_string(entityIter->second->objs.size()) + " ";
 		for (auto shape : entityIter->second->objs) {
 			entityInfo += shape->getName() + " ";
 		}

@@ -2,7 +2,7 @@
 
 #define WALK_SPEED 7.0
 #define TURN_SPEED 25.0
-#define JUMP_HEIGHT 14.0
+#define JUMP_HEIGHT 7.0
 
 InputHandler::InputHandler() {
     for (int i = 0; i < IN_SIZE; i++) {

@@ -27,9 +27,10 @@ public:
     };
     
     char entityName;
+    bool collectible;
 
     Collider();
-    Collider(Entity *owner);
+    Collider(Entity *owner, bool collectible = false);
     void UpdateColliderSize();
     float CheckGroundCollision(std::shared_ptr<Texture> hMap);
     glm::vec4 CheckCollision(float deltaTime, std::vector<std::shared_ptr<Entity>>& entities);
