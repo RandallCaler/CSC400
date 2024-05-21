@@ -355,12 +355,13 @@ int ImporterExporter::saveToFile(string outFileName){
 	if(outFile.is_open()){
 		outFile << "// Shaders: 1 shaderID vertexSFile fragSFile numUniforms [uniform1...] numAttributes [attribute1...]" << endl;
 		outFile << shadersToText();
+		outFile << "// Textures: 4 ..." << endl;
+		outFile << texturesToText();
 		outFile << "// Shapes: 2 shapeID objFile objShapeName matAmbX matAmbY matAmbZ matDifX matDifY matDifZ matSpecX matSpecY matSpecZ matShine" << endl;
 		outFile << shapesToText();
 		outFile << "// Entities: 3 entityID numShapes [shapeID1...] transX transY transZ rotX rotY rotZ scaleX scaleY scaleZ" << endl;
 		outFile << entitiesToText();
-		outFile << "// Textures: 4 ..." << endl;
-		outFile << texturesToText();
+
 		outFile.close();
 		cout << "World saved to file " << outFileName << endl;
 	}
