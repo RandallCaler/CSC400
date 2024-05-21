@@ -243,3 +243,8 @@ void LevelEditor::Shutdown() {
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 }
+
+void LevelEditor::setCurName(string name)
+{
+    cur_name = name;
+}

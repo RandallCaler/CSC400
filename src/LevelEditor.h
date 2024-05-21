@@ -33,6 +33,7 @@ class LevelEditor {
 		shared_ptr<Entity> Inspector(shared_ptr<Entity> entity);
 		void Render();
 		void Shutdown();
+		void setCurName(string name);
 		bool diableInput = false;
 
 	private:

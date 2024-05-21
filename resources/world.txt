@@ -1,11 +1,10 @@
 // Shaders: 1 shaderID vertexSFile fragSFile numUniforms [uniform1...] numAttributes [attribute1...]
+1 edit ///edit_vert.glsl ///edit_frag.glsl 4 M P PickingColor V 2 vertNor vertPos 
 1 hmap /hmap_vert.glsl /hmap_frag.glsl 6 LS M P V lightDir shadowDepth 2 vertNor vertPos 
 1 reg /simple_vert.glsl /simple_frag.glsl 11 LS M P V albedo emissivity lightColor lightDir reflectance roughness shadowDepth 3 vertNor vertPos vertTex 
 1 skybox /skybox_vert.glsl /skybox_frag.glsl 4 M P Texture0 V 3 vertNor vertPos vertTex 
 1 tex /tex_vert.glsl /tex_frag0.glsl 13 LS M P Texture0 V albedo emissivity flip lightColor lightDir reflectance roughness shadowDepth 3 vertNor vertPos vertTex 
-4 cheeseTex /cheese_Base_color.png
-1 edit ///edit_vert.glsl ///edit_frag.glsl 4 M V P PickingColor 2 vertPos vertNor
-4 sky /sky.jpg
+// Shapes: 2 shapeID objFile objShapeName matAmbX matAmbY matAmbZ matDifX matDifY matDifZ matSpecX matSpecY matSpecZ matShine
 2 bunny /bunny.obj Bunny 0.300000 0.300000 0.100000 0.500000 0.300000 0.400000 0.200000 0.230000 0.200000 0.600000 0.500000 0.500000 0.500000
 2 butterflyBody /butterfly.obj obj1 0.100000 0.100000 0.100000 0.020000 0.020000 0.020000 0.250000 0.230000 0.300000 0.900000 0.500000 0.500000 0.500000
 2 butterflyW1_A /butterfly.obj obj2 0.400000 0.200000 0.200000 0.940000 0.230000 0.200000 0.900000 0.230000 0.200000 0.600000 0.500000 0.500000 0.500000
@@ -17,7 +16,8 @@
 2 flowerB /flowernoNorm.obj flower 0.100000 0.100000 0.100000 0.940000 0.720000 0.220000 0.230000 0.230000 0.200000 100.000000 0.500000 0.500000 0.500000
 2 flowerC /flowernoNorm.obj flower 0.050000 0.150000 0.050000 0.240000 0.920000 0.410000 1.000000 1.000000 1.000000 1.000000 0.500000 0.500000 0.500000
 2 sphereSky /sphereWTex.obj Sphere 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000
-3 bunny player reg 1 bunny 0 12.655838 -6.049019 25.710739 0.000000 -8.312112 0.000000 1.000000 1.000000 1.000000
+// Entities: 3 entityID numShapes [shapeID1...] transX transY transZ rotX rotY rotZ scaleX scaleY scaleZ
+3 bunny player reg 1 bunny 0 12.930000 -6.153594 25.710739 0.000000 -8.312112 0.000000 1.000000 1.000000 1.000000
 3 butterfly1  reg 3 butterflyBody butterflyW1_A butterflyW2_A 0 -3.290000 -4.260000 19.600000 0.000000 0.000000 0.000000 0.700000 0.720000 0.700000
 3 cheese  tex 1 cheeseShape 1 cheeseTex -4.000000 -2.100000 9.180000 0.331613 -0.349066 0.043633 1.000000 1.000000 1.000000
 3 cube1  reg 1 cubeG 0 -8.740000 -4.040000 13.550000 0.000000 1.000000 0.000000 3.750000 0.530000 5.710000
@@ -29,5 +29,8 @@
 3 flower4  reg 1 flowerA 0 -4.350000 -4.100000 6.990000 0.000000 1.200000 0.000000 1.000000 1.000000 1.000000
 3 flower5  reg 1 flowerB 0 16.080000 -6.600000 16.730000 0.000000 -0.200000 0.000000 1.000000 1.000000 1.000000
 3 flower6  reg 1 flowerC 0 -9.300000 -4.300000 21.910000 0.000000 0.700000 0.000000 1.000000 1.000000 1.000000
-3 flower7  reg 1 flowerA 0 -4.800000 -4.200000 12.100000 0.000000 -0.162839 0.000000 1.000000 1.000000 1.000000
-3 skybox  skybox 1 sphereSky 1 sky -20.886614 5.014605 8.329345 0.000000 0.000000 0.000000 1000.000000 1000.000000 1000.000000
+3 flower7  reg 1 flowerA 0 -4.830000 -4.200000 12.100000 0.000000 -0.162839 0.000000 1.000000 1.000000 1.000000
+3 skybox  skybox 1 sphereSky 1 sky 0.000000 0.000000 4.000000 0.000000 0.000000 0.000000 1000.000000 1000.000000 1000.000000
+// Textures: 4 ...
+4 cheeseTex /cheese_Base_color.png
+4 sky /sky.jpg

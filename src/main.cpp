@@ -353,7 +353,7 @@ public:
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 			if(entity->id == pickedID){
-				cur_entity = entity;
+				leGUI->setCurName(i->first);
 				cout << "active entity is now " << pickedID << endl;
 				break;
 			}
