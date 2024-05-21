@@ -41,8 +41,8 @@ void Entity::initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<
         materials.push_back(m);
 
         // set diffuse mats, converting from [0,255]i to [0,1]f
-        material em = {0, 0, 0, r/255.0f, g/255.0f, b/255.0f, 0, 0, 0, 0};
-        editorMaterials.push_back(em);
+        color em = {r/255.0f, g/255.0f, b/255.0f};
+        editorColor = em;
 
         if (minBB.x > shapes[i]->min.x) minBB.x = shapes[i]->min.x;
         if (minBB.y > shapes[i]->min.y) minBB.y = shapes[i]->min.y;

@@ -1,7 +1,9 @@
+// Shaders: 1 shaderID vertexSFile fragSFile numUniforms [uniform1...] numAttributes [attribute1...]
 1 hmap ///hmap_vert.glsl ///hmap_frag.glsl 6 P V M LS lightDir shadowDepth 2 vertPos vertNor
 1 reg ///simple_vert.glsl ///simple_frag.glsl 11 P V M lightColor albedo reflectance emissivity roughness lightDir LS shadowDepth 3 vertPos vertNor vertTex
 1 skybox ///skybox_vert.glsl ///skybox_frag.glsl 4 M P Texture0 V 3 vertNor vertPos vertTex 
 1 tex ///tex_vert.glsl ///tex_frag0.glsl 12 P V M LS lightDir shadowDepth MatAmb MatDif MatSpec MatShine flip Texture0 3 vertPos vertNor vertTex
+1 edit ///edit_vert.glsl ///edit_frag.glsl 4 M V P PickingColor 2 vertPos vertNor
 4 sky /sky.jpg
 2 bunny /bunny.obj Bunny 0.300000 0.300000 0.100000 0.500000 0.30000 0.400000 0.200000 0.230000 0.200000 0.600000 0.5000 0.5000 0.5000
 2 butterflyBody /butterfly.obj obj1 0.100000 0.100000 0.100000 0.020000 0.020000 0.020000 0.250000 0.230000 0.300000 9.000000 0.5000 0.5000 0.5000

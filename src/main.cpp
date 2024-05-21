@@ -437,7 +437,10 @@ public:
 		DepthProg->init();
 		DepthProg->addUniform("LP");
 		DepthProg->addUniform("LV");
+		DepthProg->addUniform("P");
+		DepthProg->addUniform("V");
 		DepthProg->addUniform("M");
+		DepthProg->addUniform("pickingColor");
 		DepthProg->addAttribute("vertPos");
 		DepthProg->addAttribute("vertNor");
 		DepthProg->addAttribute("vertTex");
@@ -743,8 +746,6 @@ public:
 
 	void drawObjects(float aspect, mat4 LSpace, float deltaTime) {
 	
-		shared_ptr<Shader> curS = shaders["reg"];
-
 		// Create the matrix stacks - please leave these alone for now
 		auto Projection = make_shared<MatrixStack>();
 		auto Model = make_shared<MatrixStack>();
@@ -761,6 +762,7 @@ public:
 		
 		
 		//material shader first
+		shared_ptr<Shader> curS = shaders["reg"];
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog);
@@ -817,32 +819,25 @@ public:
 					entity->updateMotion(deltaTime, hmap, colNorm);
 				}
 			}
-      
+	
 			glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 			glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
 			glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
 			// curS->setModel(*entity);
-      
+	
 			for (int i = 0; i < entity->objs.size(); i++) {
 				if (curS->has_texture) {
 					curS->flip(1);
-        			entity->textures[i]->bind(curS->prog->getUniform("Texture0"));
+					entity->textures[i]->bind(curS->prog->getUniform("Texture0"));
 				}
 
-				if(editMode)
-				{
-					curS->setMaterial(entity->editorMaterials[i]);
-				}
-				else
-				{
-					curS->setMaterial(entity->materials[i]);
-				}
+				curS->setMaterial(entity->materials[i]);
 
 				entity->objs[i]->draw(curS->prog);
 				
 				if (curS->has_texture) {
-    				entity->textures[i]->unbind();
+					entity->textures[i]->unbind();
 					curS->unbindTexture(0);
 				}
 			}
@@ -851,6 +846,92 @@ public:
 				glDepthFunc(GL_LESS);
 			}
 		}
+		
+
+		curS->prog->unbind();
+
+		curS = shaders["hmap"];
+
+		curS->prog->bind();
+		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
+		activeCam->SetView(curS->prog);
+		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
+		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
+      	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
+		drawGround(curS);  //draw ground here
+
+
+		// int collided = worldentities["bunny"]->collider->CheckCollision(tempCollisionList);
+
+
+		bounds = std::sqrt(   //update cat's distance from skybox
+			cam.player_pos[0] * cam.player_pos[0]
+			+ cam.player_pos[2] * cam.player_pos[2]
+		);
+
+		// Pop matrix stacks.
+		Projection->popMatrix();
+	}
+
+	void drawEditorObjects(float aspect, mat4 LSpace, float deltaTime) {
+	
+		// Create the matrix stacks - please leave these alone for now
+		auto Projection = make_shared<MatrixStack>();
+		auto Model = make_shared<MatrixStack>();
+
+
+		// Apply perspective projection.
+		Projection->pushMatrix();
+		Projection->perspective(45.0f, aspect, 0.01f, 1000.0f);
+
+		//material shader first
+		shared_ptr<Shader> curS = shaders["edit"];
+		curS->prog->bind();
+		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
+		activeCam->SetView(curS->prog);
+
+		float butterfly_height[3] = {1.1, 1.7, 1.5};
+
+		vec3 butterfly_loc[3];
+		butterfly_loc[0] = vec3(-2.3, -1, 3);
+		butterfly_loc[1] = vec3(-2, -1.2, -3);
+		butterfly_loc[2] = vec3(4, -1, 4);
+ 
+		cout << "line 897" << endl;
+	
+		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["bunny"]};
+
+		// BRDFmaterial imported from save file
+		map<string, shared_ptr<Entity>>::iterator i;
+
+		for (i = worldentities.begin(); i != worldentities.end(); i++) {
+			shared_ptr<Entity> entity = i->second;
+			entity->generateModel();
+		}
+		for (i = worldentities.begin(); i != worldentities.end(); i++) {
+			shared_ptr<Entity> entity = i->second;
+			// glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
+			// activeCam->SetView(curS->prog);
+					cout << "line 912" << endl;
+
+
+			if (entity->collider) {
+				vec4 colNorm =entity->collider->CheckCollision(deltaTime, tempCollisionList);
+				if (entity->id == worldentities["bunny"]->id) {
+					entity->updateMotion(deltaTime, hmap, colNorm);
+				}
+			}
+	
+			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
+	
+			for (int i = 0; i < entity->objs.size(); i++) {
+				glUniform3fv(curS->prog->getUniform("PickingColor"), 1, value_ptr(glm::vec3(entity->editorColor.r, entity->editorColor.g, entity->editorColor.b)));
+				entity->objs[i]->draw(curS->prog);
+
+			}
+					cout << "line 929" << endl;
+		}
+	
 
 		curS->prog->unbind();
 
@@ -934,7 +1015,12 @@ public:
 		
       	LSpace = LO*LV;
 		float aspect = width/(float)height;
-		drawObjects(aspect, LSpace, frametime);
+		if(editMode){
+			drawEditorObjects(aspect, LSpace, frametime);
+		}
+		else{
+			drawObjects(aspect, LSpace, frametime);
+		}
 
 		// cout << "2 passes" << endl;
 		

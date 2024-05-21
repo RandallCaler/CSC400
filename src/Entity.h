@@ -65,7 +65,7 @@ public:
     std::vector<std::shared_ptr<Shape>> objs;
     std::vector<std::shared_ptr<Texture>> textures;
     std::vector<BRDFmaterial> materials;
-    std::vector<BRDFmaterial> editorMaterials;
+    color editorColor;
     Collider* collider = NULL;
     glm::vec3 position = glm::vec3(0);
     glm::vec3 scaleVec = glm::vec3(1);
