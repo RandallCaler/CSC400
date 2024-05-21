@@ -25,6 +25,13 @@
 #include <chrono>
 #include <array>
 
+// checks if apple device
+#ifdef __APPLE__
+    #define MA_NO_RUNTIME_LINKING
+#endif
+#define MINIAUDIO_IMPLEMENTATION
+#include "../ext/miniaudio/miniaudio.h"
+
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
 #define PI 3.1415927
@@ -56,6 +63,7 @@ Camera freeCam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0
 Camera* activeCam = &cam;
 
 ma_engine engine;
+// Event e = Event("../resources/cute-world.mp3");
 
 class Application : public EventCallbacks
 {
@@ -919,9 +927,8 @@ int main(int argc, char *argv[]) {
 	ma_result result;
 	ma_sound sound;
 
-	ma_sound_init_from_file(&engine, "../resources/cute-world.mp3", 0, NULL, NULL, &sound);
-	ma_sound_start(&sound);
-	ma_engine_play_sound(&engine, "../resources/music.mp3", NULL);
+	Event *ev = new Event("../resources/cute-world.mp3", &engine);
+	ev->startSound();
 
 	float dt = 1 / 60.0;
 	auto lastTime = chrono::high_resolution_clock::now();
