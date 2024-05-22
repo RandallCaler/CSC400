@@ -120,7 +120,7 @@ public:
 	//bounds for world
 	double bounds;
 
-	float editSpeed = 2.0;
+	float editSpeed = 4.0;
 	int editSRT = 0; // 0 - translation, 1 - rotation, 2 - scale
 
 	// hmap for terrain
@@ -783,6 +783,7 @@ public:
 		// 		entity->collider->CalculateBoundingBox(entity->modelMatrix);
 		// 	}
 		// }
+
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 			if (shaders[entity->defaultShaderName] != curS) {
@@ -882,7 +883,6 @@ public:
 		butterfly_loc[1] = vec3(-2, -1.2, -3);
 		butterfly_loc[2] = vec3(4, -1, 4);
  
-		cout << "line 897" << endl;
 	
 		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["bunny"]};
 
@@ -897,7 +897,6 @@ public:
 			shared_ptr<Entity> entity = i->second;
 			// glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 			// activeCam->SetView(curS->prog);
-					cout << "line 912" << endl;
 
 
 			if (entity->collider) {
@@ -914,7 +913,6 @@ public:
 				entity->objs[i]->draw(curS->prog);
 
 			}
-					cout << "line 929" << endl;
 		}
 	
 
@@ -985,7 +983,6 @@ public:
 		
 		//player->updateMotion(frametime, hmap);
 		cam.player_pos = player->position;
-
 		
       	LSpace = LO*LV;
 		float aspect = width/(float)height;
