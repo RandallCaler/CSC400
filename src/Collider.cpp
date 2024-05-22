@@ -12,88 +12,56 @@ Collider::Collider(Entity *owner, bool collectible) : worldMin(owner->minBB), wo
     this->collectible = collectible;
 }
 
-//void Collider::CheckCollision(std::vector<Entity> entities, int thisID)
-//{
-//    for(int i = 0; i < entities.size(); i++){
-//            float distance = std::sqrt(
-//            (entities[i].position.x - entities[this->entityId].position.x) * (entities[i].position.x - entities[this->entityId].position.x) + 
-//            (entities[i].position.z - entities[this->entityId].position.z) * (entities[i].position.z - entities[this->entityId].position.z)
-//            );
-//            distance = std::abs(distance);
-//            // cout << "distance is " << distance << endl;
-//            // cout << "radial of other is " << entities[i].collider->GetRadial() << "compared to this radial which is " << entities[thisID].collider->GetRadial() << endl;
-//            
-//            if(distance < entities[i].collider->GetRadial() + entities[this->entityId].collider->GetRadial()){
-//                // update this to account for butterfly collection
-//                colliding = true;
-//                return;
-//            }
-//            else {
-//                colliding = false;
-//            }
-//        //} 
-//    }
-//}
+float sampleHeightFromPixel(int x, int z, int major, unsigned char*& data) {
+    int index = 3 * (z * major + x);
+    float r = (float)data[index];
+    float g = (float)data[index + 1];
+    float b = (float)data[index + 2];
+    return (r + g + b) / 3;
+}
 
 float Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap) {
     // translate world position of entity to pixel space of heightmap
     std::pair<int, int> texDim = hMap->getDim();
-    float pixelSpaceX = (owner->position.x - ground.origin.x + texDim.first / 2) / ground.scale.x;
-    float pixelSpaceZ = (owner->position.z - ground.origin.z + texDim.second / 2) / ground.scale.z;
+    float pixelSpaceX = (owner->position.x - ground.origin.x) / ground.scale.x + texDim.first / 2;
+    float pixelSpaceZ = (owner->position.z - ground.origin.z) / ground.scale.z + texDim.second / 2;
 
     unsigned char* texData = hMap->getData();
     if (pixelSpaceX >= 0 && pixelSpaceX <= texDim.first && pixelSpaceZ >= 0 && pixelSpaceZ <= texDim.second) {
 
-        int pixelIndexZ = (int)roundf(pixelSpaceZ);
-        int pixelIndexX = (int)roundf(pixelSpaceX);
-        int index = 3 * (pixelIndexZ * texDim.first + pixelIndexX);
+        int pixelIndexZ = (int)pixelSpaceZ;
+        int pixelIndexX = (int)pixelSpaceX;
+
+        float heightA, heightB, heightC = 0.0f;
+        float areaA, areaB, areaC = 0.0f;
+
+        heightA = sampleHeightFromPixel(pixelIndexX, pixelIndexZ, texDim.first, texData);
+        heightB = sampleHeightFromPixel(pixelIndexX + 1, pixelIndexZ + 1, texDim.first, texData);
+
+        if ((pixelSpaceX - pixelIndexX) > (pixelSpaceZ - pixelIndexZ)) {
+            heightC = sampleHeightFromPixel(pixelIndexX + 1, pixelIndexZ, texDim.first, texData);
+            areaA = pixelIndexX + 1 - pixelSpaceX;
+            areaB = pixelSpaceZ - pixelIndexZ;
+        }
+        else {
+            heightC = sampleHeightFromPixel(pixelIndexX, pixelIndexZ + 1, texDim.first, texData);
+            areaA = pixelIndexZ + 1 - pixelSpaceZ;
+            areaB = pixelSpaceX - pixelIndexX;
+        }
         
-        // float weights[4];
+        areaC = 1 - areaA - areaB;
 
-        // weights[0] = std::max(1 - glm::length(vec2(pixelIndexX - 1 - pixelSpaceX, pixelIndexZ - 1 - pixelSpaceZ)), 0.0f);
-        // weights[1] = std::max(1 - glm::length(vec2(pixelIndexX - pixelSpaceX, pixelIndexZ - 1 - pixelSpaceZ)), 0.0f);
-        // weights[2] = std::max(1 - glm::length(vec2(pixelIndexX - 1 - pixelSpaceX, pixelIndexZ - pixelSpaceZ)), 0.0f);
-        // weights[3] = std::max(1 - glm::length(vec2(pixelIndexX - pixelSpaceX, pixelIndexZ - pixelSpaceZ)), 0.0f);
-        // printf("weights: %.3f %.3f %.3f %.3f \n", weights[0], weights[1], weights[2], weights[3]);
-        float r, g, b = 0.0f;
-
-        // if (pixelIndexX > 0 && pixelIndexZ > 0) {
-        //     int index = 3 * ((pixelIndexZ - 1) * texDim.first + pixelIndexX - 1);
-        //     r += (float)texData[index] * weights[0];
-        //     g += (float)texData[index + 1] * weights[0];
-        //     b += (float)texData[index + 2] * weights[0];
-        // }
-
-        // if (pixelIndexX < texDim.first && pixelIndexZ > 0) {
-        //     int index = 3 * ((pixelIndexZ - 1) * texDim.first + pixelIndexX);
-        //     r += (float)texData[index] * weights[1];
-        //     g += (float)texData[index + 1] * weights[1];
-        //     b += (float)texData[index + 2] * weights[1];
-        // }
-        
-        // if (pixelIndexX > 0 && pixelIndexZ < texDim.second) {
-        //     int index = 3 * ((pixelIndexZ) * texDim.first + pixelIndexX - 1);
-        //     r += (float)texData[index] * weights[2];
-        //     g += (float)texData[index + 1] * weights[2];
-        //     b += (float)texData[index + 2] * weights[2];
-        // }
-
-        // if (pixelIndexX < texDim.first && pixelIndexZ < texDim.second) {
-        //     int index = 3 * ((pixelIndexZ) * texDim.first + pixelIndexX);
-        //     r += (float)texData[index] * weights[3];
-        //     g += (float)texData[index + 1] * weights[3];
-        //     b += (float)texData[index + 2] * weights[3];
-        // }
-
-        r = (float)texData[index];
-        g = (float)texData[index + 1];
-        b = (float)texData[index + 2];
-
-        //float p0 = (std::max)(r, (std::max)(g, b)) / 3;
-        float p0 = (r + g + b) / 3;// / (weights[0] + weights[1] + weights[2] + weights[3]);
-        
-        return (p0 / UCHAR_MAX - 0.5) * ground.scale.y + ground.origin.y;
+        // all cross-products must be positive for p to be within triangle
+        if (areaA >= 0 && areaB >= 0 && areaC >= 0) {
+            float height = areaA * heightA + areaB * heightB + areaC * heightC;
+            return (height / UCHAR_MAX - 0.5) * ground.scale.y + ground.origin.y;
+        }
+        else { 
+            printf("error: not in either triangle: aA - %.3f, aB - %.3f, aC - %.3f\n", areaA, areaB, areaC);
+            return -1;
+        }
     }
+
     return -1;
 }
 
