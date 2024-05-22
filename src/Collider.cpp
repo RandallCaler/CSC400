@@ -265,10 +265,13 @@ glm::vec4 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<
         shared_ptr<Entity> e = entities[i];
         if (entityId != e->id) {
             glm::vec4 newCPlane = orientedCollision(deltaTime, e);
+            if (collisionPlane != vec4(0)) {
+                collisionPlane -= dot(vec3(newCPlane), vec3(collisionPlane))*newCPlane;
+            }
             collisionPlane += newCPlane;
             if (newCPlane != glm::vec4(0)) {
-                if (e->id == 0 && collectible) {
-                    owner->position.y += 100;
+                if (e->collider->collectible) {
+                    e->position.y += 100;
                 }
                 else {
                     colliding = true;

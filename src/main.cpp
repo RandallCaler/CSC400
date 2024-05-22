@@ -477,6 +477,7 @@ public:
 		worldentities["cheese"]->collider = new Collider(worldentities["cheese"].get(), true);
 		worldentities["cheese"]->collider->SetEntityID(worldentities["cheese"]->id);
 		worldentities["cheese"]->collider->entityName = 'c';
+		worldentities["cheese"]->collider->collectible = true;
 
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
@@ -503,8 +504,6 @@ public:
 				
 				pit = hval < .01;
 
-
-
 				vertices.push_back(j - hmap_dim.first / 2.0f);
 				vertices.push_back(hval * (Y_MAX - Y_MIN) + Y_MIN);
 				vertices.push_back(i - hmap_dim.second / 2.0f);
@@ -527,23 +526,10 @@ public:
 				indices.push_back(v0);
 				indices.push_back(v2);
 				indices.push_back(v3);
-				//glm::vec3 e1(vertices[3 * v2] - vertices[3 * v0], vertices[3 * v2 + 1] - vertices[3 * v0 + 1], vertices[3 * v2 + 2] - vertices[3 * v0 + 2]);
-				//glm::vec3 e2(vertices[3 * v3] - vertices[3 * v0], vertices[3 * v3 + 1] - vertices[3 * v0 + 1], vertices[3 * v3 + 2] - vertices[3 * v0 + 2]);
-				//glm::vec3 f1N = glm::normalize(glm::cross(e1, e2));
-				//normals.push_back(f1N.x);
-				//normals.push_back(f1N.y);
-				//normals.push_back(f1N.z);
 
 				indices.push_back(v0);
 				indices.push_back(v1);
 				indices.push_back(v2);
-				//e1 = glm::vec3(vertices[3 * v1] - vertices[3 * v0], vertices[3 * v1 + 1] - vertices[3 * v0 + 1], vertices[3 * v1 + 2] - vertices[3 * v0 + 2]);
-				//e2 = glm::vec3(vertices[3 * v2] - vertices[3 * v0], vertices[3 * v2 + 1] - vertices[3 * v0 + 1], vertices[3 * v2 + 2] - vertices[3 * v0 + 2]);
-				//glm::vec3 f2N = glm::normalize(glm::cross(e1, e2));
-				//normals.push_back(f2N.x);
-				//normals.push_back(f2N.y);
-				//normals.push_back(f2N.z);
-
 			}
 		}
 
@@ -635,9 +621,6 @@ public:
 		butterfly_loc[0] = vec3(-2.3, -1, 3);
 		butterfly_loc[1] = vec3(-2, -1.2, -3);
 		butterfly_loc[2] = vec3(4, -1, 4);
- 
-
-		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["butterfly1"], player};
 
 		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -647,37 +630,16 @@ public:
 			shared_ptr<Entity> entity = i->second;
 			entity->generateModel();
 		}
-		// for (i = worldentities.begin(); i != worldentities.end(); i++) {
-		// 	shared_ptr<Entity> entity = i->second;
-		// 	if (entity->collider) {
-		// 		entity->collider->CalculateBoundingBox(entity->modelMatrix);
-		// 	}
-		// }
 
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 
-			// if (entity->collider) {
-			// 	int col =entity->collider->CheckCollision(tempCollisionList);
-			// 	if (col == -1) {
-			// 		entity->updateMotion(frametime);
-			// 	}
-			// 	else {
-			// 		printf("entity %u colliding with %u\n", entity->id, col);
-			// 	}
-			// }
-			// curS->setModel(*entity);
 			for (int i = 0; i < entity->objs.size(); i++) {	
 				entity->objs[i]->draw(DepthProg);
 			}
 		}
 		
-
 		DepthProg->unbind();
-
-
-		// int collided = player->collider->CheckCollision(tempCollisionList);
-
 
 		bounds = std::sqrt(   //update cat's distance from skybox
 			cam.player_pos[0] * cam.player_pos[0]
@@ -700,12 +662,6 @@ public:
 		// Apply perspective projection.
 		Projection->pushMatrix();
 		Projection->perspective(45.0f, aspect, 0.01f, 1000.0f);
-
-		// editor mode updates
-		
-
-		// updates player motion
-		
 		
 		//material shader first
 		curS->prog->bind();
@@ -726,7 +682,7 @@ public:
 		butterfly_loc[2] = vec3(4, -1, 4);
  
 
-		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["cube2"], worldentities["cube3"], player};
+		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["cube2"], worldentities["cube3"], worldentities["cheese"], player};
 
 		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -736,12 +692,7 @@ public:
 			shared_ptr<Entity> entity = i->second;
 			entity->generateModel();
 		}
-		// for (i = worldentities.begin(); i != worldentities.end(); i++) {
-		// 	shared_ptr<Entity> entity = i->second;
-		// 	if (entity->collider) {
-		// 		entity->collider->CalculateBoundingBox(entity->modelMatrix);
-		// 	}
-		// }
+		
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 			if (shaders[entity->defaultShaderName] != curS) {
@@ -757,18 +708,14 @@ public:
 				glDepthFunc(GL_LEQUAL);
 			}
 
-			if (entity->collider) {
-				vec4 colNorm =entity->collider->CheckCollision(deltaTime, tempCollisionList);
-				if (entity->id == player->id) {
-					entity->updateMotion(deltaTime, hmap, colNorm);
-				}
+			if (entity->id == player->id) {
+				entity->updateMotion(deltaTime, hmap, tempCollisionList);
 			}
       
 			glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 			glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
 			glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
-			// curS->setModel(*entity);
       
 			for (int i = 0; i < entity->objs.size(); i++) {
 				if (curS->has_texture) {
@@ -798,10 +745,6 @@ public:
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 		drawGround(curS);  //draw ground here
-
-
-		// int collided = player->collider->CheckCollision(tempCollisionList);
-
 
 		bounds = std::sqrt(   //update cat's distance from skybox
 			cam.player_pos[0] * cam.player_pos[0]
