@@ -104,25 +104,20 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
     
     vec3 oldPosition = position;
     vec3 newPosition = position + vec3(deltaX, 0, deltaZ);
-    vec3 groundCheckPos = newPosition + vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
 
     // get ground samples
     float groundHeight0 = collider->CheckGroundCollision(hmap);
-    printf("ground at %.3f\n", groundHeight0);
-    position = groundCheckPos;    
+    position = newPosition + vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
     float groundHeight = collider->CheckGroundCollision(hmap);
-    groundCheckPos = newPosition - vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
-    position = groundCheckPos;    
+    position = newPosition - vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
     float groundHeightB = collider->CheckGroundCollision(hmap);
     if (groundHeight < groundHeightB) {
-        printf("diff: %.5f %.5f %.5f \n", groundHeightB, groundHeight, groundHeightB-groundHeight);
         groundHeight = groundHeightB;
     }
     float entityHeight = scaleVec.y/2;
-    // float distanceFromGround = groundHeight - (position.y - entityHeight);
 
     // ground climbing
-    bool climbable = groundHeight - groundHeight0 < SLOPE_TOLERANCE;
+    bool climbable = (groundHeight - groundHeight0)/(length(vec2(deltaX, deltaZ))) < SLOPE_TOLERANCE;
     if (climbable || !grounded) {
         position = newPosition;
     }
