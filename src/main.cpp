@@ -68,6 +68,8 @@ public:
 
 	shared_ptr<Entity> player;
 
+	vector<shared_ptr<Entity>> cubeList;
+
 	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities, &tagList);
 
 	shared_ptr<Program> DepthProg;
@@ -146,6 +148,9 @@ public:
 				for (auto ent : worldentities) {
 					if (ent.second->tag == "player") {
 						player = ent.second;
+					}
+					else if (ent.second->tag == "cube") {
+						cubeList.push_back(ent.second);
 					}
 				}
 			}
@@ -429,6 +434,9 @@ public:
 			if (ent.second->tag == "player") {
 				player = ent.second;
 			}
+			else if (ent.second->tag == "cube") {
+				cubeList.push_back(ent.second);
+			}
 		}
 	}
 
@@ -503,6 +511,12 @@ public:
 		//cout << "cat " << player->id << endl;
 		player->collider->entityName = 'p';
 
+		/*for (int i = 0; i < cubeList.size(); i++) {
+			cubeList[i]->collider = new Collider(cubeList[i].get());
+			cubeList[i]->collider->SetEntityID(cubeList[i]->id);
+			cubeList[i]->collider->entityName = 'c';
+		}*/
+
 		
 		worldentities["cube1"]->collider = new Collider(worldentities["cube1"].get());
 		worldentities["cube1"]->collider->SetEntityID(worldentities["cube1"]->id);
@@ -516,6 +530,14 @@ public:
 		worldentities["cube3"]->collider->SetEntityID(worldentities["cube3"]->id);
 		worldentities["cube3"]->collider->entityName = 'c';
 
+		/*worldentities["cube4"]->collider = new Collider(worldentities["cube4"].get());
+		worldentities["cube4"]->collider->SetEntityID(worldentities["cube4"]->id);
+		worldentities["cube4"]->collider->entityName = 'c';*/
+
+		/*worldentities["cube5"]->collider = new Collider(worldentities["cube5"].get());
+		worldentities["cube5"]->collider->SetEntityID(worldentities["cube5"]->id);
+		worldentities["cube5"]->collider->entityName = 'c';*/
+
 		worldentities["cheese"]->collider = new Collider(worldentities["cheese"].get(), true);
 		worldentities["cheese"]->collider->SetEntityID(worldentities["cheese"]->id);
 		worldentities["cheese"]->collider->entityName = 'c';
@@ -527,7 +549,7 @@ public:
 
 	//directly pass quad for the ground to the GPU
 	void initHMapGround() {
-		const float Y_MAX = 10;
+		const float Y_MAX = 75;
 		const float Y_MIN = -Y_MAX;
 
 		vector<float> vertices;
