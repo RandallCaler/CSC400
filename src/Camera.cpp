@@ -46,7 +46,9 @@ void Camera::SetView(shared_ptr<Program> shader, shared_ptr<Texture> hMap) {
 
         g_eye = vec3(player_pos[0] - offX, player_pos[1] + vert, player_pos[2] - offZ);
         position = g_eye;
-        g_eye.y = std::max(g_eye.y, collider->CheckGroundCollision(hMap) + vert);
+        vec4 groundNormal = collider->CheckGroundCollision(hMap);
+        float adjusted_height = (groundNormal.w - groundNormal.x * g_eye.x - groundNormal.z * g_eye.z) / groundNormal.y;
+        g_eye.y = std::max(g_eye.y, adjusted_height + vert);
         v_mat = lookAt(g_eye, player_pos, vec3(0, 1, 0));
     }
 

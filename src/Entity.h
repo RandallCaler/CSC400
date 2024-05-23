@@ -13,7 +13,7 @@
 #define GRAVITY -18.0f
 #define AIR_RESISTANCE -14.0f
 #define EPSILON 0.0001f
-#define SLOPE_TOLERANCE 15
+#define SLOPE_TOLERANCE 10
 
 typedef struct color {
     float r;

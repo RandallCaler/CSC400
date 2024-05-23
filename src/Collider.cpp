@@ -20,49 +20,48 @@ float sampleHeightFromPixel(int x, int z, int major, unsigned char*& data) {
     return (r + g + b) / 3;
 }
 
-float Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap) {
+vec3 Collider::pixelToWorldSpace(vec3 p, pair<int, int> mapSize) {
+    return vec3(ground.scale.x * (p.x - mapSize.first / 2) - ground.origin.x, (p.y / UCHAR_MAX - 0.5) * ground.scale.y + ground.origin.y, ground.scale.z * (p.z - mapSize.second / 2) - ground.origin.z);
+}
+
+vec4 Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap) {
     // translate world position of entity to pixel space of heightmap
     std::pair<int, int> texDim = hMap->getDim();
     float pixelSpaceX = (owner->position.x - ground.origin.x) / ground.scale.x + texDim.first / 2;
     float pixelSpaceZ = (owner->position.z - ground.origin.z) / ground.scale.z + texDim.second / 2;
 
     unsigned char* texData = hMap->getData();
-    if (pixelSpaceX >= 0 && pixelSpaceX <= texDim.first && pixelSpaceZ >= 0 && pixelSpaceZ <= texDim.second) {
 
+    // check whether the entity position corresponds to any valid heightmap pixel
+    if (pixelSpaceX >= 0 && pixelSpaceX <= texDim.first && pixelSpaceZ >= 0 && pixelSpaceZ <= texDim.second) {
+        // floor
         int pixelIndexZ = (int)pixelSpaceZ;
         int pixelIndexX = (int)pixelSpaceX;
 
-        float heightA, heightB, heightC = 0.0f;
-        float areaA, areaB, areaC = 0.0f;
 
+        float heightA, heightB, heightC = 0.0f;
         heightA = sampleHeightFromPixel(pixelIndexX, pixelIndexZ, texDim.first, texData);
         heightB = sampleHeightFromPixel(pixelIndexX + 1, pixelIndexZ + 1, texDim.first, texData);
+        
+        vec3 pA = pixelToWorldSpace(vec3(pixelIndexX, heightA, pixelIndexZ), texDim);
+        vec3 pB = pixelToWorldSpace(vec3(pixelIndexX + 1, heightB, pixelIndexZ + 1), texDim);
+        vec3 pC, normal;
 
         if ((pixelSpaceX - pixelIndexX) > (pixelSpaceZ - pixelIndexZ)) {
             heightC = sampleHeightFromPixel(pixelIndexX + 1, pixelIndexZ, texDim.first, texData);
-            areaA = pixelIndexX + 1 - pixelSpaceX;
-            areaB = pixelSpaceZ - pixelIndexZ;
+            pC = pixelToWorldSpace(vec3(pixelIndexX + 1, heightC, pixelIndexZ), texDim);
+            normal = normalize(cross(pB - pA, pC - pA));
         }
         else {
             heightC = sampleHeightFromPixel(pixelIndexX, pixelIndexZ + 1, texDim.first, texData);
-            areaA = pixelIndexZ + 1 - pixelSpaceZ;
-            areaB = pixelSpaceX - pixelIndexX;
+            pC = pixelToWorldSpace(vec3(pixelIndexX, heightC, pixelIndexZ + 1), texDim);
+            normal = normalize(cross(pC - pA, pB - pA));
         }
-        
-        areaC = 1 - areaA - areaB;
 
-        // all cross-products must be positive for p to be within triangle
-        if (areaA >= 0 && areaB >= 0 && areaC >= 0) {
-            float height = areaA * heightA + areaB * heightB + areaC * heightC;
-            return (height / UCHAR_MAX - 0.5) * ground.scale.y + ground.origin.y;
-        }
-        else { 
-            printf("error: not in either triangle: aA - %.3f, aB - %.3f, aC - %.3f\n", areaA, areaB, areaC);
-            return -1;
-        }
+        return vec4(normal, dot(normal, pA));
     }
 
-    return -1;
+    return vec4(0);
 }
 
 float Collider::distanceOnSeparationAxis(glm::vec3 T, glm::vec3 L, glm::vec3 dimA, glm::vec3 dimB, glm::mat4 rotA, glm::mat4 rotB) {

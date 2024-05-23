@@ -107,8 +107,11 @@ glm::mat4 Entity::generateModel() {
     return modelMatrix;
 }
 
+float getHeightFromPlane(vec4 plane, vec2 pos) {
+    return (plane.w - plane.x * pos.x - plane.z * pos.y) / plane.y;
+}
+
 void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList) {
-    // printf("update\n");
     float distance = m.curSpeed * deltaTime;
     // movement and rotation
     float deltaX = distance * sin(rotY);
@@ -118,12 +121,21 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
     vec3 newPosition = position + vec3(deltaX, 0, deltaZ);
 
     // get ground samples
-    float groundHeight0 = collider->CheckGroundCollision(hmap);
-    position = newPosition + vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
-    float groundHeight = collider->CheckGroundCollision(hmap);
-    position = newPosition - vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
-    float groundHeightB = collider->CheckGroundCollision(hmap);
+    vec4 groundPlane0 = collider->CheckGroundCollision(hmap);
+    float groundHeight0 = getHeightFromPlane(groundPlane0, vec2(oldPosition.x, oldPosition.z));
+
+    vec3 newPositionForward = newPosition + vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
+    position = newPositionForward;
+    vec4 groundPlane = collider->CheckGroundCollision(hmap);
+    float groundHeight = getHeightFromPlane(groundPlane, vec2(newPositionForward.x, newPositionForward.z));
+
+    vec3 newPositionBack = newPosition - vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
+    position = newPositionBack;
+    vec4 groundPlaneB = collider->CheckGroundCollision(hmap);
+    float groundHeightB = getHeightFromPlane(groundPlaneB, vec2(newPositionBack.x, newPositionBack.z));
+
     if (groundHeight < groundHeightB) {
+        groundPlane = groundPlaneB;
         groundHeight = groundHeightB;
     }
     float entityHeight = scaleVec.y/2;
@@ -131,12 +143,14 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
     // ground climbing
     bool climbable = grounded && (groundHeight - groundHeight0)/(std::max(EPSILON, length(vec2(deltaX, deltaZ)))) < SLOPE_TOLERANCE || 
         position.y > groundHeight + entityHeight;
+    printf("gH: %.4f\tgH0: %.4f\tm: %.4f\n", groundHeight, groundHeight0, (groundHeight - groundHeight0)/(std::max(EPSILON, length(vec2(deltaX, deltaZ)))));
     if (climbable || length(vec2(deltaX, deltaZ)) < EPSILON) {
         position = newPosition;
     }
     // if the area of ground ahead cannot be climbed, return to previous position
     else {
         position = oldPosition;
+        groundPlane = groundPlane0;
         groundHeight = groundHeight0;
     }
 
@@ -162,22 +176,23 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
         // printf("grounded: %.4f vs %.4f\n", position.y - entityHeight, groundHeight);
     }
 
-    vec4 collisionPlane = collider->CheckCollision(deltaTime, collisionList);
+    vec3 collisionPlane = vec3(collider->CheckCollision(deltaTime, collisionList));
     // oriented bounding box restrictions
-    if (collisionPlane != vec4(0)) {
-        // printf("%.4fx + %.4fy +%.4fz = %.4f\n", collisionPlane.x, collisionPlane.y, collisionPlane.z, collisionPlane.w);
+    if (collisionPlane != vec3(0)) {
         // handle gravity response when colliding with y planes
-        if (collisionPlane.y > EPSILON) {
+        // binary response: the player is on a standing surface and is grounded, or is not and will slide off it
+        if (collisionPlane.y + EPSILON > length(vec2(collisionPlane.x, collisionPlane.z))) {
             grounded = true;
+            gliding = false;
             m.upwardSpeed = std::max(0.0f, m.upwardSpeed);
         }
-        if (collisionPlane.y < -EPSILON) {
+        if (collisionPlane.y - EPSILON < -length(vec2(collisionPlane.x, collisionPlane.z))) {
             m.upwardSpeed = std::min(0.0f, m.upwardSpeed);
         }
         vec3 delta = position - oldPosition;
         position = oldPosition;
-        float fP = abs(dot(delta, vec3(collisionPlane)));
-        position += delta + vec3(collisionPlane) * fP;
+        float fP = abs(dot(delta, collisionPlane));
+        position += delta + collisionPlane * fP;
     }
 }
 
