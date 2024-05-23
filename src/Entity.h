@@ -8,11 +8,12 @@
 
 #include "Components.h"
 #include "MatrixStack.h"
+#include "Collider.h"
 
 #define GRAVITY -18.0f
 #define AIR_RESISTANCE -14.0f
-#define EPSILON 0.0001
-#define SLOPE_TOLERANCE 0.5
+#define EPSILON 0.0001f
+#define SLOPE_TOLERANCE 5
 
 typedef struct color {
     float r;
@@ -41,8 +42,6 @@ struct motion {
     float curTurnSpeed;
     float upwardSpeed;
 };
-
-class Collider; // forward declaration to enable use of this class in Collider class
 
 class Entity {
 public:

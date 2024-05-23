@@ -7,6 +7,7 @@ using namespace glm;
 Camera::Camera(vec3 v, float p, float d, float a, vec3 pp, float pr, vec3 g, bool free)
 {   
     cameraPos = vec3(0.0f, 0.0f, 4.0f);
+    position = cameraPos;
     lookAtPt = pp;
     upV = vec3(0, 1, 0);
     player_pos = pp;
@@ -27,12 +28,13 @@ Camera::~Camera()
 {
 }
 
-void Camera::updateCamera(float deltaTime) {
+void Camera::updateCamera(float deltaTime, shared_ptr<Texture> hMap) {
     vec3 v_dir = -vec3(sin(-angle) * cos(pitch), sin(pitch), cos(angle) * cos(pitch));
     cameraPos += (vec3(vel.z) * normalize(v_dir) + vec3(0,-vel.y,0) + vec3(vel.x) * normalize(cross(v_dir,vec3(0,1,0)))) * vec3(deltaTime);
+    cameraPos.y = std::max(cameraPos.y, collider->CheckGroundCollision(hMap));
 }
 
-void Camera::SetView(std::shared_ptr<Program> shader) {
+void Camera::SetView(shared_ptr<Program> shader) {
     mat4 v_mat;
     if (freeCam) {
         vec3 v_dir = -vec3(sin(-angle) * cos(pitch), sin(pitch), cos(angle) * cos(pitch)) + cameraPos;

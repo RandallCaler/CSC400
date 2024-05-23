@@ -27,7 +27,6 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
 #define PI 3.1415927
-#define EPSILON 0.0001
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -261,20 +260,7 @@ public:
 	}
 
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
-		if (editMode) {
-
-			// cout << "INSIDE SCROLL CALLBACK BUNNY MOVEMENT" << endl;
-			//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
-			cam.angle -= 10 * (deltaX / 57.296);
-			// ih.setRotation(player.get(), -10 * (deltaX / 57.296));
-
-		}
-		else {
-			cam.angle -= 10 * (deltaX / 57.296);
-			// ih.setRotation(player.get(), -10 * (deltaX / 57.296));
-
-		}
-
+		cam.angle -= 10 * (deltaX / 57.296);
 	}
 
 
@@ -316,6 +302,11 @@ public:
 				cursor_x = x;
 				cursor_y = y;
 			}
+		}
+		else {
+			cam.angle -= 0.001*(x-cursor_x);
+			cursor_x = x;
+			cursor_y = y;
 		}
   }
 
@@ -563,6 +554,7 @@ public:
 		g_GiboLen = indices.size();
 
 		player->collider->SetGround(groundPos, vec3(1,Y_MAX-Y_MIN,1));
+		cam.collider->SetGround(groundPos, vec3(1,Y_MAX-Y_MIN,1));
 
       }
 	
@@ -866,7 +858,7 @@ int main(int argc, char *argv[]) {
 		// on the next frame
 		lastTime = nextLastTime;
 
-		activeCam->updateCamera(deltaTime);
+		activeCam->updateCamera(deltaTime, application->hmap);
 		// Render scene.
 		application->render(deltaTime);
 			
