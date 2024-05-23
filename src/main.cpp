@@ -452,6 +452,9 @@ public:
 		//cout << "cat " << player->id << endl;
 		player->collider->entityName = 'p';
 
+		cam.collider = new Collider(&cam);
+		// cam.collider->SetEntityID(cam->id);
+
 		
 		worldentities["cube1"]->collider = new Collider(worldentities["cube1"].get());
 		worldentities["cube1"]->collider->SetEntityID(worldentities["cube1"]->id);
@@ -658,7 +661,7 @@ public:
 		//material shader first
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-		activeCam->SetView(curS->prog);
+		activeCam->SetView(curS->prog, hmap);
 
 		// directional light
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
@@ -692,7 +695,7 @@ public:
 				curS = shaders[entity->defaultShaderName];
 				curS->prog->bind();
 				glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-				activeCam->SetView(curS->prog);
+				activeCam->SetView(curS->prog, hmap);
 			}	
 			if (shaders["skybox"] == curS) {
 				entity->position = activeCam->cameraPos;
@@ -732,7 +735,7 @@ public:
 
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-		activeCam->SetView(curS->prog);
+		activeCam->SetView(curS->prog, hmap);
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
@@ -858,7 +861,7 @@ int main(int argc, char *argv[]) {
 		// on the next frame
 		lastTime = nextLastTime;
 
-		activeCam->updateCamera(deltaTime, application->hmap);
+		activeCam->updateCamera(deltaTime);
 		// Render scene.
 		application->render(deltaTime);
 			
