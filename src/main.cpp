@@ -44,6 +44,7 @@ bool editMode = false;
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Entity>> worldentities;
 vector<string> tagList = { "" };
+vector<shared_ptr<Entity>> collidables;
 
 shared_ptr<Entity> cur_entity = NULL;
 
@@ -67,7 +68,7 @@ public:
 
 	shared_ptr<Entity> player;
 
-	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities, &tagList);
+	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities, &tagList, &collidables);
 
 	shared_ptr<Program> DepthProg;
 	GLuint depthMapFBO;
@@ -115,11 +116,11 @@ public:
 
 	double cursor_x = 0;
 	double cursor_y = 0;
-  
+
 	//bounds for world
 	double bounds;
 
-	float editSpeed = 2.0;
+	float editSpeed = 500.0;
 	int editSRT = 0; // 0 - translation, 1 - rotation, 2 - scale
 
 	// hmap for terrain
@@ -272,6 +273,14 @@ public:
 			if (button == GLFW_MOUSE_BUTTON_LEFT) {
 				glfwGetCursorPos(window, &posX, &posY);
 				cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
+
+				//editor mode selection
+				if(editMode && !leGUI->diableInput){
+					// Get the window height
+					int windowHeight;
+					glfwGetWindowSize(window, NULL, &windowHeight);
+					selectEntity(posX, posY, windowHeight);
+				}
 			}
 			else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
 				int cursor_mode = glfwGetInputMode(window, GLFW_CURSOR);
@@ -311,6 +320,37 @@ public:
   }
 
 #pragma endregion
+	void selectEntity(int x, int y, int windowHeight){
+		glFlush();
+		glFinish(); 
+
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		// Read the pixel at location x,y
+		int glY = windowHeight - y;
+		unsigned char data[3];
+		glReadPixels(x, glY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, data);
+		cout << "r: " << +data[0] << "   g: " << +data[1] << "   b: " << +data[2] << endl;
+
+		// convert color to entity id
+		int pickedID = 
+			data[0]/10 + 
+			data[1]/10 * 256 +
+			data[2]/10 * 256*256;
+
+		cout << "pickedId = " << pickedID << endl;
+		
+		// find the entity with that id (if an entity was clicked) and set as active
+		map<string, shared_ptr<Entity>>::iterator i;
+		for (i = worldentities.begin(); i != worldentities.end(); i++) {
+			shared_ptr<Entity> entity = i->second;
+			if(entity->id == pickedID){
+				leGUI->setCurName(i->first);
+				cout << "active entity is now " << pickedID << endl;
+				break;
+			}
+		}
+	}
 
 
 	void initShadow() {
@@ -354,7 +394,10 @@ public:
 		DepthProg->init();
 		DepthProg->addUniform("LP");
 		DepthProg->addUniform("LV");
+		DepthProg->addUniform("P");
+		DepthProg->addUniform("V");
 		DepthProg->addUniform("M");
+		DepthProg->addUniform("pickingColor");
 		DepthProg->addAttribute("vertPos");
 		DepthProg->addAttribute("vertNor");
 		DepthProg->addAttribute("vertTex");
@@ -447,40 +490,28 @@ public:
 		player->m.forward = vec4(0, 0, 0.1, 1);
 		player->m.velocity = vec3(0.1) * vec3(player->m.forward);
 
-		player->collider = new Collider(player.get());
-		player->collider->SetEntityID(player->id);
-		//cout << "cat " << player->id << endl;
-		player->collider->entityName = 'p';
-
-		cam.collider = new Collider(&cam);
-		// cam.collider->SetEntityID(cam->id);
-
-		
-		worldentities["cube1"]->collider = new Collider(worldentities["cube1"].get());
-		worldentities["cube1"]->collider->SetEntityID(worldentities["cube1"]->id);
-		worldentities["cube1"]->collider->entityName = 'c';
-
-		worldentities["cube2"]->collider = new Collider(worldentities["cube2"].get());
-		worldentities["cube2"]->collider->SetEntityID(worldentities["cube2"]->id);
-		worldentities["cube2"]->collider->entityName = 'c';
-
-		worldentities["cube3"]->collider = new Collider(worldentities["cube3"].get());
-		worldentities["cube3"]->collider->SetEntityID(worldentities["cube3"]->id);
-		worldentities["cube3"]->collider->entityName = 'c';
-
-		worldentities["cheese"]->collider = new Collider(worldentities["cheese"].get(), true);
-		worldentities["cheese"]->collider->SetEntityID(worldentities["cheese"]->id);
-		worldentities["cheese"]->collider->entityName = 'c';
-		worldentities["cheese"]->collider->collectible = true;
-
+		applyCollider();
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initHMapGround();
 	}
 
+	void applyCollider() {
+		for (auto ent : collidables) {
+			ent->collider = new Collider(ent.get());
+			ent->collider->SetEntityID(ent->id);
+			if (ent == player) {
+				ent->collider->entityName = 'p';
+			}
+			else {
+				ent->collider->entityName = 'c';
+			}
+		}
+	}
+
 	//directly pass quad for the ground to the GPU
 	void initHMapGround() {
-		const float Y_MAX = 10;
+		const float Y_MAX = 75;
 		const float Y_MIN = -Y_MAX;
 
 		vector<float> vertices;
@@ -647,8 +678,6 @@ public:
 
 	void drawObjects(float aspect, mat4 LSpace, float deltaTime) {
 	
-		shared_ptr<Shader> curS = shaders["reg"];
-
 		// Create the matrix stacks - please leave these alone for now
 		auto Projection = make_shared<MatrixStack>();
 		auto Model = make_shared<MatrixStack>();
@@ -659,6 +688,7 @@ public:
 		Projection->perspective(45.0f, aspect, 0.01f, 1000.0f);
 		
 		//material shader first
+		shared_ptr<Shader> curS = shaders["reg"];
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog, hmap);
@@ -675,9 +705,6 @@ public:
 		butterfly_loc[0] = vec3(-2.3, -1, 3);
 		butterfly_loc[1] = vec3(-2, -1.2, -3);
 		butterfly_loc[2] = vec3(4, -1, 4);
- 
-
-		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["cube2"], worldentities["cube3"], worldentities["cheese"], player};
 
 		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -687,7 +714,7 @@ public:
 			shared_ptr<Entity> entity = i->second;
 			entity->generateModel();
 		}
-		
+    
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 			if (shaders[entity->defaultShaderName] != curS) {
@@ -703,10 +730,12 @@ public:
 				glDepthFunc(GL_LEQUAL);
 			}
 
-			if (entity->id == player->id) {
-				entity->updateMotion(deltaTime, hmap, tempCollisionList);
+			if (entity->collider) {
+				if (entity->id == player->id) {
+					entity->updateMotion(deltaTime, hmap, collidables);
+				}
 			}
-      
+	
 			glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 			glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
 			glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
@@ -715,12 +744,15 @@ public:
 			for (int i = 0; i < entity->objs.size(); i++) {
 				if (curS->has_texture) {
 					curS->flip(1);
-        			entity->textures[i]->bind(curS->prog->getUniform("Texture0"));
+					entity->textures[i]->bind(curS->prog->getUniform("Texture0"));
 				}
+
 				curS->setMaterial(entity->materials[i]);
+
 				entity->objs[i]->draw(curS->prog);
+				
 				if (curS->has_texture) {
-    				entity->textures[i]->unbind();
+					entity->textures[i]->unbind();
 					curS->unbindTexture(0);
 				}
 			}
@@ -729,6 +761,85 @@ public:
 				glDepthFunc(GL_LESS);
 			}
 		}
+		
+
+		curS->prog->unbind();
+
+		curS = shaders["hmap"];
+
+		curS->prog->bind();
+		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
+		activeCam->SetView(curS->prog);
+		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
+		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
+      	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
+		drawGround(curS);  //draw ground here
+
+		bounds = std::sqrt(   //update cat's distance from skybox
+			cam.player_pos[0] * cam.player_pos[0]
+			+ cam.player_pos[2] * cam.player_pos[2]
+		);
+
+		// Pop matrix stacks.
+		Projection->popMatrix();
+	}
+
+	void drawEditorObjects(float aspect, mat4 LSpace, float deltaTime) {
+	
+		// Create the matrix stacks - please leave these alone for now
+		auto Projection = make_shared<MatrixStack>();
+		auto Model = make_shared<MatrixStack>();
+
+
+		// Apply perspective projection.
+		Projection->pushMatrix();
+		Projection->perspective(45.0f, aspect, 0.01f, 1000.0f);
+
+		//material shader first
+		shared_ptr<Shader> curS = shaders["edit"];
+		curS->prog->bind();
+		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
+		activeCam->SetView(curS->prog);
+
+		float butterfly_height[3] = {1.1, 1.7, 1.5};
+
+		vec3 butterfly_loc[3];
+		butterfly_loc[0] = vec3(-2.3, -1, 3);
+		butterfly_loc[1] = vec3(-2, -1.2, -3);
+		butterfly_loc[2] = vec3(4, -1, 4);
+
+	
+		//vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], player};
+
+		// BRDFmaterial imported from save file
+		map<string, shared_ptr<Entity>>::iterator i;
+
+		for (i = worldentities.begin(); i != worldentities.end(); i++) {
+			shared_ptr<Entity> entity = i->second;
+			entity->generateModel();
+		}
+		for (i = worldentities.begin(); i != worldentities.end(); i++) {
+			shared_ptr<Entity> entity = i->second;
+			// glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
+			// activeCam->SetView(curS->prog);
+
+
+			//if (entity->collider) {
+			//	vec4 colNorm =entity->collider->CheckCollision(deltaTime, tempCollisionList);
+			//	if (entity->id == player->id) {
+			//		entity->updateMotion(deltaTime, hmap, colNorm);
+			//	}
+			//}
+	
+			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
+	
+			for (int i = 0; i < entity->objs.size(); i++) {
+				glUniform3fv(curS->prog->getUniform("PickingColor"), 1, value_ptr(glm::vec3(entity->editorColor.r, entity->editorColor.g, entity->editorColor.b)));
+				entity->objs[i]->draw(curS->prog);
+
+			}
+		}
+	
 
 		curS->prog->unbind();
 		curS = shaders["hmap"];
@@ -793,11 +904,15 @@ public:
 		
 		//player->updateMotion(frametime, hmap);
 		cam.player_pos = player->position;
-
 		
       	LSpace = LO*LV;
 		float aspect = width/(float)height;
-		drawObjects(aspect, LSpace, frametime);
+		if(editMode){
+			drawEditorObjects(aspect, LSpace, frametime);
+		}
+		else{
+			drawObjects(aspect, LSpace, frametime);
+		}
 
 		// cout << "2 passes" << endl;
 		

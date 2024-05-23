@@ -23,7 +23,7 @@ extern string resourceDir;
 
 class ImporterExporter {
     public:
-        ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList);
+        ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList, vector<shared_ptr<Entity>>* collidables);
         ~ImporterExporter();
         
         string readString();
@@ -47,6 +47,7 @@ class ImporterExporter {
         map<string, shared_ptr<Shader>>* shaders; // reference to main shader list
         map<string, shared_ptr<Entity>>* worldentities; // reference to main entity list
         vector<string>* tagList; // reference to main tag list
+        vector<shared_ptr<Entity>>* collidables; // reference to main collidables
         map<string, pair<shared_ptr<Shape>, material>> shapeLibrary;
 	    map<string, shared_ptr<Texture>> textureLibrary;
 	    string buffer; // input data stream

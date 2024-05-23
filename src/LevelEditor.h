@@ -6,9 +6,7 @@
 #include <imgui_impl_opengl3.h>
 #include <stdio.h>
 #include <iostream>
-#include <sys/stat.h>
-#include "dirent.h"
-#include <conio.h>
+#include <filesystem>
 #include <string>
 #include <map>
 #include "Entity.h"
@@ -19,7 +17,8 @@ using namespace ImGui;
 
 extern string resourceDir;
 extern map<string, shared_ptr<Entity>> worldentities;
-extern vector<string> tagList;;
+extern vector<string> tagList;
+extern vector<shared_ptr<Entity>> collidables;
 extern shared_ptr<Entity> cur_entity;
 
 class LevelEditor {
@@ -33,8 +32,10 @@ class LevelEditor {
 		void MeshList();
 		void EntityList();
 		shared_ptr<Entity> Inspector(shared_ptr<Entity> entity);
+		void EditTag(bool* flag);
 		void Render();
 		void Shutdown();
+		void setCurName(string name);
 		bool diableInput = false;
 
 	private:

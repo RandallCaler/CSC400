@@ -34,7 +34,7 @@ float D (float alpha, vec3 N, vec3 H) {
 
 	float dot_prod = max(0, dot(N, H));
 	float num = pow(alpha, 2.0);
-	float denom = max(0.0005, 2 * 3.1415 * pow(pow(dot_prod, 2.0) * (pow(alpha, 2.0) - 1.0) + 1.0, 2.0));
+	float denom = max(0.0005, pow(pow(dot_prod, 2.0) * (pow(alpha, 2.0) - 1.0) + 1.0, 2.0));
 	return num / denom;
 
 }
