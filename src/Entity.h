@@ -76,6 +76,7 @@ public:
     float rotZ;
     bool grounded = false;
     bool gliding = false;
+    bool collidable;
     string defaultShaderName;
     glm::mat4 modelMatrix;
     string tag;

@@ -1,10 +1,11 @@
 #include "ImportExport.h"
 
-ImporterExporter::ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList) {
+ImporterExporter::ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList, vector<shared_ptr<Entity>>* collidables) {
 	// mutable references to main's shaders and entities
 	this->shaders = shaders;
 	this->worldentities = worldentities;
 	this->tagList = tagList;
+	this->collidables = collidables;
 }
 
 ImporterExporter::~ImporterExporter() {
@@ -153,6 +154,8 @@ void ImporterExporter::loadEntity() {
 
 	string tag = readString();
 
+	int collision = readInt();
+
 	string shader = readString();
 
 	int numShapes = readInt();
@@ -191,6 +194,13 @@ void ImporterExporter::loadEntity() {
 		tagList->push_back(tag);
 	}
 
+	if (collision == 1) {
+		newEntity->collidable = true;
+		collidables->push_back(newEntity);
+	}
+	else {
+		newEntity->collidable = false;
+	}
 
 	// import entity spatial properties
 	newEntity->position.x = readFloat();
@@ -303,7 +313,8 @@ string ImporterExporter::shapesToText(){
 string ImporterExporter::entitiesToText(){
 	string result = "";
 	for (auto entityIter = worldentities->begin(); entityIter != worldentities->end(); entityIter++) {
-		string entityInfo = "3 " + entityIter->first + " " + entityIter->second->tag +  " " + entityIter->second->defaultShaderName + " " + to_string(entityIter->second->objs.size()) + " ";
+		string entityInfo = "3 " + entityIter->first + " " + entityIter->second->tag + " " + (entityIter->second->collidable ? "1" : "0") 
+			+ " " + entityIter->second->defaultShaderName + " " + to_string(entityIter->second->objs.size()) + " ";
 		for (auto shape : entityIter->second->objs) {
 			entityInfo += shape->getName() + " ";
 		}

@@ -116,7 +116,6 @@ shared_ptr<Entity> LevelEditor::Inspector(shared_ptr<Entity> entity) {
     ImGui::Begin("Inspector");
 
     static char new_name[256] = ""; // Buffer for new cur_name input
-    static char new_tag[256] = ""; // Buffer for new tag input
     static bool show_edit_tag_window = false; // Flag to show/hide the add tag window
 
     strncpy(new_name, cur_name.c_str(), sizeof(new_name) - 1);
@@ -167,51 +166,11 @@ shared_ptr<Entity> LevelEditor::Inspector(shared_ptr<Entity> entity) {
         show_edit_tag_window = true;
     }
 
+    ImGui::Separator();
+
     // Show the Add Tag window
     if (show_edit_tag_window) {
-        static string selectedTag = " ";
-        ImGui::Begin("Edit Tag", &show_edit_tag_window);
-        for (const auto& tag : tagList) {
-            bool is_selected = (tag == selectedTag);
-            if (tag != "") {
-                if (ImGui::Selectable(tag.c_str(), is_selected)) {
-                    selectedTag = tag;
-                }
-            }
-            if (is_selected) {
-                ImGui::SetItemDefaultFocus();
-                if (ImGui::Button("Delete##")) {
-                    for (auto ent : worldentities) {
-                        if (ent.second->tag == tag) {
-                            ent.second->tag = "";
-                        }
-                   }
-                    tagList.erase(find(tagList.begin(), tagList.end(), tag));
-                    selectedTag = " ";
-                }
-            }      
-        }
-        ImGui::Text("Add Tag");
-        ImGui::InputText("##add_tag", new_tag, IM_ARRAYSIZE(new_tag));
-        if (ImGui::Button("Add")) {
-            string newTagStr(new_tag);
-            if (newTagStr.find(' ') == string::npos && find(tagList.begin(), tagList.end(), newTagStr) == tagList.end()) {
-                tagList.push_back(newTagStr);
-                cout << "New tag added: " << newTagStr << endl;
-            }
-            selectedTag = " ";
-            show_edit_tag_window = false;
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("Close")) {
-            selectedTag = " ";
-            show_edit_tag_window = false;
-        }
-
-        ImGui::End();
-    }
-    else {
-        new_tag[0] = '\0';
+        EditTag(&show_edit_tag_window);
     }
 
     // Transform
@@ -226,8 +185,67 @@ shared_ptr<Entity> LevelEditor::Inspector(shared_ptr<Entity> entity) {
     }
     ImGui::DragFloat3("Scale", glm::value_ptr(entity->scaleVec), 0.01f, 0.0f, 0.0f, "%.2f");
 
+    ImGui::Separator();
+    ImGui::Text("Collider");
+    
+    if (ImGui::Checkbox("##collider", &entity->collidable)) {
+        if (entity->collidable == false) {
+            collidables.erase(find(collidables.begin(), collidables.end(), entity));
+        }
+        else {
+            collidables.push_back(entity);
+        }
+    }
+
+
     ImGui::End();
     return entity;
+}
+
+void LevelEditor::EditTag(bool* flag) {
+    static string selectedTag = " ";
+    static char new_tag[256] = ""; // Buffer for new tag input
+    ImGui::Begin("Edit Tag", flag);
+    for (const auto& tag : tagList) {
+        bool is_selected = (tag == selectedTag);
+        if (tag != "") {
+            if (ImGui::Selectable(tag.c_str(), is_selected)) {
+                selectedTag = tag;
+            }
+        }
+        if (is_selected) {
+            ImGui::SetItemDefaultFocus();
+            if (ImGui::Button("Delete##")) {
+                for (auto ent : worldentities) {
+                    if (ent.second->tag == tag) {
+                        ent.second->tag = "";
+                    }
+                }
+                tagList.erase(find(tagList.begin(), tagList.end(), tag));
+                selectedTag = " ";
+            }
+        }
+    }
+    ImGui::Text("Add Tag");
+    ImGui::InputText("##add_tag", new_tag, IM_ARRAYSIZE(new_tag));
+    if (ImGui::Button("Add")) {
+        string newTagStr(new_tag);
+        if (newTagStr.find(' ') == string::npos && find(tagList.begin(), tagList.end(), newTagStr) == tagList.end()) {
+            tagList.push_back(newTagStr);
+            cout << "New tag added: " << newTagStr << endl;
+        }
+        selectedTag = " ";
+        *flag = false;
+        new_tag[0] = '\0';
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Close")) {
+        selectedTag = " ";
+        *flag = false;
+        new_tag[0] = '\0';
+    }
+
+    ImGui::End();
 }
 
 

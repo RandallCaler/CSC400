@@ -3,6 +3,7 @@
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertPos;
 layout(location = 1) in vec3 vertNor;
+layout(location = 2) in vec3 vertTex;
 
 // Values that stay constant for the whole mesh.
 uniform mat4 M;

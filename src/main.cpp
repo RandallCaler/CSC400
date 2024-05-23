@@ -45,6 +45,7 @@ bool editMode = false;
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Entity>> worldentities;
 vector<string> tagList = { "" };
+vector<shared_ptr<Entity>> collidables;
 
 shared_ptr<Entity> cur_entity = NULL;
 
@@ -68,9 +69,7 @@ public:
 
 	shared_ptr<Entity> player;
 
-	vector<shared_ptr<Entity>> cubeList;
-
-	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities, &tagList);
+	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities, &tagList, &collidables);
 
 	shared_ptr<Program> DepthProg;
 	GLuint depthMapFBO;
@@ -148,9 +147,6 @@ public:
 				for (auto ent : worldentities) {
 					if (ent.second->tag == "player") {
 						player = ent.second;
-					}
-					else if (ent.second->tag == "cube") {
-						cubeList.push_back(ent.second);
 					}
 				}
 			}
@@ -293,7 +289,7 @@ public:
 				cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
 
 				//editor mode selection
-				if(editMode){
+				if(editMode && !leGUI->diableInput){
 					// Get the window height
 					int windowHeight;
 					glfwGetWindowSize(window, NULL, &windowHeight);
@@ -434,9 +430,6 @@ public:
 			if (ent.second->tag == "player") {
 				player = ent.second;
 			}
-			else if (ent.second->tag == "cube") {
-				cubeList.push_back(ent.second);
-			}
 		}
 	}
 
@@ -506,45 +499,60 @@ public:
 		player->m.forward = vec4(0, 0, 0.1, 1);
 		player->m.velocity = vec3(0.1) * vec3(player->m.forward);
 
-		player->collider = new Collider(player.get());
-		player->collider->SetEntityID(player->id);
-		//cout << "cat " << player->id << endl;
-		player->collider->entityName = 'p';
+		applyCollider();
 
-		/*for (int i = 0; i < cubeList.size(); i++) {
-			cubeList[i]->collider = new Collider(cubeList[i].get());
-			cubeList[i]->collider->SetEntityID(cubeList[i]->id);
-			cubeList[i]->collider->entityName = 'c';
-		}*/
+		//player->collider = new Collider(player.get());
+		//player->collider->SetEntityID(player->id);
+		////cout << "cat " << player->id << endl;
+		//player->collider->entityName = 'p';
 
-		
-		worldentities["cube1"]->collider = new Collider(worldentities["cube1"].get());
-		worldentities["cube1"]->collider->SetEntityID(worldentities["cube1"]->id);
-		worldentities["cube1"]->collider->entityName = 'c';
+		///*for (int i = 0; i < cubeList.size(); i++) {
+		//	cubeList[i]->collider = new Collider(cubeList[i].get());
+		//	cubeList[i]->collider->SetEntityID(cubeList[i]->id);
+		//	cubeList[i]->collider->entityName = 'c';
+		//}*/
 
-		worldentities["cube2"]->collider = new Collider(worldentities["cube2"].get());
-		worldentities["cube2"]->collider->SetEntityID(worldentities["cube2"]->id);
-		worldentities["cube2"]->collider->entityName = 'c';
+		//
+		//worldentities["cube1"]->collider = new Collider(worldentities["cube1"].get());
+		//worldentities["cube1"]->collider->SetEntityID(worldentities["cube1"]->id);
+		//worldentities["cube1"]->collider->entityName = 'c';
 
-		worldentities["cube3"]->collider = new Collider(worldentities["cube3"].get());
-		worldentities["cube3"]->collider->SetEntityID(worldentities["cube3"]->id);
-		worldentities["cube3"]->collider->entityName = 'c';
+		//worldentities["cube2"]->collider = new Collider(worldentities["cube2"].get());
+		//worldentities["cube2"]->collider->SetEntityID(worldentities["cube2"]->id);
+		//worldentities["cube2"]->collider->entityName = 'c';
 
-		/*worldentities["cube4"]->collider = new Collider(worldentities["cube4"].get());
-		worldentities["cube4"]->collider->SetEntityID(worldentities["cube4"]->id);
-		worldentities["cube4"]->collider->entityName = 'c';*/
+		//worldentities["cube3"]->collider = new Collider(worldentities["cube3"].get());
+		//worldentities["cube3"]->collider->SetEntityID(worldentities["cube3"]->id);
+		//worldentities["cube3"]->collider->entityName = 'c';
 
-		/*worldentities["cube5"]->collider = new Collider(worldentities["cube5"].get());
-		worldentities["cube5"]->collider->SetEntityID(worldentities["cube5"]->id);
-		worldentities["cube5"]->collider->entityName = 'c';*/
+		///*worldentities["cube4"]->collider = new Collider(worldentities["cube4"].get());
+		//worldentities["cube4"]->collider->SetEntityID(worldentities["cube4"]->id);
+		//worldentities["cube4"]->collider->entityName = 'c';*/
 
-		worldentities["cheese"]->collider = new Collider(worldentities["cheese"].get(), true);
-		worldentities["cheese"]->collider->SetEntityID(worldentities["cheese"]->id);
-		worldentities["cheese"]->collider->entityName = 'c';
+		///*worldentities["cube5"]->collider = new Collider(worldentities["cube5"].get());
+		//worldentities["cube5"]->collider->SetEntityID(worldentities["cube5"]->id);
+		//worldentities["cube5"]->collider->entityName = 'c';*/
+
+		//worldentities["cheese"]->collider = new Collider(worldentities["cheese"].get(), true);
+		//worldentities["cheese"]->collider->SetEntityID(worldentities["cheese"]->id);
+		//worldentities["cheese"]->collider->entityName = 'c';
 
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initHMapGround();
+	}
+
+	void applyCollider() {
+		for (auto ent : collidables) {
+			ent->collider = new Collider(ent.get());
+			ent->collider->SetEntityID(ent->id);
+			if (ent == player) {
+				ent->collider->entityName = 'p';
+			}
+			else {
+				ent->collider->entityName = 'c';
+			}
+		}
 	}
 
 	//directly pass quad for the ground to the GPU
@@ -789,7 +797,7 @@ public:
 		butterfly_loc[2] = vec3(4, -1, 4);
  
 
-		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["cube2"], worldentities["cube3"], player};
+		//vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["cube2"], worldentities["cube3"], player};
 
 		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -822,7 +830,7 @@ public:
 			}
 
 			if (entity->collider) {
-				vec4 colNorm =entity->collider->CheckCollision(deltaTime, tempCollisionList);
+				vec4 colNorm =entity->collider->CheckCollision(deltaTime, collidables);
 				if (entity->id == player->id) {
 					entity->updateMotion(deltaTime, hmap, colNorm);
 				}
@@ -904,9 +912,9 @@ public:
 		butterfly_loc[0] = vec3(-2.3, -1, 3);
 		butterfly_loc[1] = vec3(-2, -1.2, -3);
 		butterfly_loc[2] = vec3(4, -1, 4);
- 
+
 	
-		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["bunny"]};
+		//vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], player};
 
 		// BRDFmaterial imported from save file
 		map<string, shared_ptr<Entity>>::iterator i;
@@ -921,12 +929,12 @@ public:
 			// activeCam->SetView(curS->prog);
 
 
-			if (entity->collider) {
-				vec4 colNorm =entity->collider->CheckCollision(deltaTime, tempCollisionList);
-				if (entity->id == worldentities["bunny"]->id) {
-					entity->updateMotion(deltaTime, hmap, colNorm);
-				}
-			}
+			//if (entity->collider) {
+			//	vec4 colNorm =entity->collider->CheckCollision(deltaTime, tempCollisionList);
+			//	if (entity->id == player->id) {
+			//		entity->updateMotion(deltaTime, hmap, colNorm);
+			//	}
+			//}
 	
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
 	
