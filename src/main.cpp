@@ -27,7 +27,6 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
 #define PI 3.1415927
-#define EPSILON 0.0001
 
 // value_ptr for glm
 #include <glm/gtc/type_ptr.hpp>
@@ -262,20 +261,7 @@ public:
 	}
 
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
-		if (editMode) {
-
-			// cout << "INSIDE SCROLL CALLBACK BUNNY MOVEMENT" << endl;
-			//cout << "xDel + yDel " << deltaX << " " << deltaY << endl;
-			cam.angle -= 10 * (deltaX / 57.296);
-			// ih.setRotation(player.get(), -10 * (deltaX / 57.296));
-
-		}
-		else {
-			cam.angle -= 10 * (deltaX / 57.296);
-			// ih.setRotation(player.get(), -10 * (deltaX / 57.296));
-
-		}
-
+		cam.angle -= 10 * (deltaX / 57.296);
 	}
 
 
@@ -325,6 +311,11 @@ public:
 				cursor_x = x;
 				cursor_y = y;
 			}
+		}
+		else {
+			cam.angle -= 0.001*(x-cursor_x);
+			cursor_x = x;
+			cursor_y = y;
 		}
   }
 
@@ -501,43 +492,6 @@ public:
 
 		applyCollider();
 
-		//player->collider = new Collider(player.get());
-		//player->collider->SetEntityID(player->id);
-		////cout << "cat " << player->id << endl;
-		//player->collider->entityName = 'p';
-
-		///*for (int i = 0; i < cubeList.size(); i++) {
-		//	cubeList[i]->collider = new Collider(cubeList[i].get());
-		//	cubeList[i]->collider->SetEntityID(cubeList[i]->id);
-		//	cubeList[i]->collider->entityName = 'c';
-		//}*/
-
-		//
-		//worldentities["cube1"]->collider = new Collider(worldentities["cube1"].get());
-		//worldentities["cube1"]->collider->SetEntityID(worldentities["cube1"]->id);
-		//worldentities["cube1"]->collider->entityName = 'c';
-
-		//worldentities["cube2"]->collider = new Collider(worldentities["cube2"].get());
-		//worldentities["cube2"]->collider->SetEntityID(worldentities["cube2"]->id);
-		//worldentities["cube2"]->collider->entityName = 'c';
-
-		//worldentities["cube3"]->collider = new Collider(worldentities["cube3"].get());
-		//worldentities["cube3"]->collider->SetEntityID(worldentities["cube3"]->id);
-		//worldentities["cube3"]->collider->entityName = 'c';
-
-		///*worldentities["cube4"]->collider = new Collider(worldentities["cube4"].get());
-		//worldentities["cube4"]->collider->SetEntityID(worldentities["cube4"]->id);
-		//worldentities["cube4"]->collider->entityName = 'c';*/
-
-		///*worldentities["cube5"]->collider = new Collider(worldentities["cube5"].get());
-		//worldentities["cube5"]->collider->SetEntityID(worldentities["cube5"]->id);
-		//worldentities["cube5"]->collider->entityName = 'c';*/
-
-		//worldentities["cheese"]->collider = new Collider(worldentities["cheese"].get(), true);
-		//worldentities["cheese"]->collider->SetEntityID(worldentities["cheese"]->id);
-		//worldentities["cheese"]->collider->entityName = 'c';
-
-
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initHMapGround();
 	}
@@ -553,6 +507,14 @@ public:
 				ent->collider->entityName = 'c';
 			}
 		}
+		cam.collider = new Collider(&cam);
+
+		// placeholder cheese collider - replace when collectibles are implemented
+		shared_ptr<Entity> cheese = worldentities["cheese"];
+		cheese->collider = new Collider(cheese.get());
+		cheese->collider->SetEntityID(cheese->id);
+		cheese->collider->collectible = true;
+		collidables.push_back(cheese);
 	}
 
 	//directly pass quad for the ground to the GPU
@@ -567,15 +529,13 @@ public:
 		for (unsigned int i = 0; i < hmap_dim.second; i++) {
 			for (unsigned int j = 0; j < hmap_dim.first; j++) {
 				bool pit;
-				unsigned char hvalr = *(hmap_data + 3 * (i * hmap_dim.first + j));
-				unsigned char hvalg = *(hmap_data + 3 * (i * hmap_dim.first + j) + 1);
-				unsigned char hvalb = *(hmap_data + 3 * (i * hmap_dim.first + j) + 2);
+				float hvalr = (float)*(hmap_data + 3 * (i * hmap_dim.first + j));
+				float hvalg = (float)*(hmap_data + 3 * (i * hmap_dim.first + j) + 1);
+				float hvalb = (float)*(hmap_data + 3 * (i * hmap_dim.first + j) + 2);
 				float hval = (hvalr + hvalg + hvalb) / (3 * 255.0f);
 				//float hval = (std::max)(hvalr, (std::max)(hvalg, hvalb)) / 255.0f;
 				
 				pit = hval < .01;
-
-
 
 				vertices.push_back(j - hmap_dim.first / 2.0f);
 				vertices.push_back(hval * (Y_MAX - Y_MIN) + Y_MIN);
@@ -599,23 +559,10 @@ public:
 				indices.push_back(v0);
 				indices.push_back(v2);
 				indices.push_back(v3);
-				//glm::vec3 e1(vertices[3 * v2] - vertices[3 * v0], vertices[3 * v2 + 1] - vertices[3 * v0 + 1], vertices[3 * v2 + 2] - vertices[3 * v0 + 2]);
-				//glm::vec3 e2(vertices[3 * v3] - vertices[3 * v0], vertices[3 * v3 + 1] - vertices[3 * v0 + 1], vertices[3 * v3 + 2] - vertices[3 * v0 + 2]);
-				//glm::vec3 f1N = glm::normalize(glm::cross(e1, e2));
-				//normals.push_back(f1N.x);
-				//normals.push_back(f1N.y);
-				//normals.push_back(f1N.z);
 
 				indices.push_back(v0);
 				indices.push_back(v1);
 				indices.push_back(v2);
-				//e1 = glm::vec3(vertices[3 * v1] - vertices[3 * v0], vertices[3 * v1 + 1] - vertices[3 * v0 + 1], vertices[3 * v1 + 2] - vertices[3 * v0 + 2]);
-				//e2 = glm::vec3(vertices[3 * v2] - vertices[3 * v0], vertices[3 * v2 + 1] - vertices[3 * v0 + 1], vertices[3 * v2 + 2] - vertices[3 * v0 + 2]);
-				//glm::vec3 f2N = glm::normalize(glm::cross(e1, e2));
-				//normals.push_back(f2N.x);
-				//normals.push_back(f2N.y);
-				//normals.push_back(f2N.z);
-
 			}
 		}
 
@@ -649,6 +596,7 @@ public:
 		g_GiboLen = indices.size();
 
 		player->collider->SetGround(groundPos, vec3(1,Y_MAX-Y_MIN,1));
+		cam.collider->SetGround(groundPos, vec3(1,Y_MAX-Y_MIN,1));
 
       }
 	
@@ -707,9 +655,6 @@ public:
 		butterfly_loc[0] = vec3(-2.3, -1, 3);
 		butterfly_loc[1] = vec3(-2, -1.2, -3);
 		butterfly_loc[2] = vec3(4, -1, 4);
- 
-
-		vector<shared_ptr<Entity>> tempCollisionList = {worldentities["butterfly1"], player};
 
 		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -719,37 +664,16 @@ public:
 			shared_ptr<Entity> entity = i->second;
 			entity->generateModel();
 		}
-		// for (i = worldentities.begin(); i != worldentities.end(); i++) {
-		// 	shared_ptr<Entity> entity = i->second;
-		// 	if (entity->collider) {
-		// 		entity->collider->CalculateBoundingBox(entity->modelMatrix);
-		// 	}
-		// }
 
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 
-			// if (entity->collider) {
-			// 	int col =entity->collider->CheckCollision(tempCollisionList);
-			// 	if (col == -1) {
-			// 		entity->updateMotion(frametime);
-			// 	}
-			// 	else {
-			// 		printf("entity %u colliding with %u\n", entity->id, col);
-			// 	}
-			// }
-			// curS->setModel(*entity);
 			for (int i = 0; i < entity->objs.size(); i++) {	
 				entity->objs[i]->draw(DepthProg);
 			}
 		}
 		
-
 		DepthProg->unbind();
-
-
-		// int collided = player->collider->CheckCollision(tempCollisionList);
-
 
 		bounds = std::sqrt(   //update cat's distance from skybox
 			cam.player_pos[0] * cam.player_pos[0]
@@ -770,18 +694,12 @@ public:
 		// Apply perspective projection.
 		Projection->pushMatrix();
 		Projection->perspective(45.0f, aspect, 0.01f, 1000.0f);
-
-		// editor mode updates
-		
-
-		// updates player motion
-		
 		
 		//material shader first
 		shared_ptr<Shader> curS = shaders["reg"];
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-		activeCam->SetView(curS->prog);
+		activeCam->SetView(curS->prog, hmap);
 
 		// directional light
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
@@ -795,9 +713,6 @@ public:
 		butterfly_loc[0] = vec3(-2.3, -1, 3);
 		butterfly_loc[1] = vec3(-2, -1.2, -3);
 		butterfly_loc[2] = vec3(4, -1, 4);
- 
-
-		//vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], worldentities["cube2"], worldentities["cube3"], player};
 
 		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -807,13 +722,7 @@ public:
 			shared_ptr<Entity> entity = i->second;
 			entity->generateModel();
 		}
-		// for (i = worldentities.begin(); i != worldentities.end(); i++) {
-		// 	shared_ptr<Entity> entity = i->second;
-		// 	if (entity->collider) {
-		// 		entity->collider->CalculateBoundingBox(entity->modelMatrix);
-		// 	}
-		// }
-
+    
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 			if (shaders[entity->defaultShaderName] != curS) {
@@ -821,7 +730,7 @@ public:
 				curS = shaders[entity->defaultShaderName];
 				curS->prog->bind();
 				glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-				activeCam->SetView(curS->prog);
+				activeCam->SetView(curS->prog, hmap);
 			}	
 			if (shaders["skybox"] == curS) {
 				entity->position = activeCam->cameraPos;
@@ -830,9 +739,8 @@ public:
 			}
 
 			if (entity->collider) {
-				vec4 colNorm =entity->collider->CheckCollision(deltaTime, collidables);
 				if (entity->id == player->id) {
-					entity->updateMotion(deltaTime, hmap, colNorm);
+					entity->updateMotion(deltaTime, hmap, collidables);
 				}
 			}
 	
@@ -840,8 +748,7 @@ public:
 			glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
 			glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
-			// curS->setModel(*entity);
-	
+      
 			for (int i = 0; i < entity->objs.size(); i++) {
 				if (curS->has_texture) {
 					curS->flip(1);
@@ -870,15 +777,11 @@ public:
 
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-		activeCam->SetView(curS->prog);
+		activeCam->SetView(curS->prog, hmap);
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 		drawGround(curS);  //draw ground here
-
-
-		// int collided = worldentities["bunny"]->collider->CheckCollision(tempCollisionList);
-
 
 		bounds = std::sqrt(   //update cat's distance from skybox
 			cam.player_pos[0] * cam.player_pos[0]
@@ -904,7 +807,7 @@ public:
 		shared_ptr<Shader> curS = shaders["edit"];
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-		activeCam->SetView(curS->prog);
+		activeCam->SetView(curS->prog, hmap);
 
 		float butterfly_height[3] = {1.1, 1.7, 1.5};
 
@@ -951,15 +854,11 @@ public:
 
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-		activeCam->SetView(curS->prog);
+		activeCam->SetView(curS->prog, hmap);
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 		drawGround(curS);  //draw ground here
-
-
-		// int collided = player->collider->CheckCollision(tempCollisionList);
-
 
 		bounds = std::sqrt(   //update cat's distance from skybox
 			cam.player_pos[0] * cam.player_pos[0]

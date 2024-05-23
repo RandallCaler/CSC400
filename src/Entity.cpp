@@ -107,7 +107,11 @@ glm::mat4 Entity::generateModel() {
     return modelMatrix;
 }
 
-void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 collisionPlane) {
+float getHeightFromPlane(vec4 plane, vec2 pos) {
+    return (plane.w - plane.x * pos.x - plane.z * pos.y) / plane.y;
+}
+
+void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList) {
     float distance = m.curSpeed * deltaTime;
     // movement and rotation
     float deltaX = distance * sin(rotY);
@@ -115,71 +119,80 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
     
     vec3 oldPosition = position;
     vec3 newPosition = position + vec3(deltaX, 0, deltaZ);
-    vec3 groundCheckPos = newPosition + vec3((distance + scaleVec.z) * sin(rotY), 0, (distance + scaleVec.z) * cos(rotY));
 
     // get ground samples
-    float groundHeight0 = collider->CheckGroundCollision(hmap);
-    position = groundCheckPos;    
-    float groundHeight = collider->CheckGroundCollision(hmap);
+    vec4 groundPlane0 = collider->CheckGroundCollision(hmap);
+    float groundHeight0 = getHeightFromPlane(groundPlane0, vec2(oldPosition.x, oldPosition.z));
+
+    vec3 newPositionForward = newPosition + vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
+    position = newPositionForward;
+    vec4 groundPlane = collider->CheckGroundCollision(hmap);
+    float groundHeight = getHeightFromPlane(groundPlane, vec2(newPositionForward.x, newPositionForward.z));
+
+    vec3 newPositionBack = newPosition - vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
+    position = newPositionBack;
+    vec4 groundPlaneB = collider->CheckGroundCollision(hmap);
+    float groundHeightB = getHeightFromPlane(groundPlaneB, vec2(newPositionBack.x, newPositionBack.z));
+
+    if (groundHeight < groundHeightB) {
+        groundPlane = groundPlaneB;
+        groundHeight = groundHeightB;
+    }
     float entityHeight = scaleVec.y/2;
-    float distanceFromGround = groundHeight - (position.y - entityHeight);
 
     // ground climbing
-    bool climbable = groundHeight - groundHeight0 < SLOPE_TOLERANCE;
-    if (climbable || !grounded) {
+    bool climbable = grounded && (groundHeight - groundHeight0)/(std::max(EPSILON, length(vec2(deltaX, deltaZ)))) < SLOPE_TOLERANCE || 
+        position.y > groundHeight + entityHeight;
+    printf("gH: %.4f\tgH0: %.4f\tm: %.4f\n", groundHeight, groundHeight0, (groundHeight - groundHeight0)/(std::max(EPSILON, length(vec2(deltaX, deltaZ)))));
+    if (climbable || length(vec2(deltaX, deltaZ)) < EPSILON) {
         position = newPosition;
     }
     // if the area of ground ahead cannot be climbed, return to previous position
     else {
         position = oldPosition;
+        groundPlane = groundPlane0;
         groundHeight = groundHeight0;
     }
 
     // FALLING physics
-    // uses the terrain height to prevent character from indefinitely falling
-
-     // FALLING physics
-    if (!grounded) {
-
-       
+    if (gliding == true) {
+        m.upwardSpeed = std::max(m.upwardSpeed + (GRAVITY - AIR_RESISTANCE) * deltaTime, -3.0f);
     }
-
-
-    if (position.y < groundHeight + entityHeight) {
-        grounded = true;
-        gliding = false;
-        m.upwardSpeed = 0.0;
-        position.y = groundHeight + entityHeight;
+    else {
+        m.upwardSpeed += GRAVITY * deltaTime;
     }
-    if (position.y > groundHeight + entityHeight) {
+    position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
+
+    if (position.y > groundHeight + entityHeight + 0.1) {
         grounded = false;
     }
 
-    if (!grounded) {
-
-        if (gliding == true) {
-            position += vec3(0.0f, (GRAVITY - AIR_RESISTANCE) * deltaTime, 0.0f);
-        }
-        else {
-            m.upwardSpeed += GRAVITY * deltaTime;
-            position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
-        }
+    // uses the terrain height to prevent character from indefinitely falling
+    if (position.y < groundHeight + entityHeight) {
+        grounded = true;
+        gliding = false;
+        m.upwardSpeed = std::max(0.0f, m.upwardSpeed);
+        position.y = groundHeight + entityHeight;
+        // printf("grounded: %.4f vs %.4f\n", position.y - entityHeight, groundHeight);
     }
 
+    vec3 collisionPlane = vec3(collider->CheckCollision(deltaTime, collisionList));
     // oriented bounding box restrictions
-    if (collisionPlane != vec4(0)) {
+    if (collisionPlane != vec3(0)) {
         // handle gravity response when colliding with y planes
-        if (collisionPlane.y > EPSILON) {
+        // binary response: the player is on a standing surface and is grounded, or is not and will slide off it
+        if (collisionPlane.y + EPSILON > length(vec2(collisionPlane.x, collisionPlane.z))) {
             grounded = true;
+            gliding = false;
             m.upwardSpeed = std::max(0.0f, m.upwardSpeed);
         }
-        if (collisionPlane.y < -EPSILON) {
-            m.upwardSpeed = 0.0f;
+        if (collisionPlane.y - EPSILON < -length(vec2(collisionPlane.x, collisionPlane.z))) {
+            m.upwardSpeed = std::min(0.0f, m.upwardSpeed);
         }
         vec3 delta = position - oldPosition;
         position = oldPosition;
-        float fP = abs(dot(delta, vec3(collisionPlane)));
-        position += delta + vec3(collisionPlane) * fP;
+        float fP = abs(dot(delta, collisionPlane));
+        position += delta + collisionPlane * fP;
     }
 }
 

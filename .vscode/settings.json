@@ -73,6 +73,9 @@
         "span": "cpp",
         "unordered_map": "cpp",
         "xhash": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "cstdarg": "cpp",
+        "functional": "cpp",
+        "filesystem": "cpp"
     }
 }

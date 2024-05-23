@@ -8,11 +8,12 @@
 
 #include "Components.h"
 #include "MatrixStack.h"
+#include "Collider.h"
 
-#define GRAVITY -18.0
-#define AIR_RESISTANCE -14.0
-#define EPSILON 0.0001
-#define SLOPE_TOLERANCE 0.5
+#define GRAVITY -18.0f
+#define AIR_RESISTANCE -14.0f
+#define EPSILON 0.0001f
+#define SLOPE_TOLERANCE 10
 
 typedef struct color {
     float r;
@@ -42,8 +43,6 @@ struct motion {
     float upwardSpeed;
 };
 
-class Collider; // forward declaration to enable use of this class in Collider class
-
 class Entity {
 public:
     Entity();
@@ -54,9 +53,7 @@ public:
         float r3, float g3, float b3, float s);
     void setMaterials(int i, material& mat);
 
-    void updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 collisionPlane);
-    // void updateScale(float newScale);
-
+    void updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList);
 
     glm::mat4 generateModel();
 
