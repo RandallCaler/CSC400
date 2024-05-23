@@ -508,6 +508,13 @@ public:
 			}
 		}
 		cam.collider = new Collider(&cam);
+
+		// placeholder cheese collider - replace when collectibles are implemented
+		shared_ptr<Entity> cheese = worldentities["cheese"];
+		cheese->collider = new Collider(cheese.get());
+		cheese->collider->SetEntityID(cheese->id);
+		cheese->collider->collectible = true;
+		collidables.push_back(cheese);
 	}
 
 	//directly pass quad for the ground to the GPU
