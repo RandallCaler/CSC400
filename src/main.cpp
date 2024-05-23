@@ -121,7 +121,7 @@ public:
 	//bounds for world
 	double bounds;
 
-	float editSpeed = 4.0;
+	float editSpeed = 500.0;
 	int editSRT = 0; // 0 - translation, 1 - rotation, 2 - scale
 
 	// hmap for terrain
