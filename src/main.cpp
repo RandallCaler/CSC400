@@ -20,9 +20,17 @@
 #include "ImportExport.h"
 #include "Camera.h"
 #include "LevelEditor.h"
+#include "EventManager.h"
 
 #include <chrono>
 #include <array>
+
+// checks if apple device
+#ifdef __APPLE__
+    #define MA_NO_RUNTIME_LINKING
+#endif
+#define MINIAUDIO_IMPLEMENTATION
+#include "../ext/miniaudio/miniaudio.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader/tiny_obj_loader.h>
@@ -53,6 +61,10 @@ float deltaTime;
 Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
 Camera freeCam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5), true);
 Camera* activeCam = &cam;
+
+ma_engine engine;
+ma_engine walkingEngine;
+// Event e = Event("../resources/cute-world.mp3");
 
 class Application : public EventCallbacks
 {
@@ -100,8 +112,11 @@ public:
 
 	std::vector<Entity> flowers;
 
-	int bf_flags[3] = {0, 0, 0};
+	// EventManager *eManager = new EventManager();
+	// Event *walking = new Event("../resources/music.mp3", &walkingEngine);
 
+
+	int bf_flags[3] = {0, 0, 0};
 
 	int nextID = 0;
 
@@ -422,8 +437,39 @@ public:
 				player = ent.second;
 			}
 		}
+
+		//eManager->events.insert_or_assign("walking", walking);
+
 	}
 
+	int initSoundEngines(){
+		ma_result result = ma_engine_init(NULL, &engine);
+		if (result != MA_SUCCESS) {
+			printf("Failed to initialize audio engine.");
+			return -1;
+		}
+
+		result = ma_engine_init(NULL, &walkingEngine);
+		if (result != MA_SUCCESS) {
+			printf("Failed to initialize audio engine.");
+			return -1;
+		}
+		
+		return 0;
+	}
+
+	void uninitSoundEngines(){
+		ma_engine_uninit(&engine);
+		ma_engine_uninit(&walkingEngine);
+	}
+
+	bool walkingEvent(shared_ptr<Entity> penguin){
+		if(penguin->m.curSpeed != 0.0){
+			return true;
+		}
+		return false;
+	}
+	
 	void initGeom(const std::string& resourceDirectory)
 	{
 		string errStr;
@@ -922,11 +968,19 @@ public:
 			drawObjects(aspect, LSpace, frametime);
 		}
 
+		// if(walkingEvent(player)){
+		// 	// cout << "starting sound" << endl;
+		// 	eManager->updateSound("walking");
+		// }
+		// else{
+		// 	eManager->stopSoundM("walking");
+		// }
+
 		// cout << "2 passes" << endl;
 		
 	}
-};
 
+};
 
 int main(int argc, char *argv[]) {
 	// Where the resources are loaded from
@@ -958,6 +1012,10 @@ int main(int argc, char *argv[]) {
 
 	application->init(resourceDir);
 	application->initGeom(resourceDir);
+	application->initSoundEngines();
+
+	Event *ev = new Event("../resources/cute-world.mp3", &engine);
+	ev->startSound();
 
 	float dt = 1 / 60.0;
 	auto lastTime = chrono::high_resolution_clock::now();
@@ -987,7 +1045,6 @@ int main(int argc, char *argv[]) {
 		activeCam->updateCamera(deltaTime);
 		// Render scene.
 		application->render(deltaTime);
-			
 
 		// Swap front and back buffers.
 		glfwSwapBuffers(windowManager->getHandle());
@@ -995,6 +1052,7 @@ int main(int argc, char *argv[]) {
 		glfwPollEvents();
 	}
 
+	application->uninitSoundEngines();
 	application->leGUI->Shutdown();
 	windowManager->shutdown();
 	
