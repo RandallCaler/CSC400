@@ -118,8 +118,9 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
     float entityHeight = scaleVec.y/2;
 
     // ground climbing
-    bool climbable = (groundHeight - groundHeight0)/(std::max(EPSILON, length(vec2(deltaX, deltaZ)))) < SLOPE_TOLERANCE;
-    if (climbable || !grounded || length(vec2(deltaX, deltaZ)) < EPSILON) {
+    bool climbable = grounded && (groundHeight - groundHeight0)/(std::max(EPSILON, length(vec2(deltaX, deltaZ)))) < SLOPE_TOLERANCE || 
+        position.y > groundHeight + entityHeight;
+    if (climbable || length(vec2(deltaX, deltaZ)) < EPSILON) {
         position = newPosition;
     }
     // if the area of ground ahead cannot be climbed, return to previous position
@@ -138,7 +139,6 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
     position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
 
     if (position.y > groundHeight + entityHeight + 0.1) {
-        printf("airborne: %.4f vs %.4f\n", position.y - entityHeight, groundHeight);
         grounded = false;
     }
 
@@ -168,7 +168,5 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
         float fP = abs(dot(delta, vec3(collisionPlane)));
         position += delta + vec3(collisionPlane) * fP;
     }
-
-    printf("p': %.3f %.3f %.3f\tp1: %.3f %.3f %.3f\tp0: %.3f %.3f %.3f\tg: %u\n", position.x, position.y, position.z, newPosition.x, newPosition.y, newPosition.z, oldPosition.x, oldPosition.y, oldPosition.z, grounded);
 }
 
