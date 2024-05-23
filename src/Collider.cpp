@@ -24,6 +24,10 @@ vec3 Collider::pixelToWorldSpace(vec3 p, pair<int, int> mapSize) {
     return vec3(ground.scale.x * (p.x - mapSize.first / 2) - ground.origin.x, (p.y / UCHAR_MAX - 0.5) * ground.scale.y + ground.origin.y, ground.scale.z * (p.z - mapSize.second / 2) - ground.origin.z);
 }
 
+/*
+ * CheckGroundCollision - obtain the plane equation of the ground below the owner
+ * takes a heightmap, outputs a vec4 where xyz describe the normal and w completes a plane equation
+ */
 vec4 Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap) {
     // translate world position of entity to pixel space of heightmap
     std::pair<int, int> texDim = hMap->getDim();
@@ -38,18 +42,22 @@ vec4 Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap) {
         int pixelIndexZ = (int)pixelSpaceZ;
         int pixelIndexX = (int)pixelSpaceX;
 
-
+        // rgb average of the pixel being sampled
         float heightA, heightB, heightC = 0.0f;
         heightA = sampleHeightFromPixel(pixelIndexX, pixelIndexZ, texDim.first, texData);
         heightB = sampleHeightFromPixel(pixelIndexX + 1, pixelIndexZ + 1, texDim.first, texData);
         
+        // world space coordinates of each point on the triangle
         vec3 pA = pixelToWorldSpace(vec3(pixelIndexX, heightA, pixelIndexZ), texDim);
         vec3 pB = pixelToWorldSpace(vec3(pixelIndexX + 1, heightB, pixelIndexZ + 1), texDim);
         vec3 pC, normal;
 
+        // the ground mesh is a grid where each square is divided into two triangles
+        // thus, there are two different planes depending on where owner is in the square
         if ((pixelSpaceX - pixelIndexX) > (pixelSpaceZ - pixelIndexZ)) {
             heightC = sampleHeightFromPixel(pixelIndexX + 1, pixelIndexZ, texDim.first, texData);
             pC = pixelToWorldSpace(vec3(pixelIndexX + 1, heightC, pixelIndexZ), texDim);
+            // cross-product the three points to obtain the normal of the plane they share
             normal = normalize(cross(pB - pA, pC - pA));
         }
         else {
@@ -58,6 +66,7 @@ vec4 Collider::CheckGroundCollision(std::shared_ptr<Texture> hMap) {
             normal = normalize(cross(pC - pA, pB - pA));
         }
 
+        // w = (px)x + (py)y + (pz)z, completing plane equation
         return vec4(normal, dot(normal, pA));
     }
 
@@ -80,25 +89,30 @@ bool compareVec3(vec3 a, vec3 b) {
 }
 
 glm::vec4 Collider::checkOpposingPlanes(glm::vec3 normal, glm::vec3 pointP, glm::vec3 pointN) {
+    // solve plane equations for opposing faces on the same principal axis
     glm::vec4 planeP = glm::vec4(normal.x, normal.y, normal.z, glm::dot(normal, pointP));
     float distanceP = glm::dot(planeP, glm::vec4(owner->position, -1.0));
     glm::vec4 planeN = glm::vec4(-normal.x, -normal.y, -normal.z, glm::dot(-normal, pointN));
     float distanceN = glm::dot(planeN, glm::vec4(owner->position, -1.0));
 
+    // return the plane equation of the face being collided with
     if (distanceP > 0 && distanceN < 0) {
         return planeP;
     }
     if (distanceN > 0 && distanceP < 0) {
         return planeN;
     }
+    // if owner is between both planes, it is not colliding on those planes
     return glm::vec4(0);
 }
 
 glm::vec4 Collider::getCollisionPlane(glm::vec3 bbScale, glm::mat4 rot, std::shared_ptr<Entity> other) {
+    // normals in each principal axis of other's bounding box
     glm::vec3 Nx = glm::vec3(rot * glm::vec4(1,0,0,1));
     glm::vec3 Ny = glm::vec3(rot * glm::vec4(0,1,0,1));
     glm::vec3 Nz = glm::vec3(rot * glm::vec4(0,0,1,1));
 
+    // points on each face of other's bounding box
     glm::vec3 Ppx = other->position + glm::vec3(bbScale.x) * Nx;
     glm::vec3 Ppy = other->position + glm::vec3(bbScale.y) * Ny;
     glm::vec3 Ppz = other->position + glm::vec3(bbScale.z) * Nz;
@@ -106,21 +120,13 @@ glm::vec4 Collider::getCollisionPlane(glm::vec3 bbScale, glm::mat4 rot, std::sha
     glm::vec3 Pny = other->position - glm::vec3(bbScale.y) * Ny;
     glm::vec3 Pnz = other->position - glm::vec3(bbScale.z) * Nz;
 
+    // compile plane equations of the faces owner is colliding with
     glm::vec4 normOut = vec4(0);
     glm::vec4 x = checkOpposingPlanes(Nx, Ppx, Pnx);
-    if (x == vec4(0)) {
-        // printf("no x\n");
-    }
     normOut += x;
     x = checkOpposingPlanes(Ny, Ppy, Pny);
-    if (x == vec4(0)) {
-        // printf("no y\n");
-    }
     normOut += x;
     x = checkOpposingPlanes(Nz, Ppz, Pnz);
-    if (x == vec4(0)) {
-        // printf("no z\n");
-    }
     normOut += x;
     return normOut;
 }
@@ -130,15 +136,10 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
     float distance = owner->m.curSpeed * deltaTime;
     glm::vec3 ownerVel = glm::vec3(distance * sin(owner->rotY), (owner->m.upwardSpeed + GRAVITY * deltaTime) * deltaTime, distance * cos(owner->rotY));
     
-    if (owner->id == 0) {
-        
-    // printf("direction: %.3f %.3f %.3f\n", ownerVel.x,  ownerVel.y,  ownerVel.z);
-    }
+    // displacement vector
     glm::vec3 T = other->position - (owner->position + owner->m.velocity);
-    // if(owner->id == 0) {
-    //     printf("bunny xyz: %.2f %.2f %.2f cube xyz: %.2f %.2f %.2f \n", owner->position.x, owner->position.y, owner->position.z, other->position.x, other->position.y, other->position.z);
-    // }
 
+    // build each entity's rotation matrix
   	mat4 ARotX = glm::rotate( glm::mat4(1.0f), owner->rotX, vec3(1, 0, 0));
   	mat4 ARotY = glm::rotate( glm::mat4(1.0f), owner->rotY, vec3(0, 1, 0));
 	mat4 ARotZ = glm::rotate( glm::mat4(1.0f), owner->rotZ, vec3(0, 0, 1));
@@ -148,6 +149,7 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
     mat4 ARot = ARotX * ARotY * ARotZ * glm::mat4(1.0f);
     mat4 BRot = BRotX * BRotY * BRotZ * glm::mat4(1.0f);
 
+    // unit vectors facing orthogonal to each bounding box's faces
     glm::vec3 Ax = glm::vec3(ARot * glm::vec4(1,0,0,1));
     glm::vec3 Ay = glm::vec3(ARot * glm::vec4(0,1,0,1));
     glm::vec3 Az = glm::vec3(ARot * glm::vec4(0,0,1,1));
@@ -155,6 +157,7 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
     glm::vec3 By = glm::vec3(BRot * glm::vec4(0,1,0,1));
     glm::vec3 Bz = glm::vec3(BRot * glm::vec4(0,0,1,1));
 
+    // scale bounding boxes to world space
     float scalefactor1 = 1.0/(std::max(owner->maxBB.x - owner->minBB.x, 
             owner->maxBB.y - owner->minBB.y), 
             owner->maxBB.z - owner->minBB.z);
@@ -174,6 +177,10 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
     glm::vec3 L = Ax;
     
     while (distanceOnSeparationAxis(T, L, sv1, sv2, ARot, BRot) > std::abs(glm::dot(T, L))) {
+        /*
+         * separation axis cases: if there is a separation between the boxes 
+         * projected onto L's corresponding separation plane, there is no collision
+         */
         switch (i) {
             case 0:
                 L = Ay;
@@ -251,8 +258,7 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
         
         i++;
     }
-    // if (owner->id == 0)
-    //     printf("distance on sep axis: %.4f\n", distanceOnSeparationAxis(T, L, sv1, sv2, ARot, BRot));
+
     return glm::vec4(0);
 }
 
@@ -260,16 +266,21 @@ glm::vec4 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<
 {
     glm::vec4 collisionPlane = vec4(0);
     colliding = false;
+
     for(int i = 0; i < entities.size(); i++) {
         shared_ptr<Entity> e = entities[i];
+        // check collisions with each entity in the list except for the entity doing the checking
         if (entityId != e->id) {
             glm::vec4 newCPlane = orientedCollision(deltaTime, e);
             if (collisionPlane != vec4(0)) {
+                // if the owner is colliding with multiple boxes, adjust additional plane equations to prevent face-sinking
                 collisionPlane -= dot(vec3(newCPlane), vec3(collisionPlane))*newCPlane;
             }
+            // get plane equation for an oriented bounding box collision
             collisionPlane += newCPlane;
             if (newCPlane != glm::vec4(0)) {
                 if (e->collider->collectible) {
+                    // placeholder collectible response - should activate boid behavior
                     e->position.y += 100;
                 }
                 else {
