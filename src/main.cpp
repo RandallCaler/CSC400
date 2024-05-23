@@ -507,6 +507,7 @@ public:
 				ent->collider->entityName = 'c';
 			}
 		}
+		cam.collider = new Collider(&cam);
 	}
 
 	//directly pass quad for the ground to the GPU
@@ -769,7 +770,7 @@ public:
 
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-		activeCam->SetView(curS->prog);
+		activeCam->SetView(curS->prog, hmap);
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
@@ -799,7 +800,7 @@ public:
 		shared_ptr<Shader> curS = shaders["edit"];
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-		activeCam->SetView(curS->prog);
+		activeCam->SetView(curS->prog, hmap);
 
 		float butterfly_height[3] = {1.1, 1.7, 1.5};
 
