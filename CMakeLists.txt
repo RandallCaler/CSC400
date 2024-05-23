@@ -29,7 +29,7 @@ add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLSL})
 # Helper function included from FindGfxLibs.cmake
 findGLFW3(${CMAKE_PROJECT_NAME})
 findGLM(${CMAKE_PROJECT_NAME})
-# findASSIMP(${CMAKE_PROJECT_NAME})
+findASSIMP(${CMAKE_PROJECT_NAME})
 
 
 # OS specific options and libraries

@@ -65,6 +65,7 @@ public:
     std::vector<std::shared_ptr<Shape>> objs;
     std::vector<std::shared_ptr<Texture>> textures;
     std::vector<BRDFmaterial> materials;
+    color editorColor;
     Collider* collider = NULL;
     glm::vec3 position = glm::vec3(0);
     glm::vec3 scaleVec = glm::vec3(1);
@@ -75,6 +76,7 @@ public:
     float rotZ;
     bool grounded = false;
     bool gliding = false;
+    bool collidable;
     string defaultShaderName;
     glm::mat4 modelMatrix;
     string tag;
