@@ -52,8 +52,7 @@ bool editMode = false;
 
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Entity>> worldentities;
-map<string, shared_ptr<Model>> modelList;
-vector<string> tagList = { "" };
+vector<string> tagList;
 vector<shared_ptr<Entity>> collidables;
 
 shared_ptr<Entity> cur_entity = NULL;
@@ -82,7 +81,7 @@ public:
 
 	shared_ptr<Entity> player;
 
-	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities, &modelList, &tagList, &collidables);
+	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities, &tagList, &collidables);
 
 	shared_ptr<Program> DepthProg;
 	GLuint depthMapFBO;

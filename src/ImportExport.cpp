@@ -1,10 +1,9 @@
 #include "ImportExport.h"
 
-ImporterExporter::ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities, map<string, shared_ptr<Model>>* modelList, vector<string>* tagList, vector<shared_ptr<Entity>>* collidables) {
+ImporterExporter::ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList, vector<shared_ptr<Entity>>* collidables) {
 	// mutable references to main's shaders and entities
 	this->shaders = shaders;
 	this->worldentities = worldentities;
-	this->modelList = modelList;
 	this->tagList = tagList;
 	this->collidables = collidables;
 }
@@ -62,26 +61,15 @@ void ImporterExporter::loadTexture(const json& texData) {
 	textureLibrary[id] = texture;
 }
 
-void ImporterExporter::loadModel(const json& modData)
-{
-	string id = modData["name"];
-	string modFile = modData["filePath"];
-	shared_ptr<Model> newModel = make_shared<Model>(id, resourceDir + modFile);
-
-	cout << "Loading Model: " << id << " (" << modFile << ")" << endl;
-
-	(*modelList)[id] = newModel;
-}
-
 void ImporterExporter::loadEntity(const json& entData) {
 	string id = entData["name"];
-	string model = entData["model"];
+	string file = entData["file"];
 	string tag = entData["tag"];
 	int collision = entData["collider"];
 	string shader = entData["shader"];
 
 	cout << "Loading Entity: " << id << endl;
-	cout << "  Model: " << model << endl;
+	cout << "  Model: " << file << endl;
 	cout << "  Shader: " << shader << endl;
 	cout << "  Tag: " << tag << endl;
 	cout << "  Collider: " << (collision ? "true" : "false") << endl;
@@ -89,7 +77,7 @@ void ImporterExporter::loadEntity(const json& entData) {
 
 	// Initialize new entity with lists of shapes and materials
 	shared_ptr<Entity> newEntity = make_shared<Entity>();
-	newEntity->model = (*modelList)[model];
+	newEntity->model = make_shared<Model>(resourceDir + file);
 	newEntity->defaultShaderName = shader;
 	newEntity->tag = tag;
 
@@ -186,12 +174,6 @@ void ImporterExporter::loadFromFile(string path) {
 		}
 	}
 
-	if (j.contains("models")) {
-		for (const auto& modData : j["models"]) {
-			loadModel(modData);
-		}
-	}
-
 	if (j.contains("entities")) {
 		for (const auto& entData : j["entities"]) {
 			loadEntity(entData);
@@ -244,21 +226,6 @@ json ImporterExporter::texturesToJson() {
 	return texturesJson;
 }
 
-json ImporterExporter::modelsToJson() {
-	json modelsJson = json::array();
-
-	for (const auto& modelPair : *modelList) {
-		const auto& model = modelPair.second;
-		json modelJson;
-		modelJson["name"] = modelPair.first;
-		modelJson["filePath"] = model->filePath;
-
-		modelsJson.push_back(modelJson);
-	}
-
-	return modelsJson;
-}
-
 json ImporterExporter::entitiesToJson() {
 	json entitiesJson = json::array();
 
@@ -266,12 +233,12 @@ json ImporterExporter::entitiesToJson() {
 		const auto& entity = entityPair.second;
 		json entityJson;
 		entityJson["name"] = entityPair.first;
-		entityJson["model"] = entity->model->name;
+		entityJson["file"] = findFilename(entity->model->filePath);
 		entityJson["tag"] = entity->tag;
 		entityJson["collider"] = entity->collidable ? 1 : 0;
 		entityJson["shader"] = entity->defaultShaderName;
 
-		if (!entity->model->extTexture) {
+		if (entity->model->extTexture) {
 			entityJson["texture"] = findFilename(entity->model->extTexture->getFilename());
 		}
 		else {
@@ -324,7 +291,6 @@ int ImporterExporter::saveToFile(string outFileName) {
 
 	saveJson["shaders"] = shadersToJson();
 	saveJson["textures"] = texturesToJson();
-	saveJson["models"] = modelsToJson();
 	saveJson["entities"] = entitiesToJson();
 
 	ofstream saveFile(resourceDir + outFileName);

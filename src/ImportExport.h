@@ -20,17 +20,15 @@ extern string resourceDir;
 
 class ImporterExporter {
     public:
-        ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities, map<string, shared_ptr<Model>>* modelList, vector<string>* tagList, vector<shared_ptr<Entity>>* collidables);
+        ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList, vector<shared_ptr<Entity>>* collidables);
         ~ImporterExporter();
         
         void loadShader(const json& shaderData);
         void loadTexture(const json& texData);
-        void loadModel(const json& modData);
         void loadEntity(const json& entData);
         void loadFromFile(string path);
 
         json shadersToJson();
-        json modelsToJson();
         json entitiesToJson();
         json texturesToJson();
         string findFilename(string path);
