@@ -20,40 +20,18 @@ Entity::Entity() {
     rotY = 0.0;
     rotZ = 0.0;
     grounded = true;
-};
-
-void Entity::initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<std::shared_ptr<Texture>> textures) {
-    objs = shapes;
-    this->textures = textures;
-    minBB = vec3((std::numeric_limits<float>::max)());
-    maxBB = vec3((std::numeric_limits<float>::min)());
-
     id = NEXT_ID++;
     defaultShaderName = "";
 
     //generate color for color picking based on entity id
-    int r = ((id * 10) & 0x000000FF) >>  0;
-    int g = ((id * 10) & 0x0000FF00) >>  8;
+    int r = ((id * 10) & 0x000000FF) >> 0;
+    int g = ((id * 10) & 0x0000FF00) >> 8;
     int b = ((id * 10) & 0x00FF0000) >> 16;
 
-    for (int i = 0; i < shapes.size(); i++) {
-        BRDFmaterial m;
-        materials.push_back(m);
-
-        // set diffuse mats, converting from [0,255]i to [0,1]f
-        color em = {r/255.0f, g/255.0f, b/255.0f};
-        editorColor = em;
-
-        if (minBB.x > shapes[i]->min.x) minBB.x = shapes[i]->min.x;
-        if (minBB.y > shapes[i]->min.y) minBB.y = shapes[i]->min.y;
-        if (minBB.z > shapes[i]->min.z) minBB.z = shapes[i]->min.z;
-        if (maxBB.x < shapes[i]->max.x) maxBB.x = shapes[i]->max.x;
-        if (maxBB.y < shapes[i]->max.y) maxBB.y = shapes[i]->max.y;
-        if (maxBB.z < shapes[i]->max.z) maxBB.z = shapes[i]->max.z;
-    }
-
-    
-}
+    // set diffuse mats, converting from [0,255]i to [0,1]f
+    color em = { r / 255.0f, g / 255.0f, b / 255.0f };
+    editorColor = em;
+};
 
 // void Entity::updateScale(float newScale) {
 //     scale = newScale;
@@ -76,10 +54,10 @@ glm::mat4 Entity::generateModel() {
 
     // move object to origin and scale to a standard size, then scale to specifications
     M->scale(scaleVec *
-        vec3(1.0 / std::max(std::max(maxBB.x - minBB.x,
-            maxBB.y - minBB.y),
-            maxBB.z - minBB.z)));
-    M->translate(-vec3(0.5) * (minBB + maxBB));
+        vec3(1.0 / std::max(std::max(model->max.x - model->min.x,
+            model->max.y - model->min.y),
+            model->max.z - model->min.z)));
+    M->translate(-vec3(0.5) * (model->min + model->max));
 
     modelMatrix = M->topMatrix();
     M->popMatrix();

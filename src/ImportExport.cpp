@@ -296,10 +296,11 @@ int ImporterExporter::saveToFile(string outFileName) {
 	ofstream saveFile(resourceDir + outFileName);
 	if (!saveFile.is_open()) {
 		cerr << "Failed to open save file at " << outFileName << endl;
-		return;
+		return -1;
 	}
 
 	saveFile << setw(4) << saveJson << endl;  // Pretty print with 4-space indentation
 	saveFile.close();
 	cout << "World saved to file " << outFileName << endl;
+	return 1;
 }

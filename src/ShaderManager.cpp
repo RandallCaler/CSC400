@@ -82,15 +82,6 @@ void Shader::flip(int f) {
 	glUniform1i(prog->getUniform("flip"), f);
 }
 
-void Shader::setTexture(int i) {
-    if (prog->getUniform("Texture0") > 0) {
-        textures[i]->bind(prog->getUniform("Texture0"));
-    }
-}
-
-void Shader::unbindTexture(int i) {
-    textures[i]->unbind();
-}
 
 void Shader::setUniform(std::string uniformName) {
 	prog->addUniform(uniformName);

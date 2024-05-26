@@ -33,8 +33,6 @@ class Entity {
 public:
     Entity();
 
-    void initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<std::shared_ptr<Texture>> textures);
-
     void updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList);
 
     glm::mat4 generateModel();

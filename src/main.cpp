@@ -33,7 +33,6 @@
 #include "../ext/miniaudio/miniaudio.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader/tiny_obj_loader.h>
 #define PI 3.1415927
 
 // value_ptr for glm
@@ -92,8 +91,6 @@ public:
   
 	LevelEditor* leGUI = new LevelEditor();
 
-	std::vector<shared_ptr<Shape>> butterfly;
-
 	InputHandler ih;
 
 	Entity bf1 = Entity();
@@ -102,12 +99,6 @@ public:
 	// Entity *catEnt = new Manchot();
 	
   	std::vector<Entity> bf;
-
-	std::vector<shared_ptr<Shape>> flower;
-
-	std::vector<shared_ptr<Shape>> tree1;
-	
-	std::vector<shared_ptr<Shape>> cat;
 	
 	std::vector<Entity> trees;
 
@@ -472,68 +463,8 @@ public:
 	}
 	
 	void initGeom(const std::string& resourceDirectory)
-	{
-		string errStr;
-		// Initialize cat mesh.
-		vector<tinyobj::shape_t> TOshapesB;
- 		vector<tinyobj::material_t> objMaterialsB;
-		//load in the mesh and make the shape(s)
- 		bool rc = tinyobj::LoadObj(TOshapesB, objMaterialsB, errStr, (resourceDirectory + "/cat.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		} else {	
-			cat.push_back(make_shared<Shape>());
-			cat[0]->createShape(TOshapesB[0]);
-			cat[0]->measure();
-			cat[0]->init();
-		}
-
-		vector<tinyobj::shape_t> TOshapes3;
-		rc = tinyobj::LoadObj(TOshapes3, objMaterialsB, errStr, (resourceDirectory + "/butterfly.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		} else {
-			//scan in all parts of butterfly
-			for (int i = 0; i < 3; i++) {
-				butterfly.push_back(make_shared<Shape>());
-				butterfly[i]->createShape(TOshapes3[i]);
-				butterfly[i]->measure();
-				butterfly[i]->init();
-			}
-		}
-
-		vector<tinyobj::shape_t> TOshapes4;
-		rc = tinyobj::LoadObj(TOshapes4, objMaterialsB, errStr, (resourceDirectory + "/flower.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		} else {
-			//for now all our shapes will not have textures - change in later labs
-			for (int i = 0; i < 3; i++) {
-				//scan in current obj part of flower
-				flower.push_back(make_shared<Shape>());
-				flower[i]->createShape(TOshapes4[i]);
-				flower[i]->measure();
-				flower[i]->init();
-			}
-		}
-
-		vector<tinyobj::shape_t> TOshapes5;
-		rc = tinyobj::LoadObj(TOshapes5, objMaterialsB, errStr, (resourceDirectory + "/trees.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		} else {
-			//for now all our shapes will not have textures - change in later labs
-			for (int i = 0; i < 12; i++) {
-				//scan in current obj part of flower
-				tree1.push_back(make_shared<Shape>());
-
-				tree1[i]->createShape(TOshapes5[i]);
-				tree1[i]->measure();
-				tree1[i]->init();
-			}
-		}
-    
-		// IMPORT BUNNY
+	{   
+		
 		player->m.forward = vec4(0, 0, 0.1, 1);
 		player->m.velocity = vec3(0.1) * vec3(player->m.forward);
 
@@ -715,9 +646,10 @@ public:
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 
-			for (int i = 0; i < entity->objs.size(); i++) {	
-				entity->objs[i]->draw(DepthProg);
-			}
+			entity->model->Draw(DepthProg);
+			//for (int i = 0; i < entity->objs.size(); i++) {	
+			//	entity->objs[i]->draw(DepthProg);
+			//}
 		}
 		
 		DepthProg->unbind();
@@ -796,8 +728,9 @@ public:
 			glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
       
-			for (int i = 0; i < entity->objs.size(); i++) {
-				if (curS->has_texture) {
+			for (auto& meshPair : entity->model->meshes) {
+				curS->setMaterial(meshPair.second.mat);
+				/*if (curS->has_texture) {
 					curS->flip(1);
 					entity->textures[i]->bind(curS->prog->getUniform("Texture0"));
 				}
@@ -809,8 +742,9 @@ public:
 				if (curS->has_texture) {
 					entity->textures[i]->unbind();
 					curS->unbindTexture(0);
-				}
+				}*/
 			}
+			entity->model->Draw(curS->prog);
 			if (shaders["skybox"] == curS) {
 				// deactivate skybox backfill
 				glDepthFunc(GL_LESS);
@@ -887,12 +821,14 @@ public:
 			//}
 	
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
-	
-			for (int i = 0; i < entity->objs.size(); i++) {
-				glUniform3fv(curS->prog->getUniform("PickingColor"), 1, value_ptr(glm::vec3(entity->editorColor.r, entity->editorColor.g, entity->editorColor.b)));
-				entity->objs[i]->draw(curS->prog);
 
-			}
+			entity->model->Draw(curS->prog);
+	
+			//for (int i = 0; i < entity->objs.size(); i++) {
+			//	glUniform3fv(curS->prog->getUniform("PickingColor"), 1, value_ptr(glm::vec3(entity->editorColor.r, entity->editorColor.g, entity->editorColor.b)));
+			//	entity->objs[i]->draw(curS->prog);
+
+			//}
 		}
 	
 

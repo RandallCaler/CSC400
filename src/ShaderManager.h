@@ -27,9 +27,6 @@ class Shader {
 
         void flip(int f);
 
-        void setTexture(int i);
-        void unbindTexture(int i);
-
         void setUniform(std::string uniformName);
         void setAttribute(std::string attributeName);
 

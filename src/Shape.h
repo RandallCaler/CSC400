@@ -8,7 +8,6 @@
 #include <vector>
 #include <memory>
 #include <glm/gtc/type_ptr.hpp>
-#include <tiny_obj_loader/tiny_obj_loader.h>
 
 class Program;
 
@@ -17,9 +16,6 @@ class Shape
 {
 
 public:
-
-	void createShape(tinyobj::shape_t & shape, std::string filePath, std::string n);
-	void createShape(tinyobj::shape_t & shape);
 	void createShape(std::vector<float> pos, std::vector<unsigned int> ind);
 	void init();
 	void generateNormals();
