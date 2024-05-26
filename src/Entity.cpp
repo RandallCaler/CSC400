@@ -55,26 +55,6 @@ void Entity::initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<
     
 }
 
-/*
-void Entity::setMaterials(int i, float r1, float g1, float b1, float r2, float g2, float b2,
-    float r3, float g3, float b3, float s) {
-    materials[i].amb.r = r1;
-    materials[i].amb.g = g1;
-    materials[i].amb.b = b1;
-    materials[i].dif.r = r2;
-    materials[i].dif.g = g2;
-    materials[i].dif.b = b2;
-    materials[i].spec.r = r3;
-    materials[i].spec.g = g3;
-    materials[i].spec.b = b3;
-    materials[i].shine = s;
-}
-*/
-
-void Entity::setMaterials(int i, material& mat) {
-    materials[i] = mat;
-}
-
 // void Entity::updateScale(float newScale) {
 //     scale = newScale;
 // }

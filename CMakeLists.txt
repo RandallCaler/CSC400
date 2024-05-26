@@ -22,6 +22,7 @@ include_directories("${CMAKE_SOURCE_DIR}/ext/glad/include")
 # Assuming Assimp headers are within the ext/assimp/include directory
 include_directories("${CMAKE_SOURCE_DIR}/ext/assimp/include")
 include_directories("${CMAKE_SOURCE_DIR}/ext/imgui/include")
+include_directories("${CMAKE_SOURCE_DIR}/ext/json/include")
 
 # Set the executable.
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLSL})

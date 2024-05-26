@@ -46,11 +46,13 @@ using namespace glm;
 
 // Where the resources are loaded from
 std::string resourceDir = "../resources";
-std::string WORLD_FILE_NAME = "/world.txt";
+std::string WORLD_FILE_NAME = "/save.json";
+std::string WRITE_FILE = "/write.json";
 bool editMode = false;
 
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Entity>> worldentities;
+map<string, shared_ptr<Model>> modelList;
 vector<string> tagList = { "" };
 vector<shared_ptr<Entity>> collidables;
 
@@ -80,7 +82,7 @@ public:
 
 	shared_ptr<Entity> player;
 
-	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities, &tagList, &collidables);
+	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities, &modelList, &tagList, &collidables);
 
 	shared_ptr<Program> DepthProg;
 	GLuint depthMapFBO;
@@ -185,7 +187,7 @@ public:
 						freeCam.vel.x = editSpeed;
 						break;
 					case GLFW_KEY_V:
-						levelEditor->saveToFile(WORLD_FILE_NAME);
+						levelEditor->saveToFile(WRITE_FILE);
 						break;
 					case GLFW_KEY_F:
 						if (cur_entity != NULL) {

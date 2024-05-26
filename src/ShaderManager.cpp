@@ -54,7 +54,7 @@ void Shader::setModel(glm::mat4& M) {
 void Shader::addTexture(const std::string &f) {
     shared_ptr<Texture> texture0 = make_shared<Texture>();
     texture0->setFilename(f);
-    texture0->init();
+    texture0->init(false);
     texture0->setUnit(0);
     texture0->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
     textures.push_back(texture0);

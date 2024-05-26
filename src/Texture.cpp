@@ -20,23 +20,40 @@ Texture::~Texture()
 	
 }
 
-void Texture::init()
+void Texture::init(bool embedded)
 {
 	// Load texture
-	int w, h, ncomps;
-	stbi_set_flip_vertically_on_load(true);
-	unsigned char *data = stbi_load(filename.c_str(), &w, &h, &ncomps, 0);
-	if(!data) {
-		cerr << filename << " not found" << endl;
+	int width, height, ncomps;
+	stbi_set_flip_vertically_on_load(false);
+	unsigned char* data;
+	if (!embedded) {
+		data = stbi_load(filename.c_str(), &width, &height, &ncomps, 0);
+		if (!data) {
+			cerr << filename << " not found" << endl;
+		}
 	}
-	if(ncomps != 3) {
-		cerr << filename << " must have 3 components (RGB)" << endl;
+	else {
+		data = stbi_load_from_memory(buffer, static_cast<int>(bufferSize), &width, &height, &ncomps, 0);
+		if (!data) {
+			cerr << "texture info not found" << endl;
+		}
 	}
-	if((w & (w - 1)) != 0 || (h & (h - 1)) != 0) {
+
+
+	GLenum format;
+	if (ncomps == 1)
+		format = GL_RED;
+	else if (ncomps == 3)
+		format = GL_RGB;
+	else if (ncomps == 4)
+		format = GL_RGBA;
+
+	if ((width & (width - 1)) != 0 || (height & (height - 1)) != 0) {
 		cerr << filename << " must be a power of 2" << endl;
 	}
-	width = w;
-	height = h;
+
+	this->width = width;
+	this->height = height;
 
 	// Generate a texture buffer object
 	glGenTextures(1, &tid);
@@ -44,7 +61,7 @@ void Texture::init()
 	glBindTexture(GL_TEXTURE_2D, tid);
 	// Load the actual texture data
 	// Base level is 0, number of channels is 3, and border is 0.
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 	// Generate image pyramid
 	glGenerateMipmap(GL_TEXTURE_2D);
 	// Set texture wrap modes for the S and T directions
@@ -80,9 +97,9 @@ void Texture::initHmap()
 	this->data = data;
 }
 
-void Texture::freeData() const {
-	stbi_image_free(data);
-}
+//void Texture::freeData() const {
+//	stbi_image_free(data);
+//}
 
 void Texture::setWrapModes(GLint wrapS, GLint wrapT)
 {
@@ -92,15 +109,15 @@ void Texture::setWrapModes(GLint wrapS, GLint wrapT)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
 }
 
-void Texture::bind(GLint handle)
-{
-	glActiveTexture(GL_TEXTURE0 + unit);
-	glBindTexture(GL_TEXTURE_2D, tid);
-	glUniform1i(handle, unit);
-}
-
-void Texture::unbind()
-{
-	glActiveTexture(GL_TEXTURE0 + unit);
-	glBindTexture(GL_TEXTURE_2D, 0);
-}
+//void Texture::bind(GLint handle)
+//{
+//	glActiveTexture(GL_TEXTURE0 + unit);
+//	glBindTexture(GL_TEXTURE_2D, tid);
+//	glUniform1i(handle, unit);
+//}
+//
+//void Texture::unbind()
+//{
+//	glActiveTexture(GL_TEXTURE0 + unit);
+//	glBindTexture(GL_TEXTURE_2D, 0);
+//}
