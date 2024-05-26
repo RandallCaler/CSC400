@@ -1,15 +1,25 @@
 #include "Collider.h"
 #include "Entity.h"
+#include "Camera.h"
 
 #include <math.h>
 
 
 Collider::Collider(){};
 
-Collider::Collider(Entity *owner, bool collectible) : worldMin(owner->model->min), worldMax(owner->model->max)
+
+Collider::Collider(Entity* owner, bool collectible)
+    : owner(owner), collectible(collectible)
 {
-    this->owner = owner;
-    this->collectible = collectible;
+    if (owner && owner->model) {
+        worldMin = owner->model->min;
+        worldMax = owner->model->max;
+    }
+    else {
+        // Initialize to default values if owner or owner->model is null
+        worldMin = glm::vec3(0.0f);
+        worldMax = glm::vec3(0.0f);
+    }
 }
 
 float sampleHeightFromPixel(int x, int z, int major, unsigned char*& data) {

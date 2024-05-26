@@ -467,7 +467,7 @@ public:
 		
 		player->m.forward = vec4(0, 0, 0.1, 1);
 		player->m.velocity = vec3(0.1) * vec3(player->m.forward);
-
+		
 		applyCollider();
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
@@ -484,15 +484,12 @@ public:
 			else {
 				ent->collider->entityName = 'c';
 			}
+			if (ent->tag == "food") {
+				ent->collider->collectible = true;
+			}			
 		}
 		cam.collider = new Collider(&cam);
-
-		// placeholder cheese collider - replace when collectibles are implemented
-		shared_ptr<Entity> cheese = worldentities["cheese"];
-		cheese->collider = new Collider(cheese.get());
-		cheese->collider->SetEntityID(cheese->id);
-		cheese->collider->collectible = true;
-		collidables.push_back(cheese);
+		cout << "here" << endl;
 	}
 
 	//directly pass quad for the ground to the GPU
@@ -950,6 +947,7 @@ int main(int argc, char *argv[]) {
 	application->init(resourceDir);
 	application->initGeom(resourceDir);
 	application->initSoundEngines();
+
 
 	Event *ev = new Event("../resources/cute-world.mp3", &engine);
 	ev->startSound();

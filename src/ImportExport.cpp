@@ -63,18 +63,17 @@ void ImporterExporter::loadTexture(const json& texData) {
 
 void ImporterExporter::loadEntity(const json& entData) {
 	string id = entData["name"];
-	string file = entData["file"];
-	string tag = entData["tag"];
-	int collision = entData["collider"];
-	string shader = entData["shader"];
-
 	cout << "Loading Entity: " << id << endl;
+	string file = entData["file"];
 	cout << "  Model: " << file << endl;
-	cout << "  Shader: " << shader << endl;
+	string tag = entData["tag"];
 	cout << "  Tag: " << tag << endl;
+	int collision = entData["collider"];
 	cout << "  Collider: " << (collision ? "true" : "false") << endl;
 
-
+	string shader = entData["shader"];
+	cout << "  Shader: " << shader << endl;
+	
 	// Initialize new entity with lists of shapes and materials
 	shared_ptr<Entity> newEntity = make_shared<Entity>();
 	newEntity->model = make_shared<Model>(resourceDir + file);

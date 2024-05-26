@@ -7,6 +7,7 @@
 #include "Shape.h"
 
 class Entity; // forward declaration to enable use of this class in Entity class
+class Camera;
 
 typedef struct groundProperties {
     glm::vec3 origin;
@@ -31,6 +32,7 @@ public:
 
     Collider();
     Collider(Entity *owner, bool collectible = false);
+    Collider(Camera* owner, bool collectible);
     void UpdateColliderSize();
     glm::vec3 pixelToWorldSpace(glm::vec3 p, std::pair<int, int> mapSize);
     glm::vec4 CheckGroundCollision(std::shared_ptr<Texture> hMap);
