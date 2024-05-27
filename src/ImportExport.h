@@ -20,7 +20,7 @@ extern string resourceDir;
 
 class ImporterExporter {
     public:
-        ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList, vector<shared_ptr<Entity>>* collidables);
+        ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Texture>>* textureLibrary, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList, vector<shared_ptr<Entity>>* collidables);
         ~ImporterExporter();
         
         void loadShader(const json& shaderData);
@@ -40,7 +40,7 @@ class ImporterExporter {
         map<string, shared_ptr<Model>>* modelList;
         vector<string>* tagList; // reference to main tag list
         vector<shared_ptr<Entity>>* collidables; // reference to main collidables
-	    map<string, shared_ptr<Texture>> textureLibrary;    
+	    map<string, shared_ptr<Texture>>* textureLibrary;    
 	    string buffer; // input data stream
         size_t delimit; // reusable tracker for delimiter locations
 };

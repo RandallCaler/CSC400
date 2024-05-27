@@ -23,8 +23,8 @@ public:
 	GLint getUnit() const { return unit; }
 	void setType(string t) { type = t; }
 	string getType() const { return type; }
-	//void bind(GLint handle);
-	//void unbind();
+	void bind(GLint handle);
+	void unbind();
 	void setWrapModes(GLint wrapS, GLint wrapT); // Must be called after init()
 	GLint getID() const { return tid;}
 	void setID(GLint id) { tid = id; }

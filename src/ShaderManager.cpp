@@ -51,15 +51,6 @@ void Shader::setModel(glm::mat4& M) {
     glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, value_ptr(M));
 }
 
-void Shader::addTexture(const std::string &f) {
-    shared_ptr<Texture> texture0 = make_shared<Texture>();
-    texture0->setFilename(f);
-    texture0->init(false);
-    texture0->setUnit(0);
-    texture0->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
-    textures.push_back(texture0);
-}
-
 void Shader::setMaterial(BRDFmaterial material) {
     if (prog->getUniform("lightColor") > 0) {
         glUniform3f(prog->getUniform("lightColor"), material.lightColor.r, material.lightColor.g, material.lightColor.b);
@@ -91,9 +82,8 @@ void Shader::setAttribute(std::string attributeName) {
 	prog->addAttribute(attributeName);
 }
 
-Shader::Shader(const std::string &v, const std::string &f, bool has_tex) {
+Shader::Shader(const std::string &v, const std::string &f) {
     initShader(v, f);
-    has_texture = has_tex;
 }
 
 Shader::Shader() {

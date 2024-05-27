@@ -109,15 +109,15 @@ void Texture::setWrapModes(GLint wrapS, GLint wrapT)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
 }
 
-//void Texture::bind(GLint handle)
-//{
-//	glActiveTexture(GL_TEXTURE0 + unit);
-//	glBindTexture(GL_TEXTURE_2D, tid);
-//	glUniform1i(handle, unit);
-//}
-//
-//void Texture::unbind()
-//{
-//	glActiveTexture(GL_TEXTURE0 + unit);
-//	glBindTexture(GL_TEXTURE_2D, 0);
-//}
+void Texture::bind(GLint handle)
+{
+	glActiveTexture(GL_TEXTURE0 + unit);
+	glBindTexture(GL_TEXTURE_2D, tid);
+	glUniform1i(handle, unit);
+}
+
+void Texture::unbind()
+{
+	glActiveTexture(GL_TEXTURE0 + unit);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}

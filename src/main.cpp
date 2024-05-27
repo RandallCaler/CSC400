@@ -45,18 +45,20 @@ using namespace glm;
 
 // Where the resources are loaded from
 std::string resourceDir = "../resources";
-std::string WORLD_FILE_NAME = "/save.json";
-std::string WRITE_FILE = "/write.json";
+std::string WORLD_FILE_NAME = "/world.json";
 bool editMode = false;
+float editSpeed = 7.0f;
 
 map<string, shared_ptr<Shader>> shaders;
+map<string, shared_ptr<Texture>> textureLibrary = { {"", nullptr} };
 map<string, shared_ptr<Entity>> worldentities;
-vector<string> tagList;
+vector<string> tagList = { "" };
 vector<shared_ptr<Entity>> collidables;
 
 shared_ptr<Entity> cur_entity = NULL;
 
 float deltaTime;
+
 // 	view pitch dist angle playerpos playerrot animate g_eye
 Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
 Camera freeCam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5), true);
@@ -80,7 +82,7 @@ public:
 
 	shared_ptr<Entity> player;
 
-	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities, &tagList, &collidables);
+	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &textureLibrary, &worldentities, &tagList, &collidables);
 
 	shared_ptr<Program> DepthProg;
 	GLuint depthMapFBO;
@@ -127,7 +129,6 @@ public:
 	//bounds for world
 	double bounds;
 
-	float editSpeed = 500.0;
 	int editSRT = 0; // 0 - translation, 1 - rotation, 2 - scale
 
 	// hmap for terrain
@@ -144,7 +145,6 @@ public:
 		if (key == GLFW_KEY_L && action == GLFW_PRESS && !leGUI->diableInput) {
 			editMode = !editMode;
 			editSRT = 0;
-			editSpeed = 2.0;
 			if (editMode) {
 				activeCam = &freeCam;
 			}
@@ -176,8 +176,14 @@ public:
 					case GLFW_KEY_D:
 						freeCam.vel.x = editSpeed;
 						break;
+					case GLFW_KEY_SPACE:
+						freeCam.vel.y = -editSpeed;
+						break;
+					case GLFW_KEY_LEFT_CONTROL:
+						freeCam.vel.y = editSpeed;
+						break;
 					case GLFW_KEY_V:
-						levelEditor->saveToFile(WRITE_FILE);
+						levelEditor->saveToFile(WORLD_FILE_NAME);
 						break;
 					case GLFW_KEY_F:
 						if (cur_entity != NULL) {
@@ -199,6 +205,10 @@ public:
 					case GLFW_KEY_A:
 					case GLFW_KEY_D:
 						freeCam.vel.x = 0.0;
+						break;
+					case GLFW_KEY_SPACE:
+					case GLFW_KEY_LEFT_CONTROL:
+						freeCam.vel.y = 0.0;
 						break;
 				}
 			}
@@ -404,20 +414,10 @@ public:
 		DepthProg->addUniform("P");
 		DepthProg->addUniform("V");
 		DepthProg->addUniform("M");
-		DepthProg->addUniform("pickingColor");
+		DepthProg->addUniform("Texture0");
 		DepthProg->addAttribute("vertPos");
 		DepthProg->addAttribute("vertNor");
 		DepthProg->addAttribute("vertTex");
-
-		shaders["skybox"]->has_texture = true;
-		shaders["tex"]->has_texture = true;
-		shaders["hmap"]->has_texture = false;
-
-		shaders["skybox"]->addTexture(resourceDirectory + "/sky.jpg");
-		shaders["tex"]->addTexture(resourceDirectory + "/grass_tex.jpg");
-		shaders["tex"]->addTexture(resourceDirectory + "/sky.jpg");
-		shaders["tex"]->addTexture(resourceDirectory + "/cat_tex.jpg");
-		shaders["tex"]->addTexture(resourceDirectory + "/cat_tex_legs.jpg");
 
 		hmap = make_shared<Texture>();
 		hmap->setFilename(resourceDirectory + "/hmap.png");
@@ -435,6 +435,7 @@ public:
 	}
 
 	int initSoundEngines(){
+		
 		ma_result result = ma_engine_init(NULL, &engine);
 		if (result != MA_SUCCESS) {
 			printf("Failed to initialize audio engine.");
@@ -446,7 +447,6 @@ public:
 			printf("Failed to initialize audio engine.");
 			return -1;
 		}
-		
 		return 0;
 	}
 
@@ -464,9 +464,10 @@ public:
 	
 	void initGeom(const std::string& resourceDirectory)
 	{   
-		
-		player->m.forward = vec4(0, 0, 0.1, 1);
-		player->m.velocity = vec3(0.1) * vec3(player->m.forward);
+		if (player) {
+			player->m.forward = vec4(0, 0, 0.1, 1);
+			player->m.velocity = vec3(0.1) * vec3(player->m.forward);
+		}
 		
 		applyCollider();
 
@@ -489,7 +490,6 @@ public:
 			}			
 		}
 		cam.collider = new Collider(&cam);
-		cout << "here" << endl;
 	}
 
 	//directly pass quad for the ground to the GPU
@@ -570,7 +570,10 @@ public:
 
 		g_GiboLen = indices.size();
 
-		player->collider->SetGround(groundPos, vec3(1,Y_MAX-Y_MIN,1));
+		if (player) {
+			player->collider->SetGround(groundPos, vec3(1, Y_MAX - Y_MIN, 1));
+		}
+		
 		cam.collider->SetGround(groundPos, vec3(1,Y_MAX-Y_MIN,1));
 
       }
@@ -623,7 +626,6 @@ public:
 
 
 	void drawShadowMap() {
-
 		float butterfly_height[3] = {1.1, 1.7, 1.5};
 
 		vec3 butterfly_loc[3];
@@ -642,8 +644,9 @@ public:
 
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
-
 			entity->model->Draw(DepthProg);
+
+			
 			//for (int i = 0; i < entity->objs.size(); i++) {	
 			//	entity->objs[i]->draw(DepthProg);
 			//}
@@ -727,21 +730,9 @@ public:
       
 			for (auto& meshPair : entity->model->meshes) {
 				curS->setMaterial(meshPair.second.mat);
-				/*if (curS->has_texture) {
-					curS->flip(1);
-					entity->textures[i]->bind(curS->prog->getUniform("Texture0"));
-				}
-
-				curS->setMaterial(entity->materials[i]);
-
-				entity->objs[i]->draw(curS->prog);
-				
-				if (curS->has_texture) {
-					entity->textures[i]->unbind();
-					curS->unbindTexture(0);
-				}*/
+				meshPair.second.Draw(curS->prog);
 			}
-			entity->model->Draw(curS->prog);
+			
 			if (shaders["skybox"] == curS) {
 				// deactivate skybox backfill
 				glDepthFunc(GL_LESS);
@@ -818,7 +809,7 @@ public:
 			//}
 	
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
-
+			glUniform3fv(curS->prog->getUniform("PickingColor"), 1, value_ptr(glm::vec3(entity->editorColor.r, entity->editorColor.g, entity->editorColor.b)));
 			entity->model->Draw(curS->prog);
 	
 			//for (int i = 0; i < entity->objs.size(); i++) {
@@ -891,8 +882,10 @@ public:
   		glBindTexture(GL_TEXTURE_2D, depthMap);
 		
 		//player->updateMotion(frametime, hmap);
-		cam.player_pos = player->position;
-		
+		if (player) {
+			cam.player_pos = player->position;
+		}
+	
       	LSpace = LO*LV;
 		float aspect = width/(float)height;
 		if(editMode){
