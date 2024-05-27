@@ -1,8 +1,9 @@
 #include "ImportExport.h"
 
-ImporterExporter::ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList, vector<shared_ptr<Entity>>* collidables) {
+ImporterExporter::ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Texture>>* textureLibrary, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList, vector<shared_ptr<Entity>>* collidables) {
 	// mutable references to main's shaders and entities
 	this->shaders = shaders;
+	this->textureLibrary = textureLibrary;
 	this->worldentities = worldentities;
 	this->tagList = tagList;
 	this->collidables = collidables;
@@ -12,184 +13,81 @@ ImporterExporter::~ImporterExporter() {
     ;
 }
 
-string ImporterExporter::readString() {
-	// get the next substring from the savefile
-	delimit = buffer.find(DELIMITER);
-	string out = buffer.substr(0, delimit);
-	buffer = buffer.substr(delimit + 1);
-	return out;
-}
+void ImporterExporter::loadShader(const json& shaderData) {
+	// Extract shader information from the JSON object
+	string id = shaderData["shaderName"];
+	string vertexSFile = shaderData["vertShader"];
+	string fragSFile = shaderData["fragShader"];
 
-int ImporterExporter::readInt() {
-	// interpret the next substring of the savefile as an int
-	delimit = buffer.find(DELIMITER);
-	int out = strtol(buffer.substr(0, delimit).c_str(), NULL, 10);
-	buffer = buffer.substr(delimit + 1);
-	return out;
-}
+	// Construct the shader path with the directory
+	shared_ptr<Shader> shader = make_shared<Shader>(resourceDir + vertexSFile, resourceDir + fragSFile);
+	shader->name = id;
 
-float ImporterExporter::readFloat() {
-	//interpret the next substring of the savefile as a float
-	delimit = buffer.find(DELIMITER);
-	float out = stof(buffer.substr(0, delimit));
-	buffer = buffer.substr(delimit + 1);
-	return out;
-}
+	cout << "Loading Shader: " << id << " (" << vertexSFile << ", " << fragSFile << ")" << endl;
 
-void ImporterExporter::loadShader() {
-	// construct a shader from the savefile entry in the buffer
-	// add the shader to main's shader list
-
-	string id = readString();
-	string vertexSFile = readString();
-	string fragSFile = readString();
-
-	// shader initialization
-	shared_ptr<Shader> shader = make_shared<Shader>(resourceDir + vertexSFile, resourceDir + fragSFile, false);
-	
-	// add uniforms to shader definition
-	int numUniforms = readInt();
-	printf("%s %s %s %i", 
-		id.c_str(), vertexSFile.c_str(), fragSFile.c_str(), numUniforms);
-
-	for (int i = 0; i < numUniforms; i++) {
-		string uniform = readString();
+	// Add uniforms to shader definition
+	for (const string& uniform : shaderData["uniforms"]) {
 		shader->setUniform(uniform);
-		printf("%s ", uniform.c_str());
+		cout << uniform << " ";
 	}
 
-	// add attributes to shader definition
-	int numAttributes = readInt();
-	printf("%i ", numAttributes);
+	cout << shaderData["attributes"].size() << " ";
 
-	for (int i = 0; i < numAttributes; i++) {
-		string attribute = readString();
+	// Add attributes to shader definition
+	for (const string& attribute : shaderData["attributes"]) {
 		shader->setAttribute(attribute);
-		printf("%s ", attribute.c_str());
+		cout << attribute << " ";
 	}
-	printf("\n");
 
-	// commit shader to main
+	// Add or update the shader in the main shader list
 	(*shaders)[id] = shader;
 }
 
-void ImporterExporter::loadTexture() {
-	string id = readString();
-	string textFile = readString();
-    shared_ptr<Texture> texture = make_shared<Texture>();
-    texture->setFilename(resourceDir + textFile);
-    texture->setName(id);
-    texture->setName(id);
-    texture->init();
-    texture->setUnit(0);
-    texture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
-    textureLibrary[id] = texture;
-    textureLibrary[id] = texture;
+
+void ImporterExporter::loadTexture(const json& texData) {
+	// Extract texture information from the JSON object
+	string id = texData["name"];
+	string textFile = texData["filePath"];
+
+	cout << "Loading Texture: " << id << " (" << textFile << ")" << endl;
+
+	// Initialize the texture
+	shared_ptr<Texture> texture = make_shared<Texture>();
+	texture->setFilename(resourceDir + textFile);
+	texture->setName(id);
+	texture->init(false);
+	texture->setUnit(0);
+	texture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+
+	// Add or update the texture in the texture library
+	(*textureLibrary)[id] = texture;
 }
 
-void ImporterExporter::loadSingleShape() {
-	// extract a mesh and lighting properties from the savefile entry in the buffer
+void ImporterExporter::loadEntity(const json& entData) {
+	string id = entData["name"];
+	cout << "Loading Entity: " << id << endl;
+	string file = entData["file"];
+	cout << "  Model: " << file << endl;
+	string tag = entData["tag"];
+	cout << "  Tag: " << tag << endl;
+	int collision = entData["collider"];
+	cout << "  Collider: " << (collision ? "true" : "false") << endl;
+	string shader = entData["shader"];
+	cout << "  Shader: " << shader << endl;
 	
-	// tinyObj overhead
-	vector<tinyobj::shape_t> TOshapes;
-	vector<tinyobj::material_t> objMaterials;
-	string errStr;
-
-	string id = readString();
-	string meshFile = readString();
-	string shapeName = readString();
-
-	// TinyObj handles file read
-	bool rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr, (resourceDir + meshFile).c_str());
-	if (!rc) {
-		cerr << errStr << endl;
-	}
-	else {
-		for(tinyobj::shape_t shape: TOshapes) {
-			if (shape.name == shapeName) {
-				shared_ptr<Shape> newShape = make_shared<Shape>();
-				newShape->createShape(shape, resourceDir + meshFile, id);
-				newShape->measure();
-				newShape->init();
-				BRDFmaterial newMat = material();
-				shapeLibrary[id] = make_pair(newShape, newMat);
-				break;
-			}
-		}
-		errStr = "";
-	}
-
-	// import lighting properties
-	shapeLibrary[id].second.lightColor.r = readFloat();
-	shapeLibrary[id].second.lightColor.g = readFloat();
-	shapeLibrary[id].second.lightColor.b = readFloat();
-
-	shapeLibrary[id].second.albedo.r = readFloat();
-	shapeLibrary[id].second.albedo.g = readFloat();
-	shapeLibrary[id].second.albedo.b = readFloat();
-	
-	shapeLibrary[id].second.emissivity.r = readFloat();
-	shapeLibrary[id].second.emissivity.g = readFloat();
-	shapeLibrary[id].second.emissivity.b = readFloat();
-
-	shapeLibrary[id].second.reflectance.r = readFloat();
-	shapeLibrary[id].second.reflectance.g = readFloat();
-	shapeLibrary[id].second.reflectance.b = readFloat();
-	
-	shapeLibrary[id].second.roughness = readFloat();
-
-	printf("%s %s %s %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n", 
-		id.c_str(), meshFile.c_str(), shapeName.c_str(),
-		shapeLibrary[id].second.lightColor.r, shapeLibrary[id].second.lightColor.g, shapeLibrary[id].second.lightColor.b,
-		shapeLibrary[id].second.albedo.r, shapeLibrary[id].second.albedo.g, shapeLibrary[id].second.albedo.b,
-		shapeLibrary[id].second.emissivity.r, shapeLibrary[id].second.emissivity.g, shapeLibrary[id].second.emissivity.b,
-		shapeLibrary[id].second.reflectance.r, shapeLibrary[id].second.reflectance.g, shapeLibrary[id].second.reflectance.b,
-		shapeLibrary[id].second.roughness);
-}
-
-void ImporterExporter::loadEntity() {
-	// compose an entity from the savefile entry in the buffer
-	
-	string id = readString();
-
-	string tag = readString();
-
-	int collision = readInt();
-
-	string shader = readString();
-
-	int numShapes = readInt();
-	printf("%s %s %i ", id.c_str(), shader.c_str(), numShapes);
-
-	// lists of meshes and BRDFmaterial properties
-	vector<shared_ptr<Shape>> entityShapes;
-	vector<shared_ptr<Texture>> entityTextures;
-	vector<BRDFmaterial>  entityMats;
-	
-	// extract meshes and materials from the shape library
-	for (int i = 0; i < numShapes; i++) {
-		string shapeID = readString();
-		printf("%s ", shapeID.c_str());
-		entityShapes.push_back(shapeLibrary[shapeID].first);
-		entityMats.push_back(shapeLibrary[shapeID].second);
-	}
-
-	int numTextures = readInt();
-	printf("%i ", numTextures);
-	// extract textures from the texture library
-	for (int i = 0; i < numTextures; i++) {
-		string textID = readString();
-		printf("%s ", textID.c_str());
-		entityTextures.push_back(textureLibrary[textID]);
-	}
-
-	// initialize new entity with lists of meshes and materials
+	// Initialize new entity with lists of shapes and materials
 	shared_ptr<Entity> newEntity = make_shared<Entity>();
-	newEntity->initEntity(entityShapes, entityTextures);
-	newEntity->materials = entityMats;
+	newEntity->model = make_shared<Model>(resourceDir + file);
 	newEntity->defaultShaderName = shader;
-
 	newEntity->tag = tag;
+
+	// Extract textures from the texture library
+	string textureID = entData["texture"];
+	cout << "  Texture: " << textureID << endl;
+	if (!textureID.empty()) {
+		newEntity->model->loadExtTexture((*textureLibrary)[textureID]);
+	}
+
 	if (find(tagList->begin(), tagList->end(), tag) == tagList->end()) {
 		tagList->push_back(tag);
 	}
@@ -202,154 +100,184 @@ void ImporterExporter::loadEntity() {
 		newEntity->collidable = false;
 	}
 
-	// import entity spatial properties
-	newEntity->position.x = readFloat();
-	newEntity->position.y = readFloat();
-	newEntity->position.z = readFloat();
+	// Import entity spatial properties
+	newEntity->position.x = entData["position"][0];
+	newEntity->position.y = entData["position"][1];
+	newEntity->position.z = entData["position"][2];
 
-	newEntity->rotX = readFloat();
-	newEntity->rotY = readFloat();
-	newEntity->rotZ = readFloat();
+	newEntity->rotX = entData["rotation"][0];
+	newEntity->rotY = entData["rotation"][1];
+	newEntity->rotZ = entData["rotation"][2];
 
-	float scaleX = readFloat();
-	newEntity->scaleVec.x = scaleX;
-	// newEntity->scale = scaleX;
+	newEntity->scaleVec.x = entData["scale"][0];
+	newEntity->scaleVec.y = entData["scale"][1];
+	newEntity->scaleVec.z = entData["scale"][2];
 
-	newEntity->scaleVec.y = readFloat();
-	newEntity->scaleVec.z = readFloat();
-	
-	printf("%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n",
-		newEntity->position.x, newEntity->position.y, newEntity->position.z,
-		newEntity->rotX, newEntity->rotY, newEntity->rotZ,
-		newEntity->scaleVec.x, newEntity->scaleVec.y, newEntity->scaleVec.z);
-	
-	// commit new entity to main
+	cout << "  Position: (" << newEntity->position.x << ", " << newEntity->position.y << ", " << newEntity->position.z << ")" << endl;
+	cout << "  Rotation: (" << newEntity->rotX << ", " << newEntity->rotY << ", " << newEntity->rotZ << ")" << endl;
+	cout << "  Scale: (" << newEntity->scaleVec.x << ", " << newEntity->scaleVec.y << ", " << newEntity->scaleVec.z << ")" << endl;
+
+	for (const auto& meshData : entData["meshes"]) {
+		string meshID = meshData["mesh"];
+		newEntity->model->meshes[meshID].mat.lightColor = {
+			meshData["material"]["lightColor"][0],
+			meshData["material"]["lightColor"][1],
+			meshData["material"]["lightColor"][2]
+		};
+		newEntity->model->meshes[meshID].mat.albedo = {
+			meshData["material"]["albedo"][0],
+			meshData["material"]["albedo"][1],
+			meshData["material"]["albedo"][2]
+		};
+		newEntity->model->meshes[meshID].mat.emissivity = {
+			meshData["material"]["emissivity"][0],
+			meshData["material"]["emissivity"][1],
+			meshData["material"]["emissivity"][2]
+		};
+		newEntity->model->meshes[meshID].mat.reflectance = {
+			meshData["material"]["reflectance"][0],
+			meshData["material"]["reflectance"][1],
+			meshData["material"]["reflectance"][2]
+		};
+		newEntity->model->meshes[meshID].mat.roughness = meshData["material"]["roughness"];
+		cout << "  Mesh: " << meshID << " with material properties loaded." << endl;
+	}
+	// Commit new entity to main
 	(*worldentities)[id] = newEntity;
 }
+
 
 void ImporterExporter::loadFromFile(string path) {
 	// ID-indexed library of mesh-BRDFmaterial pairs, for building entities from shape data
 
-	printf("begin load from save at %s\n", (resourceDir+path).c_str());
-	ifstream saveFile(resourceDir + path);
+	string fullPath = resourceDir + path;
+	ifstream saveFile(fullPath);
 
+	if (!saveFile.is_open()) {
+		cerr << "Failed to open save file at " << fullPath << endl;
+		return;
+	}
+
+	json j;
+	saveFile >> j;  // Load the entire JSON structure from the file
+
+	printf("begin load from save at %s\n", (fullPath).c_str());
 	// parse each line in the savefile
-	while (getline(saveFile, buffer)) {
-		// interpret line according to syntax designator at the start of the line
-		char type = buffer[0];
-		buffer = buffer.substr(2);
-		switch (type) {
-			case SHADER_FLAG:
-				loadShader();
-				break;
-			case SHAPE_FLAG:
-				loadSingleShape();
-				break;
-			case ENTITY_FLAG:
-				loadEntity();
-				break;
-			case TEXTURE_FLAG:
-				loadTexture();
+	if (j.contains("shaders")) {
+		for (const auto& shaderData : j["shaders"]) {
+			loadShader(shaderData);
 		}
 	}
+
+	if (j.contains("textures")) {
+		for (const auto& texData : j["textures"]) {
+			loadTexture(texData);
+		}
+	}
+
+	if (j.contains("entities")) {
+		for (const auto& entData : j["entities"]) {
+			loadEntity(entData);
+		}
+	}
+
+
+	
 	printf("end load from save\n");
 }
 
-// Shaders: 1 shaderID vertexSFile fragSFile numUniforms [uniform1...] numAttributes [attribute1...]
-string ImporterExporter::shadersToText(){
-	string result = "";
-	int shaderCount = 1;
+json ImporterExporter::shadersToJson() {
+	json shadersJson = json::array();
 
-	// iterate through every shader and convert its properties to a string
-	for (auto shaderIter = shaders->begin(); shaderIter != shaders->end(); shaderIter++) {
-        string tag = "1 " + shaderIter->first + ' ';
-        string files = findFilename(shaderIter->second->prog->getVShaderName()) + " " 
-			+ findFilename(shaderIter->second->prog->getFShaderName()) + " ";
+	for (const auto& shaderPair : *shaders) {
+		const auto& shader = shaderPair.second;
+		json shaderJson;
+		shaderJson["shaderName"] = shaderPair.first;
+		shaderJson["vertShader"] = findFilename(shader->prog->getVShaderName());
+		shaderJson["fragShader"] = findFilename(shader->prog->getFShaderName());
 
-		// process the uniforms
-        map<string, GLint> uniRef = shaderIter->second->prog->getUniforms();
-        string uniforms = to_string(uniRef.size()) + " ";
-        for (auto iter = uniRef.begin(); iter != uniRef.end(); iter++) {
-            uniforms += iter->first + " ";
-        }
-
-		//process the attributes
-		map<string, GLint> attRef = shaderIter->second->prog->getAttributes();
-        string attributes = to_string(attRef.size()) + " ";
-        for (auto iter = attRef.begin(); iter != attRef.end(); iter++) {
-            attributes += iter->first + " ";
-        }
-
-		result = result + tag + files + uniforms + attributes + '\n';
-		shaderCount++;
-    }
-
-    return result;
-}
-
-// Shapes: 2 shapeID objFile objShapeName matAmbX matAmbY matAmbZ matDifX matDifY matDifZ matSpecX matSpecY matSpecZ matShine
-string ImporterExporter::shapesToText(){
-	string result = "";
-
-	//create set of shapes w/ materials from entities
-	for(auto iter = shapeLibrary.begin(); iter != shapeLibrary.end(); iter++){ // map<string, pair<shared_ptr<Shape>, BRDFmaterial >
-		string tag = "2 " + iter->first + ' ' + findFilename(iter->second.first.get()->getFilePath()) + ' ' 
-			+ iter->second.first.get()->getShapeName() + ' ';
-		
-		BRDFmaterial shapeMat = iter->second.second;
-		string mats = to_string(shapeMat.lightColor.r) + ' ' + to_string(shapeMat.lightColor.g) + ' ' + to_string(shapeMat.lightColor.b) + ' ' +
-					  to_string(shapeMat.albedo.r) + ' ' + to_string(shapeMat.albedo.g) + ' ' + to_string(shapeMat.albedo.b) + ' ' +
-					  to_string(shapeMat.emissivity.r) + ' ' + to_string(shapeMat.emissivity.g) + ' ' + to_string(shapeMat.emissivity.b) + ' ' + 
-					  to_string(shapeMat.reflectance.r) + ' ' + to_string(shapeMat.reflectance.g) + ' ' + to_string(shapeMat.reflectance.b) + ' ' + 
-					  to_string(shapeMat.roughness) + '\n';
-		
-		result = result + tag + mats;
-	}
-
-	return result;
-}
-
-// Entities: 3 entityID tag numShapes [shapeID1...] transX transY transZ rotX rotY rotZ scaleX scaleY scaleZ
-string ImporterExporter::entitiesToText(){
-	string result = "";
-	for (auto entityIter = worldentities->begin(); entityIter != worldentities->end(); entityIter++) {
-		string entityInfo = "3 " + entityIter->first + " " + entityIter->second->tag + " " + (entityIter->second->collidable ? "1" : "0") 
-			+ " " + entityIter->second->defaultShaderName + " " + to_string(entityIter->second->objs.size()) + " ";
-		for (auto shape : entityIter->second->objs) {
-			entityInfo += shape->getName() + " ";
+		shaderJson["uniforms"] = json::array();
+		for (const auto& uniform : shader->prog->getUniforms()) {
+			shaderJson["uniforms"].push_back(uniform.first);
 		}
 
-		entityInfo += to_string(entityIter->second->textures.size()) + " ";
-		if (entityIter->second->textures.size() != 0) {
-			for (auto texture : entityIter->second->textures) {
-				entityInfo += texture->name + " ";
-			}
+		shaderJson["attributes"] = json::array();
+		for (const auto& attribute : shader->prog->getAttributes()) {
+			shaderJson["attributes"].push_back(attribute.first);
 		}
 
-		entityInfo += to_string(entityIter->second->position.x) + " " + to_string(entityIter->second->position.y) + " " + to_string(entityIter->second->position.z) + " "
-			+ to_string(entityIter->second->rotX) + " " + to_string(entityIter->second->rotY) + " " + to_string(entityIter->second->rotZ) + " " 
-			+ to_string(entityIter->second->scaleVec.x) + " " + to_string(entityIter->second->scaleVec.y) + " " + to_string(entityIter->second->scaleVec.z) + "\n";
-		result += entityInfo;
+		shadersJson.push_back(shaderJson);
 	}
 
-	return result;
+	return shadersJson;
 }
 
-// Entities: 3 entityID numShapes [shapeID1...] transX transY transZ rotX rotY rotZ scaleX scaleY scaleZ
-string ImporterExporter::texturesToText() {
-	string result = "";
-	for (auto textIter = textureLibrary.begin(); textIter != textureLibrary.end(); textIter++) {
-		string textInfo = "4 " + textIter->first + " " + findFilename(textIter->second->filename) + '\n';
-		result += textInfo;
+
+json ImporterExporter::texturesToJson() {
+	json texturesJson = json::array();
+
+	for (const auto& texturePair : *textureLibrary) {
+		if (texturePair.second) {
+			const auto& texture = texturePair.second;
+			cout << "save" << endl;
+			json textureJson;
+			textureJson["name"] = texturePair.first;
+			textureJson["filePath"] = findFilename(texture->getFilename());
+
+			texturesJson.push_back(textureJson);
+		}		
 	}
 
-	return result;
+	return texturesJson;
 }
+
+json ImporterExporter::entitiesToJson() {
+	json entitiesJson = json::array();
+
+	for (const auto& entityPair : *worldentities) {
+		const auto& entity = entityPair.second;
+		json entityJson;
+		entityJson["name"] = entityPair.first;
+		entityJson["file"] = findFilename(entity->model->filePath);
+		entityJson["tag"] = entity->tag;
+		entityJson["collider"] = entity->collidable ? 1 : 0;
+		entityJson["shader"] = entity->defaultShaderName;
+
+
+		entityJson["texture"] = entity->model->extTexture ? entity->model->extTexture->name : "";
+
+		entityJson["position"] = { entity->position.x, entity->position.y, entity->position.z };
+		entityJson["rotation"] = { entity->rotX, entity->rotY, entity->rotZ };
+		entityJson["scale"] = { entity->scaleVec.x, entity->scaleVec.y, entity->scaleVec.z };
+
+		entityJson["meshes"] = json::array();
+		for (const auto& meshPair : entity->model->meshes) {
+			json meshJson;
+			const auto& mesh = meshPair.second;
+			meshJson["mesh"] = meshPair.first;
+
+			json materialJson;
+			materialJson["lightColor"] = { mesh.mat.lightColor.r, mesh.mat.lightColor.g, mesh.mat.lightColor.b };
+			materialJson["albedo"] = { mesh.mat.albedo.r, mesh.mat.albedo.g, mesh.mat.albedo.b };
+			materialJson["emissivity"] = { mesh.mat.emissivity.r, mesh.mat.emissivity.g, mesh.mat.emissivity.b };
+			materialJson["reflectance"] = { mesh.mat.reflectance.r, mesh.mat.reflectance.g, mesh.mat.reflectance.b };
+			materialJson["roughness"] = mesh.mat.roughness;
+
+			meshJson["material"] = materialJson;
+			entityJson["meshes"].push_back(meshJson);
+		}
+
+		entitiesJson.push_back(entityJson);
+	}
+
+	return entitiesJson;
+}
+
 
 string ImporterExporter::findFilename(string path) {
 	size_t pos = path.find(resourceDir);
 	string result = "";
-	if (pos != std::string::npos) {
+	if (pos != string::npos) {
 		pos += resourceDir.length(); 
 
 		// Extract the substring from the position to the end of the string
@@ -360,24 +288,23 @@ string ImporterExporter::findFilename(string path) {
 	return result;
 }
 
-int ImporterExporter::saveToFile(string outFileName){
-	std::ofstream outFile(resourceDir + outFileName);
+int ImporterExporter::saveToFile(string outFileName) {
+	json saveJson;
 
-	if(outFile.is_open()){
-		outFile << "// Shaders: 1 shaderID vertexSFile fragSFile numUniforms [uniform1...] numAttributes [attribute1...]" << endl;
-		outFile << shadersToText();
-		outFile << "// Textures: 4 ..." << endl;
-		outFile << texturesToText();
-		outFile << "// Shapes: 2 shapeID objFile objShapeName matAmbX matAmbY matAmbZ matDifX matDifY matDifZ matSpecX matSpecY matSpecZ matShine" << endl;
-		outFile << shapesToText();
-		outFile << "// Entities: 3 entityID numShapes [shapeID1...] transX transY transZ rotX rotY rotZ scaleX scaleY scaleZ" << endl;
-		outFile << entitiesToText();
 
-		outFile.close();
-		cout << "World saved to file " << outFileName << endl;
+	saveJson["shaders"] = shadersToJson();
+	saveJson["textures"] = texturesToJson();
+	saveJson["entities"] = entitiesToJson();
+
+	ofstream saveFile(resourceDir + outFileName);
+	if (!saveFile.is_open()) {
+		cerr << "Failed to open save file at " << resourceDir + outFileName << endl;
+		return -1;
 	}
-	else {
-		std::cerr << "Error opening file from exporter." << endl;
-	}
+
+	saveFile << setw(2) << saveJson << endl;  // Pretty print with 2-space indentation
+	saveFile.close();
+	cout << "World saved to file " << outFileName << endl;
 	return 1;
 }
+

@@ -20,60 +20,18 @@ Entity::Entity() {
     rotY = 0.0;
     rotZ = 0.0;
     grounded = true;
-};
-
-void Entity::initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<std::shared_ptr<Texture>> textures) {
-    objs = shapes;
-    this->textures = textures;
-    minBB = vec3((std::numeric_limits<float>::max)());
-    maxBB = vec3((std::numeric_limits<float>::min)());
-
     id = NEXT_ID++;
     defaultShaderName = "";
 
     //generate color for color picking based on entity id
-    int r = ((id * 10) & 0x000000FF) >>  0;
-    int g = ((id * 10) & 0x0000FF00) >>  8;
+    int r = ((id * 10) & 0x000000FF) >> 0;
+    int g = ((id * 10) & 0x0000FF00) >> 8;
     int b = ((id * 10) & 0x00FF0000) >> 16;
 
-    for (int i = 0; i < shapes.size(); i++) {
-        BRDFmaterial m;
-        materials.push_back(m);
-
-        // set diffuse mats, converting from [0,255]i to [0,1]f
-        color em = {r/255.0f, g/255.0f, b/255.0f};
-        editorColor = em;
-
-        if (minBB.x > shapes[i]->min.x) minBB.x = shapes[i]->min.x;
-        if (minBB.y > shapes[i]->min.y) minBB.y = shapes[i]->min.y;
-        if (minBB.z > shapes[i]->min.z) minBB.z = shapes[i]->min.z;
-        if (maxBB.x < shapes[i]->max.x) maxBB.x = shapes[i]->max.x;
-        if (maxBB.y < shapes[i]->max.y) maxBB.y = shapes[i]->max.y;
-        if (maxBB.z < shapes[i]->max.z) maxBB.z = shapes[i]->max.z;
-    }
-
-    
-}
-
-/*
-void Entity::setMaterials(int i, float r1, float g1, float b1, float r2, float g2, float b2,
-    float r3, float g3, float b3, float s) {
-    materials[i].amb.r = r1;
-    materials[i].amb.g = g1;
-    materials[i].amb.b = b1;
-    materials[i].dif.r = r2;
-    materials[i].dif.g = g2;
-    materials[i].dif.b = b2;
-    materials[i].spec.r = r3;
-    materials[i].spec.g = g3;
-    materials[i].spec.b = b3;
-    materials[i].shine = s;
-}
-*/
-
-void Entity::setMaterials(int i, material& mat) {
-    materials[i] = mat;
-}
+    // set diffuse mats, converting from [0,255]i to [0,1]f
+    color em = { r / 255.0f, g / 255.0f, b / 255.0f };
+    editorColor = em;
+};
 
 // void Entity::updateScale(float newScale) {
 //     scale = newScale;
@@ -96,10 +54,10 @@ glm::mat4 Entity::generateModel() {
 
     // move object to origin and scale to a standard size, then scale to specifications
     M->scale(scaleVec *
-        vec3(1.0 / std::max(std::max(maxBB.x - minBB.x,
-            maxBB.y - minBB.y),
-            maxBB.z - minBB.z)));
-    M->translate(-vec3(0.5) * (minBB + maxBB));
+        vec3(1.0 / std::max(std::max(model->max.x - model->min.x,
+            model->max.y - model->min.y),
+            model->max.z - model->min.z)));
+    M->translate(-vec3(0.5) * (model->min + model->max));
 
     modelMatrix = M->topMatrix();
     M->popMatrix();
@@ -107,7 +65,11 @@ glm::mat4 Entity::generateModel() {
     return modelMatrix;
 }
 
-void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 collisionPlane) {
+float getHeightFromPlane(vec4 plane, vec2 pos) {
+    return (plane.w - plane.x * pos.x - plane.z * pos.y) / plane.y;
+}
+
+void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList) {
     float distance = m.curSpeed * deltaTime;
     // movement and rotation
     float deltaX = distance * sin(rotY);
@@ -115,71 +77,80 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, glm::vec4 c
     
     vec3 oldPosition = position;
     vec3 newPosition = position + vec3(deltaX, 0, deltaZ);
-    vec3 groundCheckPos = newPosition + vec3((distance + scaleVec.z) * sin(rotY), 0, (distance + scaleVec.z) * cos(rotY));
 
     // get ground samples
-    float groundHeight0 = collider->CheckGroundCollision(hmap);
-    position = groundCheckPos;    
-    float groundHeight = collider->CheckGroundCollision(hmap);
+    vec4 groundPlane0 = collider->CheckGroundCollision(hmap);
+    float groundHeight0 = getHeightFromPlane(groundPlane0, vec2(oldPosition.x, oldPosition.z));
+
+    vec3 newPositionForward = newPosition + vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
+    position = newPositionForward;
+    vec4 groundPlane = collider->CheckGroundCollision(hmap);
+    float groundHeight = getHeightFromPlane(groundPlane, vec2(newPositionForward.x, newPositionForward.z));
+
+    vec3 newPositionBack = newPosition - vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
+    position = newPositionBack;
+    vec4 groundPlaneB = collider->CheckGroundCollision(hmap);
+    float groundHeightB = getHeightFromPlane(groundPlaneB, vec2(newPositionBack.x, newPositionBack.z));
+
+    if (groundHeight < groundHeightB) {
+        groundPlane = groundPlaneB;
+        groundHeight = groundHeightB;
+    }
     float entityHeight = scaleVec.y/2;
-    float distanceFromGround = groundHeight - (position.y - entityHeight);
 
     // ground climbing
-    bool climbable = groundHeight - groundHeight0 < SLOPE_TOLERANCE;
-    if (climbable || !grounded) {
+    bool climbable = grounded && (groundHeight - groundHeight0)/(std::max(EPSILON, length(vec2(deltaX, deltaZ)))) < SLOPE_TOLERANCE || 
+        position.y > groundHeight + entityHeight;
+    printf("gH: %.4f\tgH0: %.4f\tm: %.4f\n", groundHeight, groundHeight0, (groundHeight - groundHeight0)/(std::max(EPSILON, length(vec2(deltaX, deltaZ)))));
+    if (climbable || length(vec2(deltaX, deltaZ)) < EPSILON) {
         position = newPosition;
     }
     // if the area of ground ahead cannot be climbed, return to previous position
     else {
         position = oldPosition;
+        groundPlane = groundPlane0;
         groundHeight = groundHeight0;
     }
 
     // FALLING physics
-    // uses the terrain height to prevent character from indefinitely falling
-
-     // FALLING physics
-    if (!grounded) {
-
-       
+    if (gliding == true) {
+        m.upwardSpeed = std::max(m.upwardSpeed + (GRAVITY - AIR_RESISTANCE) * deltaTime, -3.0f);
     }
-
-
-    if (position.y < groundHeight + entityHeight) {
-        grounded = true;
-        gliding = false;
-        m.upwardSpeed = 0.0;
-        position.y = groundHeight + entityHeight;
+    else {
+        m.upwardSpeed += GRAVITY * deltaTime;
     }
-    if (position.y > groundHeight + entityHeight) {
+    position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
+
+    if (position.y > groundHeight + entityHeight + 0.1) {
         grounded = false;
     }
 
-    if (!grounded) {
-
-        if (gliding == true) {
-            position += vec3(0.0f, (GRAVITY - AIR_RESISTANCE) * deltaTime, 0.0f);
-        }
-        else {
-            m.upwardSpeed += GRAVITY * deltaTime;
-            position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
-        }
+    // uses the terrain height to prevent character from indefinitely falling
+    if (position.y < groundHeight + entityHeight) {
+        grounded = true;
+        gliding = false;
+        m.upwardSpeed = std::max(0.0f, m.upwardSpeed);
+        position.y = groundHeight + entityHeight;
+        // printf("grounded: %.4f vs %.4f\n", position.y - entityHeight, groundHeight);
     }
 
+    vec3 collisionPlane = vec3(collider->CheckCollision(deltaTime, collisionList));
     // oriented bounding box restrictions
-    if (collisionPlane != vec4(0)) {
+    if (collisionPlane != vec3(0)) {
         // handle gravity response when colliding with y planes
-        if (collisionPlane.y > EPSILON) {
+        // binary response: the player is on a standing surface and is grounded, or is not and will slide off it
+        if (collisionPlane.y + EPSILON > length(vec2(collisionPlane.x, collisionPlane.z))) {
             grounded = true;
+            gliding = false;
             m.upwardSpeed = std::max(0.0f, m.upwardSpeed);
         }
-        if (collisionPlane.y < -EPSILON) {
-            m.upwardSpeed = 0.0f;
+        if (collisionPlane.y - EPSILON < -length(vec2(collisionPlane.x, collisionPlane.z))) {
+            m.upwardSpeed = std::min(0.0f, m.upwardSpeed);
         }
         vec3 delta = position - oldPosition;
         position = oldPosition;
-        float fP = abs(dot(delta, vec3(collisionPlane)));
-        position += delta + vec3(collisionPlane) * fP;
+        float fP = abs(dot(delta, collisionPlane));
+        position += delta + collisionPlane * fP;
     }
 }
 

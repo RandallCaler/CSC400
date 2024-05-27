@@ -8,14 +8,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Program.h"
+#include "Entity.h"
 
-class Camera
+class Camera : public Entity
 {
     public:
         Camera(glm::vec3 v, float p, float d, float a, glm::vec3 pp, float pr, glm::vec3 g, bool free = false);
         ~Camera();
-        void updateCamera(float deltaTime = 0.0f);
-        void SetView(std::shared_ptr<Program> shader);
+        void updateCamera(float deltaTime);
+        void SetView(std::shared_ptr<Program> shader, std::shared_ptr<Texture> hMap);
         // void updateCamera();
         glm::vec3 cameraPos;
         glm::vec3 lookAtPt;

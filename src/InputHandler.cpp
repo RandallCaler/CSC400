@@ -72,7 +72,9 @@ void InputHandler::handleInput(Entity* penguin, Camera* cam, float deltaTime) {
             break;
         case 5:
             if (!(penguin->grounded)) {
-                penguin->m.upwardSpeed = 1.0;
+                if (!penguin->gliding) {
+                    penguin->m.upwardSpeed = 1.0;
+                }
                 penguin->gliding = true;
             }
         }

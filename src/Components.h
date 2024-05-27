@@ -11,7 +11,6 @@
 
 #include "GLSL.h"
 #include "Program.h"
-#include "Shape.h"
 #include "MatrixStack.h"
 #include "WindowManager.h"
 #include "Texture.h"
@@ -20,7 +19,6 @@ using namespace std;
 using namespace glm;
 
 #define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader/tiny_obj_loader.h>
 #define PI 3.1415927
 
 

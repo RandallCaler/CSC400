@@ -10,26 +10,6 @@ using namespace std;
 
 int h_pos, h_nor, h_tex;
 
-// copy the data from the shape to this object
-void Shape::createShape(tinyobj::shape_t & shape, std::string filePath, std::string n)
-{
-	posBuf = shape.mesh.positions;
-	norBuf = shape.mesh.normals;
-	texBuf = shape.mesh.texcoords;
-	eleBuf = shape.mesh.indices;
-	this->filePath = filePath;
-	shapeName = shape.name;
-	name = n;
-}
-
-void Shape::createShape(tinyobj::shape_t & shape)
-{
-	posBuf = shape.mesh.positions;
-	norBuf = shape.mesh.normals;
-	texBuf = shape.mesh.texcoords;
-	eleBuf = shape.mesh.indices;
-}
-
 void Shape::createShape(std::vector<float> pos, std::vector<unsigned int> ind)
 {
 	posBuf = pos;

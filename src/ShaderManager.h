@@ -21,27 +21,20 @@ class Shader {
         void initShader(const std::string &v, const std::string &f);
         void initTexVars();
 
-        void addTexture(const std::string &f);
-
         void setMaterial(BRDFmaterial material);
 
         void flip(int f);
-
-        void setTexture(int i);
-        void unbindTexture(int i);
 
         void setUniform(std::string uniformName);
         void setAttribute(std::string attributeName);
 
         
-        Shader(const std::string &v, const std::string &f, bool has_tex);
+        Shader(const std::string &v, const std::string &f);
         Shader();
         ~Shader();
 
 
         std::shared_ptr<Program> prog;
-        bool has_texture;
-	    std::vector<shared_ptr<Texture>> textures;
         std::string name;
 
 };

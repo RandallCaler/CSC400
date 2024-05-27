@@ -32,7 +32,7 @@ void Camera::updateCamera(float deltaTime) {
     cameraPos += (vec3(vel.z) * normalize(v_dir) + vec3(0,-vel.y,0) + vec3(vel.x) * normalize(cross(v_dir,vec3(0,1,0)))) * vec3(deltaTime);
 }
 
-void Camera::SetView(std::shared_ptr<Program> shader) {
+void Camera::SetView(shared_ptr<Program> shader, shared_ptr<Texture> hMap) {
     mat4 v_mat;
     if (freeCam) {
         vec3 v_dir = -vec3(sin(-angle) * cos(pitch), sin(pitch), cos(angle) * cos(pitch)) + cameraPos;
@@ -45,6 +45,10 @@ void Camera::SetView(std::shared_ptr<Program> shader) {
         offZ = horiz * cos(angle);
 
         g_eye = vec3(player_pos[0] - offX, player_pos[1] + vert, player_pos[2] - offZ);
+        position = g_eye;
+        vec4 groundNormal = collider->CheckGroundCollision(hMap);
+        float adjusted_height = (groundNormal.w - groundNormal.x * g_eye.x - groundNormal.z * g_eye.z) / groundNormal.y;
+        g_eye.y = std::max(g_eye.y, adjusted_height + vert);
         v_mat = lookAt(g_eye, player_pos, vec3(0, 1, 0));
     }
 
