@@ -64,7 +64,7 @@ void LevelEditor::FindMesh() {
 }
 
 void LevelEditor::ModelList() {
-    ImGui::Begin("Mesh List"); // Begin ImGui window
+    ImGui::Begin("Model List"); // Begin ImGui window
 
     if (meshFiles.empty()) {
         ImGui::Text("No mesh files found.");
@@ -113,27 +113,32 @@ void LevelEditor::EntityList()
     static string previous_name = "";
     static string selected_mesh_name = "";
     static Mesh* selected_mesh = nullptr;
+    static bool isMeshInspectorOpen = true;
+    static bool isInspectorOpen = true;
 
     if (worldentities.empty()) {
         ImGui::Text("No entities found.");
     }
     else {
-        for (const auto& pair : worldentities) {          
+        for (const auto& pair : worldentities) {  
             const string& name = pair.first;
             bool is_selected = (cur_name == name);
             const bool was_selected = (previous_name == name);
 
             // Automatically collapse the previously selected node when a new one is selected
-            if (cur_name != name && was_selected) {
+            if (cur_name != name && (was_selected || !isInspectorOpen)) {
                 ImGui::SetNextItemOpen(false);
             }
 
             if (ImGui::TreeNodeEx(name.c_str(), (is_selected ? ImGuiTreeNodeFlags_Selected : 0))) {
+                cout << "clicked" << endl;
                 if (cur_name != name) {
                     previous_name = cur_name;  // Update the previous name
                     cur_name = name;  // Update the current name
+                    cout << previous_name << endl;
                     selected_mesh_name = ""; // Deselect mesh
                     selected_mesh = nullptr;
+                    isInspectorOpen = true;
                     cout << "Entity selected: " << name << endl;
                 }
 
@@ -148,6 +153,7 @@ void LevelEditor::EntityList()
                             // Handle mesh selection
                             selected_mesh_name = meshName;
                             selected_mesh = &(meshPair.second);
+                            isMeshInspectorOpen = true;
                             cout << "Mesh selected: " << meshName << endl;
                         }
                     }
@@ -173,19 +179,27 @@ void LevelEditor::EntityList()
 
     // Handle inspection of the selected entity or mesh
     if (selected_mesh) {
-        MeshInspector(selected_mesh);
+        MeshInspector(selected_mesh, &isMeshInspectorOpen);
+        if (!isMeshInspectorOpen) {
+            selected_mesh_name = "";
+            selected_mesh = nullptr;
+        }
     }
     auto selectedEntity = worldentities.find(cur_name);
     if (selectedEntity != worldentities.end()) {
-        cur_entity = Inspector(selectedEntity->second);
+        cur_entity = Inspector(selectedEntity->second, &isInspectorOpen);
+        if (!isInspectorOpen) {
+            cur_name = "";
+            cur_entity = nullptr;
+        }
     }
 
     ImGui::End(); // End ImGui window
 }
 
 
-void LevelEditor::MeshInspector(Mesh* mesh) {
-    ImGui::Begin("Mesh Inspector");
+void LevelEditor::MeshInspector(Mesh* mesh, bool* flag) {
+    ImGui::Begin("Mesh Inspector", flag);
     ImGui::Text("Mesh Name: %s", mesh->name.c_str());
 
     // Display UI for material attributes
@@ -205,8 +219,8 @@ void LevelEditor::MeshInspector(Mesh* mesh) {
     ImGui::End();
 }
 
-shared_ptr<Entity> LevelEditor::Inspector(shared_ptr<Entity> entity) {
-    ImGui::Begin("Inspector");
+shared_ptr<Entity> LevelEditor::Inspector(shared_ptr<Entity> entity, bool* flag) {
+    ImGui::Begin("Inspector", flag);
 
     static char new_name[256] = ""; // Buffer for new cur_name input
     static bool show_edit_tag_window = false; // Flag to show/hide the add tag window
@@ -331,7 +345,7 @@ shared_ptr<Entity> LevelEditor::Inspector(shared_ptr<Entity> entity) {
 void LevelEditor::EditTag(bool* flag) {
     static string selectedTag = " ";
     static char new_tag[256] = ""; // Buffer for new tag input
-    ImGui::Begin("Edit Tag", flag);
+    ImGui::Begin("Edit Tag");
     for (const auto& tag : tagList) {
         bool is_selected = (tag == selectedTag);
         if (tag != "") {
