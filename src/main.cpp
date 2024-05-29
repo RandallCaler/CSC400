@@ -85,11 +85,21 @@ public:
 	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &textureLibrary, &worldentities, &tagList, &collidables);
 
 	shared_ptr<Program> DepthProg;
+	shared_ptr<Program> DepthProgDebug;
+	shared_ptr<Program> DebugProg;
+
+	bool DEBUG_LIGHT = false;
+	bool GEOM_DEBUG = true;
+	bool SHADOW = true;
+
+
 	GLuint depthMapFBO;
 	const GLuint S_WIDTH = 1024, S_HEIGHT = 1024;
 	GLuint depthMap;
+	GLuint quad_vertexbuffer;
+	 GLuint quad_VertexArrayID;
 
-	vec3 light_vec = vec3(1.0, 2.5, 1.0);
+	vec3 light_vec = vec3(3, 5, 5);
   
 	LevelEditor* leGUI = new LevelEditor();
 
@@ -238,7 +248,7 @@ public:
 				ih.inputStates[5] = 1;
 			}
 	
-			if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
+			if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
 
@@ -268,7 +278,7 @@ public:
 				ih.inputStates[5] = 0;
 			}
 			
-			if (key == GLFW_KEY_F1 && action == GLFW_RELEASE) {
+			if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			}
 
@@ -419,6 +429,29 @@ public:
 		DepthProg->addAttribute("vertNor");
 		DepthProg->addAttribute("vertTex");
 
+		DepthProgDebug = make_shared<Program>();
+		DepthProgDebug->setVerbose(true);
+		DepthProgDebug->setShaderNames(resourceDirectory + "/depth_vertDebug.glsl", resourceDirectory + "/depth_fragDebug.glsl");
+		DepthProgDebug->init();
+
+		DepthProgDebug->addUniform("LP");
+		DepthProgDebug->addUniform("LV");
+		DepthProgDebug->addUniform("M");
+		DepthProgDebug->addAttribute("vertPos");
+		//un-needed, better solution to modifying shape
+		DepthProgDebug->addAttribute("vertNor");
+		DepthProgDebug->addAttribute("vertTex");
+
+
+		DebugProg = make_shared<Program>();
+		DebugProg->setVerbose(true);
+		DebugProg->setShaderNames(resourceDirectory + "/depth_vert.glsl", resourceDirectory + "/depth_frag.glsl");
+		DebugProg->init();
+
+		DebugProg->addUniform("texBuf");
+  		DebugProg->addAttribute("vertPos");
+
+
 		hmap = make_shared<Texture>();
 		hmap->setFilename(resourceDirectory + "/hmap.png");
 		hmap->initHmap();
@@ -473,6 +506,7 @@ public:
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initHMapGround();
+		initQuad();
 	}
 
 	void applyCollider() {
@@ -626,15 +660,9 @@ public:
 
 
 	void drawShadowMap() {
-		float butterfly_height[3] = {1.1, 1.7, 1.5};
-
-		vec3 butterfly_loc[3];
-		butterfly_loc[0] = vec3(-2.3, -1, 3);
-		butterfly_loc[1] = vec3(-2, -1.2, -3);
-		butterfly_loc[2] = vec3(4, -1, 4);
 
 		// BRDFmaterial imported from save file
-		shaders["skybox"]->prog->setVerbose(false);
+		//shaders["skybox"]->prog->setVerbose(false);
 		map<string, shared_ptr<Entity>>::iterator i;
 
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
@@ -644,6 +672,7 @@ public:
 
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
+			if (entity)
 			entity->model->Draw(DepthProg);
 
 			
@@ -651,13 +680,11 @@ public:
 			//	entity->objs[i]->draw(DepthProg);
 			//}
 		}
-		
-		DepthProg->unbind();
 
-		bounds = std::sqrt(   //update cat's distance from skybox
+		/*bounds = std::sqrt(   //update cat's distance from skybox
 			cam.player_pos[0] * cam.player_pos[0]
 			+ cam.player_pos[2] * cam.player_pos[2]
-		);
+		);*/
 
 		// Pop matrix stacks.
 	}
@@ -677,6 +704,7 @@ public:
 		//material shader first
 		shared_ptr<Shader> curS = shaders["reg"];
 		curS->prog->bind();
+
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog, hmap);
 
@@ -685,13 +713,6 @@ public:
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 
-
-		float butterfly_height[3] = {1.1, 1.7, 1.5};
-
-		vec3 butterfly_loc[3];
-		butterfly_loc[0] = vec3(-2.3, -1, 3);
-		butterfly_loc[1] = vec3(-2, -1.2, -3);
-		butterfly_loc[2] = vec3(4, -1, 4);
 
 		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -752,10 +773,10 @@ public:
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 		drawGround(curS);  //draw ground here
 
-		bounds = std::sqrt(   //update cat's distance from skybox
+		/*bounds = std::sqrt(   //update cat's distance from skybox
 			cam.player_pos[0] * cam.player_pos[0]
 			+ cam.player_pos[2] * cam.player_pos[2]
-		);
+		);*/
 
 		// Pop matrix stacks.
 		Projection->popMatrix();
@@ -831,10 +852,10 @@ public:
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 		drawGround(curS);  //draw ground here
 
-		bounds = std::sqrt(   //update cat's distance from skybox
+		/*bounds = std::sqrt(   //update cat's distance from skybox
 			cam.player_pos[0] * cam.player_pos[0]
 			+ cam.player_pos[2] * cam.player_pos[2]
-		);
+		);*/
 
 		// Pop matrix stacks.
 		Projection->popMatrix();
@@ -846,7 +867,28 @@ public:
 			leGUI->Render();
 		}
 	}
-	
+
+
+	void initQuad() {
+
+	//now set up a simple quad for rendering FBO
+		glGenVertexArrays(1, &quad_VertexArrayID);
+		glBindVertexArray(quad_VertexArrayID);
+
+		static const GLfloat g_quad_vertex_buffer_data[] = {
+		-1.0f, -1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		1.0f,  1.0f, 0.0f,
+		};
+
+		glGenBuffers(1, &quad_vertexbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
+	}
+		
 
 	void render(float frametime) {
 		// Get current frame buffer size.
@@ -856,44 +898,78 @@ public:
 		vec3 lightLA = vec3(0.0);
     	vec3 lightUp = vec3(0, 1, 0);
 		mat4 LO, LV, LSpace;
+
+		if (SHADOW) {
+			glViewport(0, 0, S_WIDTH, S_HEIGHT);
+			glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+			glClear(GL_DEPTH_BUFFER_BIT);
+			glCullFace(GL_FRONT);
+
+			DepthProg->bind();
+			//TODO you will need to fix these
+			LO = SetOrthoMatrix(DepthProg);
+			LV = SetLightView(DepthProg, light_vec, lightLA, lightUp);
+			drawShadowMap();
+			DepthProg->unbind();
+			glCullFace(GL_BACK);
+			// cout << "1 pass" << endl;
+
+		//this sets the output back to the screen
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
 		// cout << "before" << endl;
-		glViewport(0, 0, S_WIDTH, S_HEIGHT);
-		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		glCullFace(GL_FRONT);
-
-		DepthProg->bind();
-		  //TODO you will need to fix these
-		LO = SetOrthoMatrix(DepthProg);
-		LV = SetLightView(DepthProg, light_vec, lightLA, lightUp);
-		drawShadowMap();
-		DepthProg->unbind();
-		glCullFace(GL_BACK);
-		// cout << "1 pass" << endl;
-
-      //this sets the output back to the screen
-  	 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		
 
 		glViewport(0, 0, width, height);
 		// Clear framebuffer.
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glActiveTexture(GL_TEXTURE1);
-  		glBindTexture(GL_TEXTURE_2D, depthMap);
+		if (DEBUG_LIGHT) {
+			/*if (GEOM_DEBUG) {
+				DepthProgDebug->bind();
+				SetOrthoMatrix(DepthProgDebug);
+				SetLightView(DepthProgDebug, light_vec, lightLA, lightUp);
+				drawShadowMap();
+				DepthProgDebug->unbind();
+			}
+			else {*/
+				DebugProg->bind();
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, depthMap);
+				glUniform1i(DebugProg->getUniform("texBuf"), 0);
+			
+			//draw the quad
+				glEnableVertexAttribArray(0);
+				glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+				glDrawArrays(GL_TRIANGLES, 0, 6);
+				glDisableVertexAttribArray(0);
+				cout << "askdjhfkasdjhflkasdj" << endl;
+				DebugProg->unbind();
+				cout << "after :)" << endl;
+			//}
+		}
+		else {
+			glActiveTexture(GL_TEXTURE1);
+  			glBindTexture(GL_TEXTURE_2D, depthMap);
+			if (player) {
+				cam.player_pos = player->position;
+			}
+		
+			LSpace = LO*LV;
+			float aspect = width/(float)height;
+			if(editMode){
+				drawEditorObjects(aspect, LSpace, frametime);
+			}
+			else{
+				drawObjects(aspect, LSpace, frametime);
+			}
+		}
+
+		
 		
 		//player->updateMotion(frametime, hmap);
-		if (player) {
-			cam.player_pos = player->position;
-		}
-	
-      	LSpace = LO*LV;
-		float aspect = width/(float)height;
-		if(editMode){
-			drawEditorObjects(aspect, LSpace, frametime);
-		}
-		else{
-			drawObjects(aspect, LSpace, frametime);
-		}
+		
 
 		// if(walkingEvent(player)){
 		// 	// cout << "starting sound" << endl;
