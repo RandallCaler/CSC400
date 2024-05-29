@@ -672,8 +672,13 @@ public:
 
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
-			if (entity)
-			entity->model->Draw(DepthProg);
+			if (entity == worldentities["skybox"]) {
+				cout << "here" << endl;
+			}
+			else {
+				entity->model->Draw(DepthProg);
+			}
+			
 
 			
 			//for (int i = 0; i < entity->objs.size(); i++) {	
@@ -798,14 +803,6 @@ public:
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog, hmap);
-
-		float butterfly_height[3] = {1.1, 1.7, 1.5};
-
-		vec3 butterfly_loc[3];
-		butterfly_loc[0] = vec3(-2.3, -1, 3);
-		butterfly_loc[1] = vec3(-2, -1.2, -3);
-		butterfly_loc[2] = vec3(4, -1, 4);
-
 	
 		//vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], player};
 
