@@ -39,7 +39,7 @@ class LevelEditor {
 		void ModelList();
 		void EntityList();
 		shared_ptr<Entity> Inspector(shared_ptr<Entity> entity, bool* flag);
-		void LevelEditor::MeshInspector(Mesh* mesh, bool* flag);
+		void MeshInspector(Mesh* mesh, bool* flag);
 		void EditTag(bool* flag);
 		void CameraSpeed();
 		void Render();
