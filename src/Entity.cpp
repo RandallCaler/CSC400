@@ -143,7 +143,7 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
     // ground climbing
     bool climbable = grounded && (groundHeight - groundHeight0)/(std::max(EPSILON, length(vec2(deltaX, deltaZ)))) < SLOPE_TOLERANCE || 
         position.y > groundHeight + entityHeight;
-    printf("gH: %.4f\tgH0: %.4f\tm: %.4f\n", groundHeight, groundHeight0, (groundHeight - groundHeight0)/(std::max(EPSILON, length(vec2(deltaX, deltaZ)))));
+
     if (climbable || length(vec2(deltaX, deltaZ)) < EPSILON) {
         position = newPosition;
     }
@@ -181,18 +181,38 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
     if (collisionPlane != vec3(0)) {
         // handle gravity response when colliding with y planes
         // binary response: the player is on a standing surface and is grounded, or is not and will slide off it
+
+        // if (collisionPlane.y + EPSILON > 0 && true) {
+        //     grounded = true;
+        //     gliding = false;
+        //     vec3 down = vec3(0,GRAVITY,0);
+        //     vec3 a = down - collisionPlane * dot(collisionPlane, down);
+
+            
+
+        //     printf("%.3f %.3f %.3f \n", a.x, a.y, a.z);
+        //     // add velocity forward
+        //     m.curSpeed += length(vec2(a.x, a.z)) * deltaTime;
+        //     // add velocity upward
+        //     m.upwardSpeed += a.y * deltaTime;
+        //     printf("%.3f \n", m.upwardSpeed);
+        // }
         if (collisionPlane.y + EPSILON > length(vec2(collisionPlane.x, collisionPlane.z))) {
             grounded = true;
             gliding = false;
             m.upwardSpeed = std::max(0.0f, m.upwardSpeed);
         }
+
         if (collisionPlane.y - EPSILON < -length(vec2(collisionPlane.x, collisionPlane.z))) {
             m.upwardSpeed = std::min(0.0f, m.upwardSpeed);
         }
+
         vec3 delta = position - oldPosition;
         position = oldPosition;
         float fP = abs(dot(delta, collisionPlane));
-        position += delta + collisionPlane * fP;
+        if (position.y > groundHeight + entityHeight) {
+            position += delta + collisionPlane * fP;
+        }
     }
 }
 
