@@ -47,25 +47,25 @@ void InputHandler::handleInput(Entity* penguin, Camera* cam, float deltaTime) {
         case 0:
             //north
             angles.push_back(0);
-            penguin->m.curSpeed = WALK_SPEED;
+            //penguin->m.curSpeed = WALK_SPEED;
             break;
         case 1:
             //west
             angles.push_back(1.57);
-            penguin->m.curSpeed = WALK_SPEED;
+            //penguin->m.curSpeed = WALK_SPEED;
             break;
         case 2:
             //south
             if (!penguin->gliding) {
                 angles.push_back(0);
-                penguin->m.curSpeed = -WALK_SPEED;
+                //penguin->m.curSpeed = -WALK_SPEED;
                 backwards = true;
             }
             break;
         case 3:
             //east
             angles.push_back(-1.57);
-            penguin->m.curSpeed = WALK_SPEED;
+            //penguin->m.curSpeed = WALK_SPEED;
             break;
         case 4:
             //jump
@@ -100,6 +100,7 @@ void InputHandler::handleInput(Entity* penguin, Camera* cam, float deltaTime) {
     for (int i = 0; i < angles.size(); i++) {
         sum += angles[i];
         // cout << angles[i] << endl;
+        penguin->m.curSpeed = WALK_SPEED;
     }
     // cout << "end" << endl;
 
@@ -113,7 +114,7 @@ void InputHandler::handleInput(Entity* penguin, Camera* cam, float deltaTime) {
         penguin->rotY = 0;
     }
     if (backwards) {
-       // penguin->m.curSpeed = -WALK_SPEED;
+        penguin->m.curSpeed = -WALK_SPEED;
         sum = -1 * sum;
     }
     if (penguin->gliding && !penguin->grounded) {
