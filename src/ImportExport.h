@@ -7,49 +7,40 @@
 #include <set>
 #include <fstream>
 #include <iostream>
-#include "Shape.h"
+#include <nlohmann/json.hpp>
+#include "Model.h"
 #include "Entity.h"
 #include "Texture.h"
 #include "ShaderManager.h"
 
-#define DELIMITER ' '
-#define SHADER_FLAG '1'
-#define SHAPE_FLAG '2'
-#define ENTITY_FLAG '3'
-#define TEXTURE_FLAG '4'
+using json = nlohmann::json;
 
 // Where the resources are loaded from
 extern string resourceDir;
 
 class ImporterExporter {
     public:
-        ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList, vector<shared_ptr<Entity>>* collidables);
+        ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Texture>>* textureLibrary, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList, vector<shared_ptr<Entity>>* collidables);
         ~ImporterExporter();
         
-        string readString();
-        int readInt();
-        float readFloat();
-
-        void loadShader();
-        void loadTexture();
-        void loadSingleShape();
-        void loadEntity();
+        void loadShader(const json& shaderData);
+        void loadTexture(const json& texData);
+        void loadEntity(const json& entData);
         void loadFromFile(string path);
 
-        string shadersToText();
-        string shapesToText();
-        string entitiesToText();
-        string texturesToText();
+        json shadersToJson();
+        json entitiesToJson();
+        json texturesToJson();
         string findFilename(string path);
         int saveToFile(string path);
 
     private:
         map<string, shared_ptr<Shader>>* shaders; // reference to main shader list
         map<string, shared_ptr<Entity>>* worldentities; // reference to main entity list
+        map<string, shared_ptr<Model>>* modelList;
         vector<string>* tagList; // reference to main tag list
         vector<shared_ptr<Entity>>* collidables; // reference to main collidables
-        map<string, pair<shared_ptr<Shape>, material>> shapeLibrary;
-	    map<string, shared_ptr<Texture>> textureLibrary;
+	    map<string, shared_ptr<Texture>>* textureLibrary;    
 	    string buffer; // input data stream
         size_t delimit; // reusable tracker for delimiter locations
 };

@@ -1,0 +1,1650 @@
+{
+  "entities": [
+    {
+      "collider": 0,
+      "file": "/SmoothSphere.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              0.0,
+              0.628242015838623,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.9538905024528503,
+              0.15394185483455658
+            ],
+            "lightColor": [
+              0.0,
+              0.1268012523651123,
+              1.0
+            ],
+            "reflectance": [
+              0.36023056507110596,
+              0.3020953834056854,
+              0.3020953834056854
+            ],
+            "roughness": 1.0
+          },
+          "mesh": "Sphere"
+        }
+      ],
+      "name": "SmoothSphere",
+      "position": [
+        79.0199966430664,
+        -62.86000061035156,
+        -19.40999984741211
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/cheese.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cheese"
+        }
+      ],
+      "name": "cheese",
+      "position": [
+        -80.16000366210938,
+        -72.33000183105469,
+        41.13999938964844
+      ],
+      "rotation": [
+        0.3316130042076111,
+        -0.34906598925590515,
+        0.15707999467849731
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "shader": "tex",
+      "tag": "",
+      "texture": "cheeseTex"
+    },
+    {
+      "collider": 0,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube",
+      "position": [
+        -61.34000015258789,
+        -73.83999633789063,
+        175.9199981689453
+      ],
+      "rotation": [
+        0.0,
+        -0.7941247820854187,
+        0.0
+      ],
+      "scale": [
+        3.690000057220459,
+        0.11999999731779099,
+        4.440000057220459
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 0,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(1)",
+      "position": [
+        -57.790000915527344,
+        -73.38999938964844,
+        179.72000122070313
+      ],
+      "rotation": [
+        -0.008726646192371845,
+        -0.811578094959259,
+        0.0
+      ],
+      "scale": [
+        3.5899999141693115,
+        0.10999999940395355,
+        4.440000057220459
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(10)",
+      "position": [
+        -75.83999633789063,
+        -73.81999969482422,
+        26.940000534057617
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        3.640000104904175,
+        0.3100000023841858,
+        4.409999847412109
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(11)",
+      "position": [
+        -73.87999725341797,
+        -74.08000183105469,
+        21.139999389648438
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        3.640000104904175,
+        0.20999999344348907,
+        4.46999979019165
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(12)",
+      "position": [
+        -75.3499984741211,
+        -73.83000183105469,
+        15.149999618530273
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        3.640000104904175,
+        0.2800000011920929,
+        4.380000114440918
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(13)",
+      "position": [
+        -79.38999938964844,
+        -74.08999633789063,
+        10.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        3.549999952316284,
+        0.07000000029802322,
+        4.460000038146973
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(14)",
+      "position": [
+        -83.83000183105469,
+        -73.83999633789063,
+        1.5199999809265137
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        3.890000104904175,
+        -0.15000000596046448,
+        4.429999828338623
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(15)",
+      "position": [
+        -83.76000213623047,
+        -74.1500015258789,
+        6.550000190734863
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        3.7899999618530273,
+        0.07000000029802322,
+        4.199999809265137
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(16)",
+      "position": [
+        -95.55999755859375,
+        -73.86000061035156,
+        -9.25
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        15.260000228881836,
+        -0.15000000596046448,
+        14.75
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 0,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(2)",
+      "position": [
+        -62.119998931884766,
+        -73.9800033569336,
+        174.16000366210938
+      ],
+      "rotation": [
+        0.0,
+        -3.918264150619507,
+        0.0
+      ],
+      "scale": [
+        3.059999942779541,
+        0.20999999344348907,
+        4.78000020980835
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 0,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(3)",
+      "position": [
+        -68.23999786376953,
+        -74.3499984741211,
+        169.16000366210938
+      ],
+      "rotation": [
+        0.0,
+        -0.890117883682251,
+        0.0
+      ],
+      "scale": [
+        3.630000114440918,
+        0.1599999964237213,
+        4.340000152587891
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(4)",
+      "position": [
+        -77.0199966430664,
+        -72.55999755859375,
+        56.11000061035156
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        3.609999895095825,
+        0.2199999988079071,
+        4.360000133514404
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(5)",
+      "position": [
+        -79.26000213623047,
+        -73.02999877929688,
+        50.38999938964844
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        3.609999895095825,
+        0.12999999523162842,
+        4.440000057220459
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(6)",
+      "position": [
+        -74.88999938964844,
+        -72.73999786376953,
+        44.61000061035156
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        3.259999990463257,
+        0.12999999523162842,
+        4.340000152587891
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(7)",
+      "position": [
+        -75.98999786376953,
+        -73.0,
+        39.959999084472656
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        3.119999885559082,
+        0.09000000357627869,
+        4.409999847412109
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(8)",
+      "position": [
+        -78.52999877929688,
+        -73.29000091552734,
+        31.940000534057617
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        3.630000114440918,
+        0.20000000298023224,
+        4.409999847412109
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube(9)",
+      "position": [
+        -80.51000213623047,
+        -73.05000305175781,
+        36.63999938964844
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        3.5299999713897705,
+        0.11999999731779099,
+        4.210000038146973
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/penguin.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "emissivity": [
+              0.0394987128674984,
+              0.23631125688552856,
+              0.0394987128674984
+            ],
+            "lightColor": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reflectance": [
+              0.2766570448875427,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.5
+          },
+          "mesh": "Circle"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              0.5,
+              0.009999999776482582
+            ],
+            "emissivity": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "lightColor": [
+              1.2999999523162842,
+              0.5,
+              0.009999999776482582
+            ],
+            "reflectance": [
+              0.30000001192092896,
+              0.30000001192092896,
+              0.30000001192092896
+            ],
+            "roughness": 0.20000000298023224
+          },
+          "mesh": "Cone.001"
+        },
+        {
+          "material": {
+            "albedo": [
+              0.10000000149011612,
+              0.699999988079071,
+              10.0
+            ],
+            "emissivity": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "lightColor": [
+              0.10000000149011612,
+              0.699999988079071,
+              10.0
+            ],
+            "reflectance": [
+              0.10000000149011612,
+              0.10000000149011612,
+              0.10000000149011612
+            ],
+            "roughness": 0.8999999761581421
+          },
+          "mesh": "Cube"
+        },
+        {
+          "material": {
+            "albedo": [
+              0.10000000149011612,
+              0.5,
+              1.0
+            ],
+            "emissivity": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "lightColor": [
+              0.10000000149011612,
+              0.5,
+              1.0
+            ],
+            "reflectance": [
+              0.10000000149011612,
+              0.10000000149011612,
+              0.10000000149011612
+            ],
+            "roughness": 0.8999999761581421
+          },
+          "mesh": "Cylinder"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              0.5,
+              0.009999999776482582
+            ],
+            "emissivity": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "lightColor": [
+              1.2999999523162842,
+              0.5,
+              0.009999999776482582
+            ],
+            "reflectance": [
+              0.30000001192092896,
+              0.30000001192092896,
+              0.30000001192092896
+            ],
+            "roughness": 0.5
+          },
+          "mesh": "Plane"
+        },
+        {
+          "material": {
+            "albedo": [
+              0.800000011920929,
+              0.800000011920929,
+              0.800000011920929
+            ],
+            "emissivity": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "lightColor": [
+              0.800000011920929,
+              0.800000011920929,
+              0.800000011920929
+            ],
+            "reflectance": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "roughness": 0.5
+          },
+          "mesh": "Sphere"
+        }
+      ],
+      "name": "penguin",
+      "position": [
+        -76.84889221191406,
+        -74.5,
+        -7.257831573486328
+      ],
+      "rotation": [
+        0.0,
+        -0.8420000672340393,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "shader": "reg",
+      "tag": "player",
+      "texture": ""
+    },
+    {
+      "collider": 0,
+      "file": "/sphereWTex.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Sphere"
+        }
+      ],
+      "name": "skybox",
+      "position": [
+        0.0,
+        0.0,
+        4.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1000.0,
+        1000.0,
+        1000.0
+      ],
+      "shader": "skybox",
+      "tag": "",
+      "texture": "sky"
+    },
+    {
+      "collider": 1,
+      "file": "/trees.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Icosphere"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Icosphere.001"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Icosphere.002"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Icosphere.003"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Icosphere.004"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Icosphere.005"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Icosphere.006"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Icosphere.007"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Icosphere.008"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Icosphere.009"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Icosphere.010"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Plane"
+        }
+      ],
+      "name": "trees",
+      "position": [
+        81.31636047363281,
+        -64.7890853881836,
+        -15.945487976074219
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "shader": "tex",
+      "tag": "",
+      "texture": "sky"
+    }
+  ],
+  "shaders": [
+    {
+      "attributes": [
+        "vertPos"
+      ],
+      "fragShader": "/edit_frag.glsl",
+      "shaderName": "edit",
+      "uniforms": [
+        "M",
+        "P",
+        "PickingColor",
+        "Texture0",
+        "V"
+      ],
+      "vertShader": "/edit_vert.glsl"
+    },
+    {
+      "attributes": [
+        "region",
+        "vertNor",
+        "vertPos"
+      ],
+      "fragShader": "/hmap_frag.glsl",
+      "shaderName": "hmap",
+      "uniforms": [
+        "LS",
+        "M",
+        "P",
+        "V",
+        "lightDir",
+        "shadowDepth"
+      ],
+      "vertShader": "/hmap_vert.glsl"
+    },
+    {
+      "attributes": [
+        "vertNor",
+        "vertPos",
+        "vertTex"
+      ],
+      "fragShader": "/simple_frag.glsl",
+      "shaderName": "reg",
+      "uniforms": [
+        "LS",
+        "M",
+        "P",
+        "V",
+        "albedo",
+        "emissivity",
+        "lightColor",
+        "lightDir",
+        "reflectance",
+        "roughness",
+        "shadowDepth"
+      ],
+      "vertShader": "/simple_vert.glsl"
+    },
+    {
+      "attributes": [
+        "vertPos",
+        "vertTex"
+      ],
+      "fragShader": "/skybox_frag.glsl",
+      "shaderName": "skybox",
+      "uniforms": [
+        "M",
+        "P",
+        "Texture0",
+        "V"
+      ],
+      "vertShader": "/skybox_vert.glsl"
+    },
+    {
+      "attributes": [
+        "vertNor",
+        "vertPos",
+        "vertTex"
+      ],
+      "fragShader": "/tex_frag0.glsl",
+      "shaderName": "tex",
+      "uniforms": [
+        "LS",
+        "M",
+        "P",
+        "Texture0",
+        "V",
+        "albedo",
+        "emissivity",
+        "flip",
+        "lightColor",
+        "lightDir",
+        "reflectance",
+        "roughness",
+        "shadowDepth"
+      ],
+      "vertShader": "/tex_vert.glsl"
+    }
+  ],
+  "textures": [
+    {
+      "filePath": "/cheese_Base_color.png",
+      "name": "cheeseTex"
+    },
+    {
+      "filePath": "/sky.jpg",
+      "name": "sky"
+    }
+  ]
+}

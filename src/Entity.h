@@ -9,26 +9,12 @@
 #include "Components.h"
 #include "MatrixStack.h"
 #include "Collider.h"
+#include "Model.h"
 
 #define GRAVITY -18.0f
 #define AIR_RESISTANCE -14.0f
 #define EPSILON 0.0001f
 #define SLOPE_TOLERANCE 10
-
-typedef struct color {
-    float r;
-    float g;
-    float b;
-} color;
-
-
-typedef struct BRDFmaterial {
-    color lightColor;
-    color albedo;
-    color reflectance;
-    color emissivity;
-    float roughness;
-} material;
 
 // to avoid making a separate player class, I added a few extra variables to the motion struct for the player specifically
 // however, I think they could be useful for obstacle movement as well - Claire 
@@ -47,21 +33,12 @@ class Entity {
 public:
     Entity();
 
-    void initEntity(std::vector<std::shared_ptr<Shape>> shapes, std::vector<std::shared_ptr<Texture>> textures);
-
-    void setMaterials(int i, float r1, float g1, float b1, float r2, float g2, float b2,
-        float r3, float g3, float b3, float s);
-    void setMaterials(int i, material& mat);
-
     void updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList);
 
     glm::mat4 generateModel();
 
     static int NEXT_ID; // initializes to 0 and increments with every call to initEntity()
     int id;
-    std::vector<std::shared_ptr<Shape>> objs;
-    std::vector<std::shared_ptr<Texture>> textures;
-    std::vector<BRDFmaterial> materials;
     color editorColor;
     Collider* collider = NULL;
     glm::vec3 position = glm::vec3(0);
@@ -77,9 +54,7 @@ public:
     string defaultShaderName;
     glm::mat4 modelMatrix;
     string tag;
-
-    glm::vec3 minBB;
-    glm::vec3 maxBB;
+    shared_ptr<Model> model;
 
 };
 

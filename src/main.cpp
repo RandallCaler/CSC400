@@ -20,12 +20,19 @@
 #include "ImportExport.h"
 #include "Camera.h"
 #include "LevelEditor.h"
+#include "EventManager.h"
 
 #include <chrono>
 #include <array>
 
+// checks if apple device
+#ifdef __APPLE__
+    #define MA_NO_RUNTIME_LINKING
+#endif
+#define MINIAUDIO_IMPLEMENTATION
+#include "../ext/miniaudio/miniaudio.h"
+
 #define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader/tiny_obj_loader.h>
 #define PI 3.1415927
 
 // value_ptr for glm
@@ -38,10 +45,12 @@ using namespace glm;
 
 // Where the resources are loaded from
 std::string resourceDir = "../resources";
-std::string WORLD_FILE_NAME = "/world.txt";
+std::string WORLD_FILE_NAME = "/world.json";
 bool editMode = false;
+float editSpeed = 7.0f;
 
 map<string, shared_ptr<Shader>> shaders;
+map<string, shared_ptr<Texture>> textureLibrary = { {"", nullptr} };
 map<string, shared_ptr<Entity>> worldentities;
 vector<string> tagList = { "" };
 vector<shared_ptr<Entity>> collidables;
@@ -49,10 +58,15 @@ vector<shared_ptr<Entity>> collidables;
 shared_ptr<Entity> cur_entity = NULL;
 
 float deltaTime;
+
 // 	view pitch dist angle playerpos playerrot animate g_eye
 Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
 Camera freeCam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5), true);
 Camera* activeCam = &cam;
+
+ma_engine engine;
+ma_engine walkingEngine;
+// Event e = Event("../resources/cute-world.mp3");
 
 class Application : public EventCallbacks
 {
@@ -68,7 +82,7 @@ public:
 
 	shared_ptr<Entity> player;
 
-	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &worldentities, &tagList, &collidables);
+	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &textureLibrary, &worldentities, &tagList, &collidables);
 
 	shared_ptr<Program> DepthProg;
 	GLuint depthMapFBO;
@@ -79,8 +93,6 @@ public:
   
 	LevelEditor* leGUI = new LevelEditor();
 
-	std::vector<shared_ptr<Shape>> butterfly;
-
 	InputHandler ih;
 
 	Entity bf1 = Entity();
@@ -89,19 +101,16 @@ public:
 	// Entity *catEnt = new Manchot();
 	
   	std::vector<Entity> bf;
-
-	std::vector<shared_ptr<Shape>> flower;
-
-	std::vector<shared_ptr<Shape>> tree1;
-	
-	std::vector<shared_ptr<Shape>> cat;
 	
 	std::vector<Entity> trees;
 
 	std::vector<Entity> flowers;
 
-	int bf_flags[3] = {0, 0, 0};
+	// EventManager *eManager = new EventManager();
+	// Event *walking = new Event("../resources/music.mp3", &walkingEngine);
 
+
+	int bf_flags[3] = {0, 0, 0};
 
 	int nextID = 0;
 
@@ -120,7 +129,6 @@ public:
 	//bounds for world
 	double bounds;
 
-	float editSpeed = 500.0;
 	int editSRT = 0; // 0 - translation, 1 - rotation, 2 - scale
 
 	// hmap for terrain
@@ -137,7 +145,6 @@ public:
 		if (key == GLFW_KEY_L && action == GLFW_PRESS && !leGUI->diableInput) {
 			editMode = !editMode;
 			editSRT = 0;
-			editSpeed = 2.0;
 			if (editMode) {
 				activeCam = &freeCam;
 			}
@@ -169,6 +176,12 @@ public:
 					case GLFW_KEY_D:
 						freeCam.vel.x = editSpeed;
 						break;
+					case GLFW_KEY_SPACE:
+						freeCam.vel.y = -editSpeed;
+						break;
+					case GLFW_KEY_LEFT_CONTROL:
+						freeCam.vel.y = editSpeed;
+						break;
 					case GLFW_KEY_V:
 						levelEditor->saveToFile(WORLD_FILE_NAME);
 						break;
@@ -192,6 +205,10 @@ public:
 					case GLFW_KEY_A:
 					case GLFW_KEY_D:
 						freeCam.vel.x = 0.0;
+						break;
+					case GLFW_KEY_SPACE:
+					case GLFW_KEY_LEFT_CONTROL:
+						freeCam.vel.y = 0.0;
 						break;
 				}
 			}
@@ -397,20 +414,10 @@ public:
 		DepthProg->addUniform("P");
 		DepthProg->addUniform("V");
 		DepthProg->addUniform("M");
-		DepthProg->addUniform("pickingColor");
+		DepthProg->addUniform("Texture0");
 		DepthProg->addAttribute("vertPos");
 		DepthProg->addAttribute("vertNor");
 		DepthProg->addAttribute("vertTex");
-
-		shaders["skybox"]->has_texture = true;
-		shaders["tex"]->has_texture = true;
-		shaders["hmap"]->has_texture = false;
-
-		shaders["skybox"]->addTexture(resourceDirectory + "/sky.jpg");
-		shaders["tex"]->addTexture(resourceDirectory + "/grass_tex.jpg");
-		shaders["tex"]->addTexture(resourceDirectory + "/sky.jpg");
-		shaders["tex"]->addTexture(resourceDirectory + "/cat_tex.jpg");
-		shaders["tex"]->addTexture(resourceDirectory + "/cat_tex_legs.jpg");
 
 		hmap = make_shared<Texture>();
 		hmap->setFilename(resourceDirectory + "/hmap.png");
@@ -422,74 +429,46 @@ public:
 				player = ent.second;
 			}
 		}
+
+		//eManager->events.insert_or_assign("walking", walking);
+
 	}
 
+	int initSoundEngines(){
+		
+		ma_result result = ma_engine_init(NULL, &engine);
+		if (result != MA_SUCCESS) {
+			printf("Failed to initialize audio engine.");
+			return -1;
+		}
+
+		result = ma_engine_init(NULL, &walkingEngine);
+		if (result != MA_SUCCESS) {
+			printf("Failed to initialize audio engine.");
+			return -1;
+		}
+		return 0;
+	}
+
+	void uninitSoundEngines(){
+		ma_engine_uninit(&engine);
+		ma_engine_uninit(&walkingEngine);
+	}
+
+	bool walkingEvent(shared_ptr<Entity> penguin){
+		if(penguin->m.curSpeed != 0.0){
+			return true;
+		}
+		return false;
+	}
+	
 	void initGeom(const std::string& resourceDirectory)
-	{
-		string errStr;
-		// Initialize cat mesh.
-		vector<tinyobj::shape_t> TOshapesB;
- 		vector<tinyobj::material_t> objMaterialsB;
-		//load in the mesh and make the shape(s)
- 		bool rc = tinyobj::LoadObj(TOshapesB, objMaterialsB, errStr, (resourceDirectory + "/cat.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		} else {	
-			cat.push_back(make_shared<Shape>());
-			cat[0]->createShape(TOshapesB[0]);
-			cat[0]->measure();
-			cat[0]->init();
+	{   
+		if (player) {
+			player->m.forward = vec4(0, 0, 0.1, 1);
+			player->m.velocity = vec3(0.1) * vec3(player->m.forward);
 		}
-
-		vector<tinyobj::shape_t> TOshapes3;
-		rc = tinyobj::LoadObj(TOshapes3, objMaterialsB, errStr, (resourceDirectory + "/butterfly.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		} else {
-			//scan in all parts of butterfly
-			for (int i = 0; i < 3; i++) {
-				butterfly.push_back(make_shared<Shape>());
-				butterfly[i]->createShape(TOshapes3[i]);
-				butterfly[i]->measure();
-				butterfly[i]->init();
-			}
-		}
-
-		vector<tinyobj::shape_t> TOshapes4;
-		rc = tinyobj::LoadObj(TOshapes4, objMaterialsB, errStr, (resourceDirectory + "/flower.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		} else {
-			//for now all our shapes will not have textures - change in later labs
-			for (int i = 0; i < 3; i++) {
-				//scan in current obj part of flower
-				flower.push_back(make_shared<Shape>());
-				flower[i]->createShape(TOshapes4[i]);
-				flower[i]->measure();
-				flower[i]->init();
-			}
-		}
-
-		vector<tinyobj::shape_t> TOshapes5;
-		rc = tinyobj::LoadObj(TOshapes5, objMaterialsB, errStr, (resourceDirectory + "/trees.obj").c_str());
-		if (!rc) {
-			cerr << errStr << endl;
-		} else {
-			//for now all our shapes will not have textures - change in later labs
-			for (int i = 0; i < 12; i++) {
-				//scan in current obj part of flower
-				tree1.push_back(make_shared<Shape>());
-
-				tree1[i]->createShape(TOshapes5[i]);
-				tree1[i]->measure();
-				tree1[i]->init();
-			}
-		}
-    
-		// IMPORT BUNNY
-		player->m.forward = vec4(0, 0, 0.1, 1);
-		player->m.velocity = vec3(0.1) * vec3(player->m.forward);
-
+		
 		applyCollider();
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
@@ -506,15 +485,11 @@ public:
 			else {
 				ent->collider->entityName = 'c';
 			}
+			if (ent->tag == "food") {
+				ent->collider->collectible = true;
+			}			
 		}
 		cam.collider = new Collider(&cam);
-
-		// placeholder cheese collider - replace when collectibles are implemented
-		shared_ptr<Entity> cheese = worldentities["cheese"];
-		cheese->collider = new Collider(cheese.get());
-		cheese->collider->SetEntityID(cheese->id);
-		cheese->collider->collectible = true;
-		collidables.push_back(cheese);
 	}
 
 	//directly pass quad for the ground to the GPU
@@ -595,7 +570,10 @@ public:
 
 		g_GiboLen = indices.size();
 
-		player->collider->SetGround(groundPos, vec3(1,Y_MAX-Y_MIN,1));
+		if (player) {
+			player->collider->SetGround(groundPos, vec3(1, Y_MAX - Y_MIN, 1));
+		}
+		
 		cam.collider->SetGround(groundPos, vec3(1,Y_MAX-Y_MIN,1));
 
       }
@@ -648,7 +626,6 @@ public:
 
 
 	void drawShadowMap() {
-
 		float butterfly_height[3] = {1.1, 1.7, 1.5};
 
 		vec3 butterfly_loc[3];
@@ -667,10 +644,12 @@ public:
 
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
+			entity->model->Draw(DepthProg);
 
-			for (int i = 0; i < entity->objs.size(); i++) {	
-				entity->objs[i]->draw(DepthProg);
-			}
+			
+			//for (int i = 0; i < entity->objs.size(); i++) {	
+			//	entity->objs[i]->draw(DepthProg);
+			//}
 		}
 		
 		DepthProg->unbind();
@@ -749,21 +728,11 @@ public:
 			glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
       
-			for (int i = 0; i < entity->objs.size(); i++) {
-				if (curS->has_texture) {
-					curS->flip(1);
-					entity->textures[i]->bind(curS->prog->getUniform("Texture0"));
-				}
-
-				curS->setMaterial(entity->materials[i]);
-
-				entity->objs[i]->draw(curS->prog);
-				
-				if (curS->has_texture) {
-					entity->textures[i]->unbind();
-					curS->unbindTexture(0);
-				}
+			for (auto& meshPair : entity->model->meshes) {
+				curS->setMaterial(meshPair.second.mat);
+				meshPair.second.Draw(curS->prog);
 			}
+			
 			if (shaders["skybox"] == curS) {
 				// deactivate skybox backfill
 				glDepthFunc(GL_LESS);
@@ -840,12 +809,14 @@ public:
 			//}
 	
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
+			glUniform3fv(curS->prog->getUniform("PickingColor"), 1, value_ptr(glm::vec3(entity->editorColor.r, entity->editorColor.g, entity->editorColor.b)));
+			entity->model->Draw(curS->prog);
 	
-			for (int i = 0; i < entity->objs.size(); i++) {
-				glUniform3fv(curS->prog->getUniform("PickingColor"), 1, value_ptr(glm::vec3(entity->editorColor.r, entity->editorColor.g, entity->editorColor.b)));
-				entity->objs[i]->draw(curS->prog);
+			//for (int i = 0; i < entity->objs.size(); i++) {
+			//	glUniform3fv(curS->prog->getUniform("PickingColor"), 1, value_ptr(glm::vec3(entity->editorColor.r, entity->editorColor.g, entity->editorColor.b)));
+			//	entity->objs[i]->draw(curS->prog);
 
-			}
+			//}
 		}
 	
 
@@ -911,8 +882,10 @@ public:
   		glBindTexture(GL_TEXTURE_2D, depthMap);
 		
 		//player->updateMotion(frametime, hmap);
-		cam.player_pos = player->position;
-		
+		if (player) {
+			cam.player_pos = player->position;
+		}
+	
       	LSpace = LO*LV;
 		float aspect = width/(float)height;
 		if(editMode){
@@ -922,11 +895,19 @@ public:
 			drawObjects(aspect, LSpace, frametime);
 		}
 
+		// if(walkingEvent(player)){
+		// 	// cout << "starting sound" << endl;
+		// 	eManager->updateSound("walking");
+		// }
+		// else{
+		// 	eManager->stopSoundM("walking");
+		// }
+
 		// cout << "2 passes" << endl;
 		
 	}
-};
 
+};
 
 int main(int argc, char *argv[]) {
 	// Where the resources are loaded from
@@ -958,6 +939,11 @@ int main(int argc, char *argv[]) {
 
 	application->init(resourceDir);
 	application->initGeom(resourceDir);
+	application->initSoundEngines();
+
+
+	Event *ev = new Event("../resources/cute-world.mp3", &engine);
+	ev->startSound();
 
 	float dt = 1 / 60.0;
 	auto lastTime = chrono::high_resolution_clock::now();
@@ -987,7 +973,6 @@ int main(int argc, char *argv[]) {
 		activeCam->updateCamera(deltaTime);
 		// Render scene.
 		application->render(deltaTime);
-			
 
 		// Swap front and back buffers.
 		glfwSwapBuffers(windowManager->getHandle());
@@ -995,6 +980,7 @@ int main(int argc, char *argv[]) {
 		glfwPollEvents();
 	}
 
+	application->uninitSoundEngines();
 	application->leGUI->Shutdown();
 	windowManager->shutdown();
 	

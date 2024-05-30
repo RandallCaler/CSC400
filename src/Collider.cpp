@@ -1,15 +1,25 @@
 #include "Collider.h"
 #include "Entity.h"
+#include "Camera.h"
 
 #include <math.h>
 
 
 Collider::Collider(){};
 
-Collider::Collider(Entity *owner, bool collectible) : worldMin(owner->minBB), worldMax(owner->maxBB)
+
+Collider::Collider(Entity* owner, bool collectible)
+    : owner(owner), collectible(collectible)
 {
-    this->owner = owner;
-    this->collectible = collectible;
+    if (owner && owner->model) {
+        worldMin = owner->model->min;
+        worldMax = owner->model->max;
+    }
+    else {
+        // Initialize to default values if owner or owner->model is null
+        worldMin = glm::vec3(0.0f);
+        worldMax = glm::vec3(0.0f);
+    }
 }
 
 float sampleHeightFromPixel(int x, int z, int major, unsigned char*& data) {
@@ -158,22 +168,21 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
     glm::vec3 Bz = glm::vec3(BRot * glm::vec4(0,0,1,1));
 
     // scale bounding boxes to world space
-    float scalefactor1 = 1.0/std::max(std::max(owner->maxBB.x - owner->minBB.x, 
-            owner->maxBB.y - owner->minBB.y), 
-            owner->maxBB.z - owner->minBB.z);
-            
+    float scalefactor1 = 1.0 / std::max(std::max(owner->model->max.x - owner->model->min.x,
+            owner->model->max.y - owner->model->min.y), 
+            owner->model->max.z - owner->model->min.z);
     glm::vec3 sv1 = owner->scaleVec * 
-        glm::vec3((owner->maxBB.x - owner->minBB.x)/2*scalefactor1,
-            (owner->maxBB.y - owner->minBB.y)/2*scalefactor1, 
-            (owner->maxBB.z - owner->minBB.z)/2*scalefactor1);
+        glm::vec3((owner->model->max.x - owner->model->min.x)/2*scalefactor1,
+            (owner->model->max.y - owner->model->min.y)/2*scalefactor1, 
+            (owner->model->max.z - owner->model->min.z)/2*scalefactor1);
 
-    float scalefactor2 = 1.0/(std::max(other->maxBB.x - other->minBB.x, 
-            other->maxBB.y - other->minBB.y), 
-            other->maxBB.z - other->minBB.z);
+    float scalefactor2 = 1.0 / ((std::max)(other->model->max.x - other->model->min.x,
+            other->model->max.y - other->model->min.y), 
+            other->model->max.z - other->model->min.z);
     glm::vec3 sv2 = other->scaleVec * 
-        glm::vec3((other->maxBB.x - other->minBB.x)/2 *scalefactor2,
-            (other->maxBB.y - other->minBB.y)/2*scalefactor2, 
-            (other->maxBB.z - other->minBB.z)/2*scalefactor2);
+        glm::vec3((other->model->max.x - other->model->min.x)/2 *scalefactor2,
+            (other->model->max.y - other->model->min.y)/2*scalefactor2, 
+            (other->model->max.z - other->model->min.z)/2*scalefactor2);
 
     glm::vec3 L = Ax;
     
