@@ -34,7 +34,7 @@ float D (float alpha, vec3 N, vec3 H) {
 
 	float dot_prod = max(0, dot(N, H));
 	float num = pow(alpha, 2.0);
-	float denom = max(0.0005, pow(pow(dot_prod, 2.0) * (pow(alpha, 2.0) - 1.0) + 1.0, 2.0));
+	float denom = max(0.0005, 3.1415 * pow(pow(dot_prod, 2.0) * (pow(alpha, 2.0) - 1.0) + 1.0, 2.0));
 	return num / denom;
 
 }
@@ -61,7 +61,7 @@ vec3 F (vec3 F0, vec3 V, vec3 N) {
 float TestShadow(vec4 LSfPos) {
 
   //0.005 * tan (acos(nDotl)) is better/more precise
-  float depth_buffer = 0.1;
+  float depth_buffer = 0.009;
 
 	//1: shift the coordinates from -1, 1 to 0, 1
   vec3 fLS = (vec3(LSfPos) + vec3(1.0)) * 0.5;
@@ -112,7 +112,7 @@ void main() {
 
 	Shade = TestShadow(in_struct.fPosLS);
 
-	Outcolor = amb*(baseColor) + (1.0-Shade)*baseColor;
+	Outcolor = amb*(baseColor) + baseColor; //(1.0-Shade)*
 	
 }
 
