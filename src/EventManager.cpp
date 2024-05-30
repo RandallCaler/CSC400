@@ -13,16 +13,18 @@ Event::Event(const char* sp, ma_engine *en, bool loop, string type){
 Event::Event(){}
 
 void Event::startSound(){
-    ma_result result;
-    if (looping == true){
-        ma_sound_set_looping(&sound, looping);
-        ma_sound_start(&sound);
+    if (!isPlaying()){
+        ma_result result;
+        if (looping == true){
+            ma_sound_set_looping(&sound, looping);
+            ma_sound_start(&sound);
+        }
+        else {
+            result = ma_sound_start(&sound);
+        } 
+        startTime = ma_engine_get_time_in_pcm_frames(engine);
+        //cout << "START SOUND : " << (result == MA_SUCCESS) << endl;
     }
-    else {
-        result = ma_sound_start(&sound);
-    } 
-    startTime = ma_engine_get_time_in_pcm_frames(engine);
-    //cout << "START SOUND : " << (result == MA_SUCCESS) << endl;
 }
 
 void Event::rewindSound(){
@@ -34,13 +36,15 @@ bool Event::isPlaying(){
 }
 
 void Event::stopSound(){
-    if ((id != "walking") && (id != "background")){
-        if (isPlaying() && (ma_engine_get_time_in_pcm_frames(engine) - startTime >= soundDuration)) {
+    if (isPlaying()){
+        if ((id != "walking") && (id != "background")){
+            if (ma_engine_get_time_in_pcm_frames(engine) - startTime >= soundDuration) {
+                ma_sound_stop(&sound);
+            }
+        }
+        else{
             ma_sound_stop(&sound);
         }
-    }
-    else{
-        ma_sound_stop(&sound);
     }
 }
 
