@@ -69,7 +69,7 @@ float getHeightFromPlane(vec4 plane, vec2 pos) {
     return (plane.w - plane.x * pos.x - plane.z * pos.y) / plane.y;
 }
 
-void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList) {
+void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList, int *collisionSounds) {
     float distance = m.curSpeed * deltaTime;
     // movement and rotation
     float deltaX = distance * sin(rotY);
@@ -134,7 +134,7 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
         // printf("grounded: %.4f vs %.4f\n", position.y - entityHeight, groundHeight);
     }
 
-    vec3 collisionPlane = vec3(collider->CheckCollision(deltaTime, collisionList));
+    vec3 collisionPlane = vec3(collider->CheckCollision(deltaTime, collisionList, collisionSounds));
     // oriented bounding box restrictions
     if (collisionPlane != vec3(0)) {
         // handle gravity response when colliding with y planes

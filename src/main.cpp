@@ -64,8 +64,9 @@ Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 
 Camera freeCam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5), true);
 Camera* activeCam = &cam;
 
+// for background music, called once in main loop
 ma_engine engine;
-ma_engine walkingEngine;
+
 // Event e = Event("../resources/cute-world.mp3");
 
 class Application : public EventCallbacks
@@ -94,6 +95,7 @@ public:
 	LevelEditor* leGUI = new LevelEditor();
 
 	InputHandler ih;
+	int collisionSounds[1];
 
 	Entity bf1 = Entity();
 	Entity bf2 = Entity();
@@ -106,7 +108,7 @@ public:
 
 	std::vector<Entity> flowers;
 
-	// EventManager *eManager = new EventManager();
+	EventManager *eManager = new EventManager();
 	// Event *walking = new Event("../resources/music.mp3", &walkingEngine);
 
 
@@ -134,7 +136,10 @@ public:
 	// hmap for terrain
 	shared_ptr<Texture> hmap;
 	vec3 groundPos = vec3(0, 0, 0);
-	
+
+	ma_engine walkingEngine;
+	ma_engine collectionEngine;
+		
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -434,20 +439,33 @@ public:
 
 	}
 
-	int initSoundEngines(){
+	void initSoundEngines(){
 		
 		ma_result result = ma_engine_init(NULL, &engine);
 		if (result != MA_SUCCESS) {
-			printf("Failed to initialize audio engine.");
-			return -1;
+			printf("Failed to initialize BACKGROUND MUSIC audio engine.");
+			//return -1;
 		}
 
 		result = ma_engine_init(NULL, &walkingEngine);
 		if (result != MA_SUCCESS) {
-			printf("Failed to initialize audio engine.");
-			return -1;
+			printf("Failed to initialize WALKING audio engine.");
+			//return -1;
 		}
-		return 0;
+
+		result = ma_engine_init(NULL, &collectionEngine);
+		if (result != MA_SUCCESS) {
+			printf("Failed to initialize WALKING audio engine.");
+			//return -1;
+		}
+
+		Event *walkingEv = new Event("../resources/walking-grass.mp3", &walkingEngine, true, "walking");
+		eManager->events.insert_or_assign("walking", walkingEv);
+
+		Event *collectionEv = new Event("../resources/collect2-short.mp3", &collectionEngine, false, "collection");
+		eManager->events.insert_or_assign("collection", collectionEv);
+
+		//return 0;
 	}
 
 	void uninitSoundEngines(){
@@ -455,13 +473,6 @@ public:
 		ma_engine_uninit(&walkingEngine);
 	}
 
-	bool walkingEvent(shared_ptr<Entity> penguin){
-		if(penguin->m.curSpeed != 0.0){
-			return true;
-		}
-		return false;
-	}
-	
 	void initGeom(const std::string& resourceDirectory)
 	{   
 		if (player) {
@@ -719,7 +730,7 @@ public:
 
 			if (entity->collider) {
 				if (entity->id == player->id) {
-					entity->updateMotion(deltaTime, hmap, collidables);
+					entity->updateMotion(deltaTime, hmap, collidables, collisionSounds);
 				}
 			}
 	
@@ -846,7 +857,39 @@ public:
 			leGUI->Render();
 		}
 	}
+
 	
+	bool walkingEvent(){
+		return ((player->m.curSpeed > 0.0) && (player->grounded));
+	}
+	
+	bool collectionEvent(){
+		return (collisionSounds[0] == 1 && eManager->eventHistory->at("collection") == false);
+	}
+	
+	
+	void checkSounds(){
+		if (walkingEvent()) {
+			//cout << "walking event triggered" << endl;
+			eManager->triggerSound("walking");
+		}
+		else {
+			//cout << "stopping sound walking" << endl;
+			eManager->stoppingSound("walking");}
+
+		if (collectionEvent()) {
+			cout << "collection event triggered, starting sound" << endl;
+			eManager->triggerSound("collection");
+			// collisionSounds[0] == 0;
+		}
+		// have to rework to trigger sound for certain amount of time and then stop
+		else {
+			//cout << "stopping sound collection" << endl;
+			eManager->stoppingSound("collection");
+		}
+
+
+	}
 
 	void render(float frametime) {
 		// Get current frame buffer size.
@@ -894,17 +937,8 @@ public:
 		else{
 			drawObjects(aspect, LSpace, frametime);
 		}
-
-		// if(walkingEvent(player)){
-		// 	// cout << "starting sound" << endl;
-		// 	eManager->updateSound("walking");
-		// }
-		// else{
-		// 	eManager->stopSoundM("walking");
-		// }
-
-		// cout << "2 passes" << endl;
 		
+		checkSounds();
 	}
 
 };
@@ -942,7 +976,7 @@ int main(int argc, char *argv[]) {
 	application->initSoundEngines();
 
 
-	Event *ev = new Event("../resources/cute-world.mp3", &engine);
+	Event *ev = new Event("../resources/french-mood.mp3", &engine, true, "background");
 	ev->startSound();
 
 	float dt = 1 / 60.0;

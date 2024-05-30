@@ -155,6 +155,57 @@
     },
     {
       "collider": 1,
+      "file": "/baguette.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "baguette_low"
+        }
+      ],
+      "name": "baguette(2)",
+      "position": [
+        -37.7599983215332,
+        -66.75,
+        39.33000183105469
+      ],
+      "rotation": [
+        0.0,
+        -5.51524019241333,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "shader": "reg",
+      "tag": "food",
+      "texture": ""
+    },
+    {
+      "collider": 1,
       "file": "/cheese.obj",
       "meshes": [
         {
@@ -187,7 +238,7 @@
       "name": "cheese",
       "position": [
         -60.970001220703125,
-        -53.7400016784668,
+        -53.779998779296875,
         106.7300033569336
       ],
       "rotation": [
@@ -658,159 +709,6 @@
         3.6700000762939453,
         -0.15000000596046448,
         4.550000190734863
-      ],
-      "shader": "reg",
-      "tag": "",
-      "texture": ""
-    },
-    {
-      "collider": 1,
-      "file": "/cube.obj",
-      "meshes": [
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Cube"
-        }
-      ],
-      "name": "cube(17)",
-      "position": [
-        -93.29000091552734,
-        -73.37999725341797,
-        -13.970000267028809
-      ],
-      "rotation": [
-        0.0,
-        0.0,
-        0.0
-      ],
-      "scale": [
-        -3.5299999713897705,
-        0.3700000047683716,
-        -5.679999828338623
-      ],
-      "shader": "reg",
-      "tag": "",
-      "texture": ""
-    },
-    {
-      "collider": 1,
-      "file": "/cube.obj",
-      "meshes": [
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Cube"
-        }
-      ],
-      "name": "cube(18)",
-      "position": [
-        -19.350000381469727,
-        -71.55000305175781,
-        -71.52999877929688
-      ],
-      "rotation": [
-        0.0,
-        0.0,
-        0.0
-      ],
-      "scale": [
-        -3.3499999046325684,
-        -0.10999999940395355,
-        4.510000228881836
-      ],
-      "shader": "reg",
-      "tag": "",
-      "texture": ""
-    },
-    {
-      "collider": 1,
-      "file": "/cube.obj",
-      "meshes": [
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Cube"
-        }
-      ],
-      "name": "cube(19)",
-      "position": [
-        -15.199999809265137,
-        -70.33000183105469,
-        -72.11000061035156
-      ],
-      "rotation": [
-        0.0,
-        0.0,
-        0.0
-      ],
-      "scale": [
-        -3.7200000286102295,
-        -0.05000000074505806,
-        -4.489999771118164
       ],
       "shader": "reg",
       "tag": "",
@@ -2042,6 +1940,1226 @@
     },
     {
       "collider": 1,
+      "file": "/fishPie.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Crust"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube.001"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube.002"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube.003"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube.004"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "FakeFishLayer"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fish.001|Cone|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fish.002|Cone|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fish.003|Cone|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fish.004|Cone|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fish.005|Cone|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fish.006|Cone|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fish|Cone|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Pan"
+        }
+      ],
+      "name": "fishPie",
+      "position": [
+        -46.380001068115234,
+        -70.75,
+        59.08000183105469
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "shader": "reg",
+      "tag": "food",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/frenchFries.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Dish"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fake"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.001|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.002|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.003|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.004|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.005|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.006|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.007|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.008|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.009|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.010|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.011|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.012|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.013|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.014|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.015|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.016|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.017|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.018|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.019|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.020|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.021|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.022|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.023|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.024|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.025|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.026|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries.027|Cube|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Fries|Cube|Dupli|"
+        }
+      ],
+      "name": "frenchFries",
+      "position": [
+        -43.81999969482422,
+        -69.55000305175781,
+        55.099998474121094
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "shader": "reg",
+      "tag": "food",
+      "texture": ""
+    },
+    {
+      "collider": 1,
       "file": "/penguin.obj",
       "meshes": [
         {
@@ -2203,13 +3321,13 @@
       ],
       "name": "penguin",
       "position": [
-        12.368212699890137,
-        -74.5,
-        -16.61100196838379
+        -50.5042610168457,
+        -70.57843017578125,
+        70.41617584228516
       ],
       "rotation": [
         0.0,
-        0.5895935893058777,
+        2.298818826675415,
         0.0
       ],
       "scale": [

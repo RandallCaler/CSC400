@@ -12,9 +12,9 @@ using namespace std;
 /*
 
 useful mini audio advice 
+ma_sound_set_volume()
 
 - Use ma_sound_seek_to_pcm_frame(&sound, 0) to seek back to the start of a sound
-
 - ma_engine_listener_set_position(&engine, listenerIndex, worldPosX, worldPosY, worldPosZ);
 - ma_engine_listener_set_direction(&engine, listenerIndex, forwardX, forwardY, forwardZ);
 - ma_engine_listener_set_world_up(&engine, listenerIndex, 0, 1, 0);
@@ -23,26 +23,21 @@ useful mini audio advice
 */
 
 class Event {
-    // is it continuous (holding down key) or is it press-release
     public: 
-        bool continuous;
-        bool activated;
+        bool looping;
         const char *soundPath;
-        int weight;
+        ma_uint64 soundDuration;
+        ma_uint64 startTime;
         ma_engine *engine;
         ma_sound sound;
-        int id; // each event should have a different ID so that the event manager will not repeat the sound play
+        string id; // each event should have a different ID so that the event manager will not repeat the sound play
 
-        Event(const char *sp, ma_engine *en);
+        Event(const char *sp, ma_engine *en, bool looping, string id);
         Event();
-        // void initSound();
         void startSound();
         void stopSound();
-
-        // // redefine the comparison attribute so events with higher priority play first
-        // bool operator<(const Event& other) const {
-        //     return weight > other.weight;
-        // }
+        void rewindSound();
+        bool isPlaying();
 };
 
 class EventManager {
@@ -50,17 +45,14 @@ class EventManager {
     // each event has an event buffer, where did things true 1 
     // check if things change between render calls
 
-    // take in when things should play
-    // lambda function that check conidtions, pass boolean to event manager to determine whihch event to call
-
     public:
         EventManager();
-        void updateSound(string id);
-        void stopSoundM(string id);
+        void triggerSound(string id);
+        void stoppingSound(string id);
         void addEvent(Event e);
     // void addEvent();
 
-        map<string, bool> *eventHistory = new map<string, bool>;
+        map<string, bool> *eventHistory;
         map<string, Event*> events;
 
 };
