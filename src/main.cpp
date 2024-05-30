@@ -869,7 +869,7 @@ public:
 
 	
 	bool walkingEvent(){
-		return ((player->m.curSpeed > 0.0) && (player->grounded));
+		return ((player->m.curSpeed > 0 || player->m.curSpeed < 0) && (player->grounded));
 	}
 	
 	bool collectionEvent(){
