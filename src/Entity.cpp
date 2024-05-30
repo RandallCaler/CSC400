@@ -108,14 +108,9 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
     // if the area of ground ahead cannot be climbed, return to previous position
     else {
         position = oldPosition;
+        // sliding = true;
         groundPlane = groundPlane0;
         groundHeight = groundHeight0;
-    }
-
-    // if (groundPlane.y > 0 && (sliding || collisionPlane.y + EPSILON < length(vec2(collisionPlane.x, collisionPlane.z)))) {
-    if (groundPlane.y > 0 && (sliding)) {
-        m.upwardSpeed -= GRAVITY * deltaTime * (groundPlane.y * groundPlane.y);
-        m.curSpeed += groundPlane.x * sin(rotY) + groundPlane.z * cos(rotY);
     }
 
     // printf("%.3f\t", m.upwardSpeed);
@@ -135,7 +130,15 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
 
     // uses the terrain height to prevent character from indefinitely falling
     if (position.y < groundHeight + entityHeight) {
-        grounded = true;
+        if (!sliding) {
+            grounded = true;
+        }
+        // if (groundPlane.y > 0 && (sliding || collisionPlane.y + EPSILON < length(vec2(collisionPlane.x, collisionPlane.z)))) {
+        else {
+            m.upwardSpeed -= GRAVITY * deltaTime * (groundPlane.y * groundPlane.y);
+            m.curSpeed -= (groundPlane.x * sin(rotY) + groundPlane.z * cos(rotY)) * GRAVITY * deltaTime;
+            printf("%.3f\n", m.curSpeed);
+        }
         gliding = false;
         m.upwardSpeed = std::max(0.0f, m.upwardSpeed);
         position.y = groundHeight + entityHeight;
