@@ -112,6 +112,12 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
         groundHeight = groundHeight0;
     }
 
+    // if (groundPlane.y > 0 && (sliding || collisionPlane.y + EPSILON < length(vec2(collisionPlane.x, collisionPlane.z)))) {
+    if (groundPlane.y > 0 && (sliding)) {
+        m.upwardSpeed -= GRAVITY * deltaTime * (groundPlane.y * groundPlane.y);
+        m.curSpeed += groundPlane.x * sin(rotY) + groundPlane.z * cos(rotY);
+    }
+
     // printf("%.3f\t", m.upwardSpeed);
     // FALLING physics
     if (gliding == true) {
@@ -165,7 +171,6 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
 
         if (collisionPlane.y > 0 && (sliding || collisionPlane.y + EPSILON < length(vec2(collisionPlane.x, collisionPlane.z)))) {
             m.upwardSpeed -= GRAVITY * deltaTime * (collisionPlane.y * collisionPlane.y);
-            printf("%.3f\n", m.upwardSpeed);
         }
     }
 }
