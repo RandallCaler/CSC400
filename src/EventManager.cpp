@@ -22,11 +22,12 @@ void Event::stopSound(){
 EventManager::EventManager(){
     eventHistory = new map<string, bool>;
     eventHistory->insert_or_assign("walking", false);
+    eventHistory->insert_or_assign("collection", false);
 }
 
-void EventManager::updateSound(string id){
+void EventManager::triggerSound(string id){
     if (eventHistory->at(id) == false){
-        cout << "in the update sound area" << endl;
+        cout << "confirmed that walking is false, setting to true" << endl;
         eventHistory->insert_or_assign(id, true);
         events.at(id)->startSound();
     }
@@ -35,10 +36,9 @@ void EventManager::updateSound(string id){
 void EventManager::addEvent(Event e){
 }
 
-void EventManager::stopSoundM(string id){
+void EventManager::stopSound(string id){
     cout << "stopping sound" << endl;
-    // eventHistory->insert_or_assign(id, false);
-    // events.at(id)->stopSound();
-
+    eventHistory->insert_or_assign(id, false);
+    events.at(id)->stopSound();
     //ma_sound_stop();
 }

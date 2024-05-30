@@ -292,6 +292,8 @@ glm::vec4 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<
                 if (e->collider->collectible) {
                     // placeholder collectible response - should activate boid behavior
                     e->position.y += 100;
+                    // set flag for sound to check
+                    collected = true;
                 }
                 else {
                     colliding = true;
@@ -320,6 +322,10 @@ void Collider::ExitCollision(){
 
 float Collider::GetRadial(){
     return radial;
+}
+
+bool Collider::IsCollected(){
+    return collected;
 }
 
 void Collider::CalculateBoundingBox(glm::mat4 modelMatrix) {

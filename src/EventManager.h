@@ -55,12 +55,12 @@ class EventManager {
 
     public:
         EventManager();
-        void updateSound(string id);
-        void stopSoundM(string id);
+        void triggerSound(string id);
+        void stopSound(string id);
         void addEvent(Event e);
     // void addEvent();
 
-        map<string, bool> *eventHistory = new map<string, bool>;
+        map<string, bool> *eventHistory;
         map<string, Event*> events;
 
 };
