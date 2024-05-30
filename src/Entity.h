@@ -51,6 +51,7 @@ public:
     bool grounded = false;
     bool gliding = false;
     bool collidable;
+    bool sliding = false;
     string defaultShaderName;
     glm::mat4 modelMatrix;
     string tag;
