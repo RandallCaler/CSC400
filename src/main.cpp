@@ -470,7 +470,7 @@ public:
 		Event *walkingEv = new Event("../resources/walking-grass.mp3", &walkingEngine, true, "walking");
 		eManager->events.insert_or_assign("walking", walkingEv);
 
-		Event *collectionEv = new Event("../resources/collect2-short.mp3", &collectionEngine, false, "collection");
+		Event *collectionEv = new Event("../resources/marimba-y.mp3", &collectionEngine, false, "collection");
 		eManager->events.insert_or_assign("collection", collectionEv);
 
 		//return 0;
@@ -479,6 +479,7 @@ public:
 	void uninitSoundEngines(){
 		ma_engine_uninit(&engine);
 		ma_engine_uninit(&walkingEngine);
+		ma_engine_uninit(&collectionEngine);
 	}
 
 	void initGeom(const std::string& resourceDirectory)
@@ -877,24 +878,15 @@ public:
 	
 	
 	void checkSounds(){
-		if (walkingEvent()) {
-			//cout << "walking event triggered" << endl;
-			eManager->triggerSound("walking");
-		}
-		else {
-			//cout << "stopping sound walking" << endl;
-			eManager->stoppingSound("walking");}
+		if (walkingEvent()) {eManager->triggerSound("walking");}
+		else {eManager->stoppingSound("walking");}
 
 		if (collectionEvent()) {
 			cout << "collection event triggered, starting sound" << endl;
 			eManager->triggerSound("collection");
 			// collisionSounds[0] == 0;
 		}
-		// have to rework to trigger sound for certain amount of time and then stop
-		else {
-			//cout << "stopping sound collection" << endl;
-			eManager->stoppingSound("collection");
-		}
+		else {eManager->stoppingSound("collection");}
 
 
 	}
