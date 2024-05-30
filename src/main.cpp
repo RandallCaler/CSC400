@@ -445,7 +445,7 @@ public:
 
 		DebugProg = make_shared<Program>();
 		DebugProg->setVerbose(true);
-		DebugProg->setShaderNames(resourceDirectory + "/depth_vert.glsl", resourceDirectory + "/depth_frag.glsl");
+		DebugProg->setShaderNames(resourceDirectory + "/pass_vert.glsl", resourceDirectory + "/pass_texfrag.glsl");
 		DebugProg->init();
 
 		DebugProg->addUniform("texBuf");
@@ -922,14 +922,14 @@ public:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		if (DEBUG_LIGHT) {
-			/*if (GEOM_DEBUG) {
+			if (GEOM_DEBUG) {
 				DepthProgDebug->bind();
 				SetOrthoMatrix(DepthProgDebug);
 				SetLightView(DepthProgDebug, light_vec, lightLA, lightUp);
 				drawShadowMap();
 				DepthProgDebug->unbind();
 			}
-			else {*/
+			else {
 				DebugProg->bind();
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, depthMap);
@@ -944,7 +944,7 @@ public:
 				cout << "askdjhfkasdjhflkasdj" << endl;
 				DebugProg->unbind();
 				cout << "after :)" << endl;
-			//}
+			}
 		}
 		else {
 			glActiveTexture(GL_TEXTURE1);
