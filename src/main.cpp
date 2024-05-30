@@ -95,6 +95,7 @@ public:
 	LevelEditor* leGUI = new LevelEditor();
 
 	InputHandler ih;
+	
 
 	Entity bf1 = Entity();
 	Entity bf2 = Entity();
@@ -859,15 +860,11 @@ public:
 
 	
 	bool walkingEvent(){
-		if ((player->m.curSpeed > 0.0) && (player->grounded)) {return true;}
-		return false;
+		return ((player->m.curSpeed > 0.0) && (player->grounded));
 	}
 	
 	bool collectionEvent(){
-		// if (player->collider->IsCollected()){
-		// 	return true;
-		// }
-		return false;
+		return (false);
 	}
 	
 	
@@ -878,11 +875,11 @@ public:
 		}
 		else {eManager->stopSound("walking");}
 
-		// if (collectionEvent()) {
-		// 	cout << "collection event triggered" << endl;
-		// 	eManager->triggerSound("collection");
-		// }
-		// else {eManager->stopSound("collection");}
+		if (collectionEvent()) {
+			cout << "collection event triggered" << endl;
+			eManager->triggerSound("collection");
+		}
+		else {eManager->stopSound("collection");}
 
 
 	}

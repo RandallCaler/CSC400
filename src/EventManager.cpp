@@ -4,7 +4,7 @@ Event::Event(const char* sp, ma_engine *en, bool loop){
     soundPath = sp;
     engine = en;
     ma_result result = ma_sound_init_from_file(engine, soundPath, 0, NULL, NULL, &sound);
-    cout << "INIT SOUND : " << (result == MA_SUCCESS) << endl;
+    // cout << "INIT SOUND : " << (result == MA_SUCCESS) << endl;
     looping = loop;
     
 }
@@ -35,7 +35,7 @@ EventManager::EventManager(){
 
 void EventManager::triggerSound(string id){
     if (eventHistory->at(id) == false){
-        cout << "confirmed that walking is false, setting to true" << endl;
+       // cout << "confirmed that walking is false, setting to true" << endl;
         eventHistory->insert_or_assign(id, true);
         events.at(id)->startSound();
     }

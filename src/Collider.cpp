@@ -291,9 +291,8 @@ glm::vec4 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<
             if (newCPlane != glm::vec4(0)) {
                 if (e->collider->collectible) {
                     // placeholder collectible response - should activate boid behavior
+                    cout << "COLLECTIBLE" << endl;
                     e->position.y += 100;
-                    // set flag for sound to check
-                    //collected = true;
                 }
                 else {
                     colliding = true;

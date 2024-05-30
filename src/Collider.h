@@ -40,7 +40,6 @@ public:
     void SetEntityID(int ID);
     void SetGround(glm::vec3 origin, glm::vec3 scale) { ground.origin = origin; ground.scale = scale; };
     bool IsColliding();
-    // bool IsCollected();
     float distanceOnSeparationAxis(glm::vec3 T, glm::vec3 L, glm::vec3 dimA, glm::vec3 dimB, glm::mat4 rotA, glm::mat4 rotB);
     glm::vec4 checkOpposingPlanes(glm::vec3 normal, glm::vec3 pointP, glm::vec3 pointN);
     glm::vec4 getCollisionPlane(glm::vec3 bbScale, glm::mat4 rot, std::shared_ptr<Entity> other);
@@ -60,7 +59,6 @@ private:
     Entity* owner;
     float radial;
     bool colliding = false;
-    // bool collected = false;
 
 };
 
