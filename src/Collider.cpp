@@ -168,7 +168,7 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
     glm::vec3 Bz = glm::vec3(BRot * glm::vec4(0,0,1,1));
 
     // scale bounding boxes to world space
-    float scalefactor1 = 1.0 / ((std::max)(owner->model->max.x - owner->model->min.x,
+    float scalefactor1 = 1.0 / std::max(std::max(owner->model->max.x - owner->model->min.x,
             owner->model->max.y - owner->model->min.y), 
             owner->model->max.z - owner->model->min.z);
     glm::vec3 sv1 = owner->scaleVec * 
