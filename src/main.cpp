@@ -242,6 +242,10 @@ public:
 			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_PRESS)){
 				ih.inputStates[5] = 1;
 			}
+
+			if (key == GLFW_KEY_C && (action == GLFW_PRESS)) {
+				player->sliding = true;
+			}
 	
 			if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -271,6 +275,10 @@ public:
 
 			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_RELEASE)){
 				ih.inputStates[5] = 0;
+			}
+
+			if (key == GLFW_KEY_C && (action == GLFW_RELEASE)) {
+				player->sliding = false;
 			}
 			
 			if (key == GLFW_KEY_F1 && action == GLFW_RELEASE) {

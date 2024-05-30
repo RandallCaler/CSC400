@@ -112,6 +112,7 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
         groundHeight = groundHeight0;
     }
 
+    // printf("%.3f\t", m.upwardSpeed);
     // FALLING physics
     if (gliding == true) {
         m.upwardSpeed = std::max(m.upwardSpeed + (GRAVITY - AIR_RESISTANCE) * deltaTime, -3.0f);
@@ -119,6 +120,7 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
     else {
         m.upwardSpeed += GRAVITY * deltaTime;
     }
+    // printf("+ %.3f * %.3f -> %.3f\t", GRAVITY, deltaTime, m.upwardSpeed);
     position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
 
     if (position.y > groundHeight + entityHeight + 0.1) {
@@ -140,36 +142,30 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
         // handle gravity response when colliding with y planes
         // binary response: the player is on a standing surface and is grounded, or is not and will slide off it
 
-        // if (collisionPlane.y + EPSILON > 0 && true) {
-        //     grounded = true;
-        //     gliding = false;
-        //     vec3 down = vec3(0,GRAVITY,0);
-        //     vec3 a = down - collisionPlane * dot(collisionPlane, down);
-
-            
-
-        //     printf("%.3f %.3f %.3f \n", a.x, a.y, a.z);
-        //     // add velocity forward
-        //     m.curSpeed += length(vec2(a.x, a.z)) * deltaTime;
-        //     // add velocity upward
-        //     m.upwardSpeed += a.y * deltaTime;
-        //     printf("%.3f \n", m.upwardSpeed);
-        // }
-        if (collisionPlane.y + EPSILON > length(vec2(collisionPlane.x, collisionPlane.z))) {
+        // stand on top face
+        if (!sliding && collisionPlane.y + EPSILON > length(vec2(collisionPlane.x, collisionPlane.z))) {
             grounded = true;
             gliding = false;
             m.upwardSpeed = std::max(0.0f, m.upwardSpeed);
         }
 
+        // bounce off bottom face
         if (collisionPlane.y - EPSILON < -length(vec2(collisionPlane.x, collisionPlane.z))) {
             m.upwardSpeed = std::min(0.0f, m.upwardSpeed);
         }
 
+        // acquire new position along bounding box face
         vec3 delta = position - oldPosition;
         position = oldPosition;
         float fP = abs(dot(delta, collisionPlane));
-        if (position.y > groundHeight + entityHeight) {
-            position += delta + collisionPlane * fP;
+        position += delta + collisionPlane * fP;
+        if (position.y < groundHeight + entityHeight) {
+            position = oldPosition;
+        }
+
+        if (collisionPlane.y > 0 && (sliding || collisionPlane.y + EPSILON < length(vec2(collisionPlane.x, collisionPlane.z)))) {
+            m.upwardSpeed -= GRAVITY * deltaTime * (collisionPlane.y * collisionPlane.y);
+            printf("%.3f\n", m.upwardSpeed);
         }
     }
 }
