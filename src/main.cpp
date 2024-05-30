@@ -458,10 +458,10 @@ public:
 			//return -1;
 		}
 
-		Event *walkingEv = new Event("../resources/walking-grass.mp3", &walkingEngine);
+		Event *walkingEv = new Event("../resources/walking-grass.mp3", &walkingEngine, true);
 		eManager->events.insert_or_assign("walking", walkingEv);
 
-		Event *collectionEv = new Event("../resources/collect3.mp3", &collectionEngine);
+		Event *collectionEv = new Event("../resources/collect3.mp3", &collectionEngine, false);
 		eManager->events.insert_or_assign("collection", collectionEv);
 
 		//return 0;
@@ -864,9 +864,9 @@ public:
 	}
 	
 	bool collectionEvent(){
-		if (player->collider->IsCollected()){
-			return true;
-		}
+		// if (player->collider->IsCollected()){
+		// 	return true;
+		// }
 		return false;
 	}
 	
@@ -878,11 +878,11 @@ public:
 		}
 		else {eManager->stopSound("walking");}
 
-		if (collectionEvent()) {
-			cout << "collection event triggered" << endl;
-			eManager->triggerSound("collection");
-		}
-		else {eManager->stopSound("collection");}
+		// if (collectionEvent()) {
+		// 	cout << "collection event triggered" << endl;
+		// 	eManager->triggerSound("collection");
+		// }
+		// else {eManager->stopSound("collection");}
 
 
 	}
@@ -972,7 +972,7 @@ int main(int argc, char *argv[]) {
 	application->initSoundEngines();
 
 
-	Event *ev = new Event("../resources/cute-world.mp3", &engine);
+	Event *ev = new Event("../resources/cute-world.mp3", &engine, true);
 	ev->startSound();
 
 	float dt = 1 / 60.0;

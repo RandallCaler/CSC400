@@ -25,7 +25,7 @@ useful mini audio advice
 class Event {
     // is it continuous (holding down key) or is it press-release
     public: 
-        bool continuous;
+        bool looping;
         bool activated;
         const char *soundPath;
         int weight;
@@ -33,7 +33,7 @@ class Event {
         ma_sound sound;
         int id; // each event should have a different ID so that the event manager will not repeat the sound play
 
-        Event(const char *sp, ma_engine *en);
+        Event(const char *sp, ma_engine *en, bool looping);
         Event();
         // void initSound();
         void startSound();

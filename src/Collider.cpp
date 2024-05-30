@@ -293,7 +293,7 @@ glm::vec4 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<
                     // placeholder collectible response - should activate boid behavior
                     e->position.y += 100;
                     // set flag for sound to check
-                    collected = true;
+                    //collected = true;
                 }
                 else {
                     colliding = true;
@@ -324,9 +324,9 @@ float Collider::GetRadial(){
     return radial;
 }
 
-bool Collider::IsCollected(){
-    return collected;
-}
+// bool Collider::IsCollected(){
+//     return collected;
+// }
 
 void Collider::CalculateBoundingBox(glm::mat4 modelMatrix) {
     glm::vec3 vertices[8] = {
