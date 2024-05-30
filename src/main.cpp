@@ -95,7 +95,7 @@ public:
 	LevelEditor* leGUI = new LevelEditor();
 
 	InputHandler ih;
-	
+	int collisionSounds[1];
 
 	Entity bf1 = Entity();
 	Entity bf2 = Entity();
@@ -730,7 +730,7 @@ public:
 
 			if (entity->collider) {
 				if (entity->id == player->id) {
-					entity->updateMotion(deltaTime, hmap, collidables);
+					entity->updateMotion(deltaTime, hmap, collidables, collisionSounds);
 				}
 			}
 	
@@ -864,7 +864,7 @@ public:
 	}
 	
 	bool collectionEvent(){
-		return (false);
+		return (collisionSounds[0] == 1);
 	}
 	
 	
@@ -879,6 +879,7 @@ public:
 			cout << "collection event triggered" << endl;
 			eManager->triggerSound("collection");
 		}
+		// have to rework to trigger sound for certain amount of time and then stop
 		else {eManager->stopSound("collection");}
 
 

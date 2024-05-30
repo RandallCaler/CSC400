@@ -272,7 +272,7 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
     return glm::vec4(0);
 }
 
-glm::vec4 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<Entity>>& entities)
+glm::vec4 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<Entity>>& entities, int *collisionSounds)
 {
     glm::vec4 collisionPlane = vec4(0);
     colliding = false;
@@ -292,6 +292,7 @@ glm::vec4 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<
                 if (e->collider->collectible) {
                     // placeholder collectible response - should activate boid behavior
                     cout << "COLLECTIBLE" << endl;
+                    collisionSounds[0] = 1;
                     e->position.y += 100;
                 }
                 else {

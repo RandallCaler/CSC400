@@ -33,7 +33,7 @@ class Entity {
 public:
     Entity();
 
-    void updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList);
+    void updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList, int *collisionSounds);
 
     glm::mat4 generateModel();
 

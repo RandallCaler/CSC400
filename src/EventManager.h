@@ -14,7 +14,6 @@ using namespace std;
 useful mini audio advice 
 
 - Use ma_sound_seek_to_pcm_frame(&sound, 0) to seek back to the start of a sound
-
 - ma_engine_listener_set_position(&engine, listenerIndex, worldPosX, worldPosY, worldPosZ);
 - ma_engine_listener_set_direction(&engine, listenerIndex, forwardX, forwardY, forwardZ);
 - ma_engine_listener_set_world_up(&engine, listenerIndex, 0, 1, 0);
@@ -23,7 +22,6 @@ useful mini audio advice
 */
 
 class Event {
-    // is it continuous (holding down key) or is it press-release
     public: 
         bool looping;
         bool activated;
@@ -35,23 +33,14 @@ class Event {
 
         Event(const char *sp, ma_engine *en, bool looping);
         Event();
-        // void initSound();
         void startSound();
         void stopSound();
-
-        // // redefine the comparison attribute so events with higher priority play first
-        // bool operator<(const Event& other) const {
-        //     return weight > other.weight;
-        // }
 };
 
 class EventManager {
     // 1. have a buffer of two histories 2 index array 
     // each event has an event buffer, where did things true 1 
     // check if things change between render calls
-
-    // take in when things should play
-    // lambda function that check conidtions, pass boolean to event manager to determine whihch event to call
 
     public:
         EventManager();
