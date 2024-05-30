@@ -76,6 +76,10 @@
         "queue": "cpp",
         "cstdarg": "cpp",
         "functional": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "any": "cpp",
+        "codecvt": "cpp",
+        "numeric": "cpp",
+        "valarray": "cpp"
     }
 }
