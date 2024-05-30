@@ -18,7 +18,9 @@ InputHandler::~InputHandler() {
 
 void InputHandler::handleInput(Entity* penguin, Camera* cam, float deltaTime) {
     float distance;
-    penguin->m.curSpeed = 0.0;
+    if (!penguin->sliding) {
+        penguin->m.curSpeed = 0.0;
+    }
     std::queue<int> q;
     std::vector<float> angles;
 
