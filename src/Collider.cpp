@@ -296,6 +296,7 @@ glm::vec4 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<
                     e->position.y += 100;
                 }
                 else {
+                    collisionSounds[0] = 0;
                     colliding = true;
                 }
             }

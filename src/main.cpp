@@ -459,10 +459,10 @@ public:
 			//return -1;
 		}
 
-		Event *walkingEv = new Event("../resources/walking-grass.mp3", &walkingEngine, true);
+		Event *walkingEv = new Event("../resources/walking-grass.mp3", &walkingEngine, true, "walking");
 		eManager->events.insert_or_assign("walking", walkingEv);
 
-		Event *collectionEv = new Event("../resources/collect3.mp3", &collectionEngine, false);
+		Event *collectionEv = new Event("../resources/collect2-short.mp3", &collectionEngine, false, "collection");
 		eManager->events.insert_or_assign("collection", collectionEv);
 
 		//return 0;
@@ -864,7 +864,7 @@ public:
 	}
 	
 	bool collectionEvent(){
-		return (collisionSounds[0] == 1);
+		return (collisionSounds[0] == 1 && eManager->eventHistory->at("collection") == false);
 	}
 	
 	
@@ -873,14 +873,20 @@ public:
 			//cout << "walking event triggered" << endl;
 			eManager->triggerSound("walking");
 		}
-		else {eManager->stopSound("walking");}
+		else {
+			//cout << "stopping sound walking" << endl;
+			eManager->stoppingSound("walking");}
 
 		if (collectionEvent()) {
-			cout << "collection event triggered" << endl;
+			cout << "collection event triggered, starting sound" << endl;
 			eManager->triggerSound("collection");
+			// collisionSounds[0] == 0;
 		}
 		// have to rework to trigger sound for certain amount of time and then stop
-		else {eManager->stopSound("collection");}
+		else {
+			//cout << "stopping sound collection" << endl;
+			eManager->stoppingSound("collection");
+		}
 
 
 	}
@@ -970,7 +976,7 @@ int main(int argc, char *argv[]) {
 	application->initSoundEngines();
 
 
-	Event *ev = new Event("../resources/cute-world.mp3", &engine, true);
+	Event *ev = new Event("../resources/french-mood.mp3", &engine, true, "background");
 	ev->startSound();
 
 	float dt = 1 / 60.0;

@@ -12,6 +12,7 @@ using namespace std;
 /*
 
 useful mini audio advice 
+ma_sound_set_volume()
 
 - Use ma_sound_seek_to_pcm_frame(&sound, 0) to seek back to the start of a sound
 - ma_engine_listener_set_position(&engine, listenerIndex, worldPosX, worldPosY, worldPosZ);
@@ -24,17 +25,19 @@ useful mini audio advice
 class Event {
     public: 
         bool looping;
-        bool activated;
         const char *soundPath;
-        int weight;
+        ma_uint64 soundDuration;
+        ma_uint64 startTime;
         ma_engine *engine;
         ma_sound sound;
-        int id; // each event should have a different ID so that the event manager will not repeat the sound play
+        string id; // each event should have a different ID so that the event manager will not repeat the sound play
 
-        Event(const char *sp, ma_engine *en, bool looping);
+        Event(const char *sp, ma_engine *en, bool looping, string id);
         Event();
         void startSound();
         void stopSound();
+        void rewindSound();
+        bool isPlaying();
 };
 
 class EventManager {
@@ -45,7 +48,7 @@ class EventManager {
     public:
         EventManager();
         void triggerSound(string id);
-        void stopSound(string id);
+        void stoppingSound(string id);
         void addEvent(Event e);
     // void addEvent();
 
