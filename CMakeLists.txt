@@ -41,10 +41,10 @@ if(NOT WIN32)
   add_compile_options("-pedantic")
   add_compile_options("-Werror=return-type")
 
-  # TODO: The following links may be uneeded.
+  # Link the appropriate libraries
   if(APPLE)
-    # Add required frameworks for GLFW.
-    target_link_libraries(${CMAKE_PROJECT_NAME} "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
+    # Add required frameworks for GLFW and CoreAudio
+    target_link_libraries(${CMAKE_PROJECT_NAME} "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo" "-framework AudioToolbox" "-framework CoreAudio")
   else()
     # Link the Linux OpenGL library
     target_link_libraries(${CMAKE_PROJECT_NAME} "GL" "dl")
