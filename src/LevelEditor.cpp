@@ -126,12 +126,12 @@ void LevelEditor::EntityList()
             const bool was_selected = (previous_name == name);
 
             // Automatically collapse the previously selected node when a new one is selected
-            if (cur_name != name && (was_selected || !isInspectorOpen)) {
+            if (cur_name != name && (was_selected || !isInspectorOpen || mouseSelected)) {
                 ImGui::SetNextItemOpen(false);
+                mouseSelected = false;
             }
 
             if (ImGui::TreeNodeEx(name.c_str(), (is_selected ? ImGuiTreeNodeFlags_Selected : 0))) {
-                cout << "clicked" << endl;
                 if (cur_name != name) {
                     previous_name = cur_name;  // Update the previous name
                     cur_name = name;  // Update the current name
@@ -140,6 +140,8 @@ void LevelEditor::EntityList()
                     selected_mesh = nullptr;
                     isInspectorOpen = true;
                     cout << "Entity selected: " << name << endl;
+
+                    ImGui::SetScrollHereY();
                 }
 
                 ImGui::Indent(20.0f);
@@ -409,6 +411,7 @@ void LevelEditor::Shutdown() {
 
 void LevelEditor::setCurName(string name)
 {
+    mouseSelected = true;
     cur_name = name;
 }
 

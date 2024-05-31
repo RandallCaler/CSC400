@@ -55,7 +55,7 @@ map<string, shared_ptr<Entity>> worldentities;
 vector<string> tagList = { "" };
 vector<shared_ptr<Entity>> collidables;
 
-shared_ptr<Entity> cur_entity = NULL;
+shared_ptr<Entity> cur_entity = nullptr;
 
 float deltaTime;
 
@@ -191,7 +191,7 @@ public:
 						levelEditor->saveToFile(WORLD_FILE_NAME);
 						break;
 					case GLFW_KEY_F:
-						if (cur_entity != NULL) {
+						if (cur_entity) {
 							freeCam.cameraPos = cur_entity->position + vec3(0,2,2);
 							freeCam.pitch = atan((freeCam.cameraPos.z - cur_entity->position.z) /
 								(freeCam.cameraPos.y - cur_entity->position.y));
