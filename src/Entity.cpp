@@ -23,10 +23,9 @@ Entity::Entity() {
     id = NEXT_ID++;
     defaultShaderName = "";
 
-    //generate color for color picking based on entity id
-    int r = ((id * 10) & 0x000000FF) >> 0;
-    int g = ((id * 10) & 0x0000FF00) >> 8;
-    int b = ((id * 10) & 0x00FF0000) >> 16;
+    int r = (id * 137) % 256;  // Using a larger multiplier for more spread
+    int g = (id * 149) % 256;  // Different multipliers for each color component
+    int b = (id * 163) % 256;
 
     // set diffuse mats, converting from [0,255]i to [0,1]f
     color em = { r / 255.0f, g / 255.0f, b / 255.0f };

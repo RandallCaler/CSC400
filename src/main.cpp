@@ -363,10 +363,19 @@ public:
 		cout << "r: " << +data[0] << "   g: " << +data[1] << "   b: " << +data[2] << endl;
 
 		// convert color to entity id
-		int pickedID = 
-			data[0]/10 + 
-			data[1]/10 * 256 +
-			data[2]/10 * 256*256;
+		int pickedID = -1;
+
+		// Iterate through all possible IDs to find the one that matches the color
+		for (int testID = 0; testID < Entity::NEXT_ID; ++testID) {
+			int r = (testID * 137) % 256;
+			int g = (testID * 149) % 256;
+			int b = (testID * 163) % 256;
+
+			if (r == data[0] && g == data[1] && b == data[2]) {
+				pickedID = testID;
+				break;
+			}
+		}
 
 		cout << "pickedId = " << pickedID << endl;
 		
@@ -860,11 +869,9 @@ public:
 		Projection->popMatrix();
 
 		// editor mode 
-		if (editMode) {
-			leGUI->NewFrame();
-			leGUI->Update();
-			leGUI->Render();
-		}
+		leGUI->NewFrame();
+		leGUI->Update();
+		leGUI->Render();
 	}
 
 	
