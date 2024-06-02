@@ -110,7 +110,6 @@ void LevelEditor::EntityList()
 {
     ImGui::Begin("Entity List"); // Begin ImGui window
 
-    static string previous_name = "";
     static string selected_mesh_name = "";
     static Mesh* selected_mesh = nullptr;
     static bool isMeshInspectorOpen = true;
@@ -123,23 +122,28 @@ void LevelEditor::EntityList()
         for (const auto& pair : worldentities) {  
             const string& name = pair.first;
             bool is_selected = (cur_name == name);
-            const bool was_selected = (previous_name == name);
 
             // Automatically collapse the previously selected node when a new one is selected
-            if (cur_name != name && (was_selected || !isInspectorOpen)) {
-                ImGui::SetNextItemOpen(false);
+            if (cur_name != name) {
+                ImGui::SetNextItemOpen(false);             
+            }
+            else {
+                ImGui::SetNextItemOpen(true);
+                if (mouseSelected) {
+                    isInspectorOpen = true;
+                    mouseSelected = false;
+                }
             }
 
             if (ImGui::TreeNodeEx(name.c_str(), (is_selected ? ImGuiTreeNodeFlags_Selected : 0))) {
-                cout << "clicked" << endl;
                 if (cur_name != name) {
-                    previous_name = cur_name;  // Update the previous name
-                    cur_name = name;  // Update the current name
-                    cout << previous_name << endl;
-                    selected_mesh_name = ""; // Deselect mesh
+                    cur_name = name;
+                    selected_mesh_name = "";
                     selected_mesh = nullptr;
                     isInspectorOpen = true;
                     cout << "Entity selected: " << name << endl;
+
+                    ImGui::SetScrollHereY();
                 }
 
                 ImGui::Indent(20.0f);
@@ -169,7 +173,6 @@ void LevelEditor::EntityList()
                 cout << "Entity deleted: " << name << endl;
                 worldentities.erase(cur_name);
                 cur_name = "";
-                previous_name = "";
                 selected_mesh_name = "";
                 selected_mesh = nullptr;
                 break; // Break the loop as the iterator is invalidated after erasure
@@ -409,6 +412,7 @@ void LevelEditor::Shutdown() {
 
 void LevelEditor::setCurName(string name)
 {
+    mouseSelected = true;
     cur_name = name;
 }
 

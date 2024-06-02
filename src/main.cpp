@@ -55,7 +55,7 @@ map<string, shared_ptr<Entity>> worldentities;
 vector<string> tagList = { "" };
 vector<shared_ptr<Entity>> collidables;
 
-shared_ptr<Entity> cur_entity = NULL;
+shared_ptr<Entity> cur_entity = nullptr;
 
 float deltaTime;
 
@@ -191,7 +191,7 @@ public:
 						levelEditor->saveToFile(WORLD_FILE_NAME);
 						break;
 					case GLFW_KEY_F:
-						if (cur_entity != NULL) {
+						if (cur_entity) {
 							freeCam.cameraPos = cur_entity->position + vec3(0,2,2);
 							freeCam.pitch = atan((freeCam.cameraPos.z - cur_entity->position.z) /
 								(freeCam.cameraPos.y - cur_entity->position.y));
@@ -363,10 +363,19 @@ public:
 		cout << "r: " << +data[0] << "   g: " << +data[1] << "   b: " << +data[2] << endl;
 
 		// convert color to entity id
-		int pickedID = 
-			data[0]/10 + 
-			data[1]/10 * 256 +
-			data[2]/10 * 256*256;
+		int pickedID = -1;
+
+		// Iterate through all possible IDs to find the one that matches the color
+		for (int testID = 0; testID < Entity::NEXT_ID; ++testID) {
+			int r = (testID * 137) % 256;
+			int g = (testID * 149) % 256;
+			int b = (testID * 163) % 256;
+
+			if (r == data[0] && g == data[1] && b == data[2]) {
+				pickedID = testID;
+				break;
+			}
+		}
 
 		cout << "pickedId = " << pickedID << endl;
 		
@@ -860,11 +869,9 @@ public:
 		Projection->popMatrix();
 
 		// editor mode 
-		if (editMode) {
-			leGUI->NewFrame();
-			leGUI->Update();
-			leGUI->Render();
-		}
+		leGUI->NewFrame();
+		leGUI->Update();
+		leGUI->Render();
 	}
 
 	
