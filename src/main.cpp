@@ -89,7 +89,7 @@ public:
 	shared_ptr<Program> DebugProg;
 
 	bool DEBUG_LIGHT = false;
-	bool GEOM_DEBUG = true;
+	bool GEOM_DEBUG = false;
 	bool SHADOW = true;
 
 
@@ -644,7 +644,7 @@ public:
 
 
 	mat4 SetOrthoMatrix(shared_ptr<Program> curShade) {
-		mat4 ortho = glm::ortho(-15.0, 15.0, -15.0, 15.0, 0.1, 20.0);
+		mat4 ortho = glm::ortho(-150.0, 150.0, -150.0, 150.0, 0.1, 200.0);
 
 		glUniformMatrix4fv(curShade->getUniform("LP"), 1, GL_FALSE, value_ptr(ortho));
 		return ortho;

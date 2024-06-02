@@ -70,9 +70,12 @@ float TestShadow(vec4 LSfPos) {
   float depth = texture(shadowDepth, fLS.xy).r;
 
 	//3: compare to the current depth (.z) of the projected depth
-  if (fLS.z > depth + depth_buffer)
+  /*if (fLS.z > depth + depth_buffer)
     return 1.0;
-  return 0.0;
+  return 0.0;*/
+
+  return fLS.z;
+
 
 	//4: return 1 if the point is shadowed
 
@@ -112,7 +115,8 @@ void main() {
 
 	Shade = TestShadow(in_struct.fPosLS);
 
-	Outcolor = amb*(baseColor) + baseColor; //(1.0-Shade)*
+	Outcolor = amb*(baseColor) + (1.0-Shade)*baseColor; //
+	Outcolor = vec4(Shade);
 	
 }
 
