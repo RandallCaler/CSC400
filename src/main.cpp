@@ -377,7 +377,7 @@ public:
 			}
 		}
 
-		cout << "pickedId = " << pickedID << endl;
+		//cout << "pickedId = " << pickedID << endl;
 		
 		// find the entity with that id (if an entity was clicked) and set as active
 		map<string, shared_ptr<Entity>>::iterator i;
