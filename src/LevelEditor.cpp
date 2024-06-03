@@ -109,6 +109,8 @@ void LevelEditor::ModelList() {
 void LevelEditor::EntityList()
 {
     ImGui::Begin("Entity List"); // Begin ImGui window
+    static char filter_name[256] = "";
+    ImGui::InputText("##filter_name", filter_name, IM_ARRAYSIZE(filter_name));
 
     static string selected_mesh_name = "";
     static Mesh* selected_mesh = nullptr;
@@ -121,6 +123,11 @@ void LevelEditor::EntityList()
     else {
         for (const auto& pair : worldentities) {  
             const string& name = pair.first;
+
+            if (strlen(filter_name) > 0 && name.find(filter_name) == string::npos) {
+                continue;
+            }
+
             bool is_selected = (cur_name == name);
 
             // Automatically collapse the previously selected node when a new one is selected
