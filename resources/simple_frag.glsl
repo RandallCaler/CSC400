@@ -61,21 +61,18 @@ vec3 F (vec3 F0, vec3 V, vec3 N) {
 float TestShadow(vec4 LSfPos) {
 
   //0.005 * tan (acos(nDotl)) is better/more precise
-  float depth_buffer = 0.009;
+  float depth_buffer_factor = 0.980;
 
 	//1: shift the coordinates from -1, 1 to 0, 1
-  vec3 fLS = (vec3(LSfPos) + vec3(1.0)) * 0.5;
+  vec3 fLS = (vec3(LSfPos) + 1) / 2;
 
 	//2: read off the stored depth (.) from the ShadowDepth, using the shifted.xy 
   float depth = texture(shadowDepth, fLS.xy).r;
 
 	//3: compare to the current depth (.z) of the projected depth
-  /*if (fLS.z > depth + depth_buffer)
+  if (fLS.z * depth_buffer_factor > depth)
     return 1.0;
-  return 0.0;*/
-
-  return fLS.z;
-
+  return 0.0;
 
 	//4: return 1 if the point is shadowed
 
@@ -115,8 +112,9 @@ void main() {
 
 	Shade = TestShadow(in_struct.fPosLS);
 
-	Outcolor = amb*(baseColor) + (1.0-Shade)*baseColor; //
-	Outcolor = vec4(Shade);
+	//Outcolor = vec4(vec3(Shade), 1.0);
+	//Outcolor = vec4(vec3(1.0-Shade), 1.0);
+	Outcolor = amb*(baseColor) + (1.0-Shade)*baseColor;
 	
 }
 

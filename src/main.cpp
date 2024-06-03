@@ -89,17 +89,17 @@ public:
 	shared_ptr<Program> DebugProg;
 
 	bool DEBUG_LIGHT = false;
-	bool GEOM_DEBUG = false;
+	bool GEOM_DEBUG = true;
 	bool SHADOW = true;
 
 
 	GLuint depthMapFBO;
-	const GLuint S_WIDTH = 1024, S_HEIGHT = 1024;
+	const GLuint S_WIDTH = 4096, S_HEIGHT = 4096;
 	GLuint depthMap;
 	GLuint quad_vertexbuffer;
 	 GLuint quad_VertexArrayID;
 
-	vec3 light_vec = vec3(3, 5, 5);
+	vec3 light_vec = normalize(vec3(3, 5, 5));
   
 	LevelEditor* leGUI = new LevelEditor();
 
@@ -421,8 +421,6 @@ public:
 		DepthProg->init();
 		DepthProg->addUniform("LP");
 		DepthProg->addUniform("LV");
-		DepthProg->addUniform("P");
-		DepthProg->addUniform("V");
 		DepthProg->addUniform("M");
 		DepthProg->addUniform("Texture0");
 		DepthProg->addAttribute("vertPos");
@@ -644,7 +642,7 @@ public:
 
 
 	mat4 SetOrthoMatrix(shared_ptr<Program> curShade) {
-		mat4 ortho = glm::ortho(-150.0, 150.0, -150.0, 150.0, 0.1, 200.0);
+		mat4 ortho = glm::ortho(-150.0, 150.0, -150.0, 150.0, 25.0, 75.0);
 
 		glUniformMatrix4fv(curShade->getUniform("LP"), 1, GL_FALSE, value_ptr(ortho));
 		return ortho;
@@ -659,39 +657,24 @@ public:
 	}
 
 
-	void drawShadowMap() {
+	void drawShadowMap(mat4 LSpace) {
+		auto Model = make_shared<MatrixStack>();
 
-		// BRDFmaterial imported from save file
-		//shaders["skybox"]->prog->setVerbose(false);
 		map<string, shared_ptr<Entity>>::iterator i;
 
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 			entity->generateModel();
 		}
-
+    
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
-			if (entity == worldentities["skybox"]) {
-				cout << "here" << endl;
-			}
-			else {
+			if (entity != worldentities["skybox"]) {
+				glUniformMatrix4fv(DepthProg->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
+		
 				entity->model->Draw(DepthProg);
 			}
-			
-
-			
-			//for (int i = 0; i < entity->objs.size(); i++) {	
-			//	entity->objs[i]->draw(DepthProg);
-			//}
 		}
-
-		/*bounds = std::sqrt(   //update cat's distance from skybox
-			cam.player_pos[0] * cam.player_pos[0]
-			+ cam.player_pos[2] * cam.player_pos[2]
-		);*/
-
-		// Pop matrix stacks.
 	}
 
 
@@ -714,6 +697,8 @@ public:
 		activeCam->SetView(curS->prog, hmap);
 
 		// directional light
+  		glActiveTexture(GL_TEXTURE1);
+  		glBindTexture(GL_TEXTURE_2D, depthMap);
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
@@ -773,6 +758,8 @@ public:
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog, hmap);
+  		glActiveTexture(GL_TEXTURE1);
+  		glBindTexture(GL_TEXTURE_2D, depthMap);
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
@@ -803,8 +790,6 @@ public:
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog, hmap);
-	
-		//vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], player};
 
 		// BRDFmaterial imported from save file
 		map<string, shared_ptr<Entity>>::iterator i;
@@ -844,6 +829,8 @@ public:
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog, hmap);
+  		glActiveTexture(GL_TEXTURE1);
+  		glBindTexture(GL_TEXTURE_2D, depthMap);
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
@@ -896,24 +883,23 @@ public:
     	vec3 lightUp = vec3(0, 1, 0);
 		mat4 LO, LV, LSpace;
 
-		if (SHADOW) {
-			glViewport(0, 0, S_WIDTH, S_HEIGHT);
-			glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-			glClear(GL_DEPTH_BUFFER_BIT);
-			glCullFace(GL_FRONT);
+		glViewport(0, 0, S_WIDTH, S_HEIGHT);
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glCullFace(GL_FRONT);
 
-			DepthProg->bind();
-			//TODO you will need to fix these
-			LO = SetOrthoMatrix(DepthProg);
-			LV = SetLightView(DepthProg, light_vec, lightLA, lightUp);
-			drawShadowMap();
-			DepthProg->unbind();
-			glCullFace(GL_BACK);
-			// cout << "1 pass" << endl;
+		DepthProg->bind();
+		//TODO you will need to fix these
+		LO = SetOrthoMatrix(DepthProg);
+		LV = SetLightView(DepthProg, player->position + vec3(50) * light_vec, player->position, lightUp);
+		LSpace = LO*LV;
+		drawShadowMap(LSpace);
+		DepthProg->unbind();
+		glCullFace(GL_BACK);
+		// cout << "1 pass" << endl;
 
 		//this sets the output back to the screen
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		// cout << "before" << endl;
 		
 
@@ -924,9 +910,9 @@ public:
 		if (DEBUG_LIGHT) {
 			if (GEOM_DEBUG) {
 				DepthProgDebug->bind();
-				SetOrthoMatrix(DepthProgDebug);
-				SetLightView(DepthProgDebug, light_vec, lightLA, lightUp);
-				drawShadowMap();
+				LO = SetOrthoMatrix(DepthProg);
+				LV = SetLightView(DepthProg, player->position + vec3(50) * light_vec, player->position, lightUp);
+				drawShadowMap(LSpace);
 				DepthProgDebug->unbind();
 			}
 			else {
@@ -953,7 +939,6 @@ public:
 				cam.player_pos = player->position;
 			}
 		
-			LSpace = LO*LV;
 			float aspect = width/(float)height;
 			if(editMode){
 				drawEditorObjects(aspect, LSpace, frametime);
