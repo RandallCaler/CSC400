@@ -110,7 +110,7 @@ void main() {
   	//vec4 BaseColor = vec4(in_struct.vColor, 1);
   	//vec4 texColor0 = vec4(1.0, 0, 0, 1.0);
 
-	Shade = TestShadow(in_struct.fPosLS);
+	//Shade = TestShadow(in_struct.fPosLS);
 
 	Outcolor = amb*(baseColor) + baseColor; //(1.0-Shade)*
 	
