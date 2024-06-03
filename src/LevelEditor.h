@@ -55,6 +55,7 @@ class LevelEditor {
 		bool diableInput = false;
 
 	private:
+		bool mouseSelected = false;
 		string cur_name;
 		bool show_demo_window = true;
 		bool show_another_window = false;

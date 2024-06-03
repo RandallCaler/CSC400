@@ -14,7 +14,7 @@
 #define GRAVITY -18.0f
 #define AIR_RESISTANCE -14.0f
 #define EPSILON 0.0001f
-#define SLOPE_TOLERANCE 10
+#define SLOPE_TOLERANCE 3
 
 // to avoid making a separate player class, I added a few extra variables to the motion struct for the player specifically
 // however, I think they could be useful for obstacle movement as well - Claire 
@@ -33,7 +33,7 @@ class Entity {
 public:
     Entity();
 
-    void updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList);
+    void updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList, int *collisionSounds);
 
     glm::mat4 generateModel();
 
@@ -51,6 +51,7 @@ public:
     bool grounded = false;
     bool gliding = false;
     bool collidable;
+    bool sliding = false;
     string defaultShaderName;
     glm::mat4 modelMatrix;
     string tag;

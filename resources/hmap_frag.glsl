@@ -52,7 +52,11 @@ void main() {
   float intensity = max(dot(in_struct.lightDir, normalize(in_struct.fragNor)), 0);
   
   //amb*(baseColor) + (1.0-Shade)*baseColor
+<<<<<<< HEAD
   color = vec4(1.0-Shade) * BaseColor;
+=======
+  color = BaseColor;
+>>>>>>> d49306689fbdab2531b3790a43c2da9f43dad2d6
   //color = vec4(vec3(regionColor) * intensity, 1.0);
   //color = BaseColor;
 }

@@ -168,7 +168,7 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
     glm::vec3 Bz = glm::vec3(BRot * glm::vec4(0,0,1,1));
 
     // scale bounding boxes to world space
-    float scalefactor1 = 1.0/(std::max(owner->model->max.x - owner->model->min.x, 
+    float scalefactor1 = 1.0 / std::max(std::max(owner->model->max.x - owner->model->min.x,
             owner->model->max.y - owner->model->min.y), 
             owner->model->max.z - owner->model->min.z);
     glm::vec3 sv1 = owner->scaleVec * 
@@ -176,7 +176,7 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
             (owner->model->max.y - owner->model->min.y)/2*scalefactor1, 
             (owner->model->max.z - owner->model->min.z)/2*scalefactor1);
 
-    float scalefactor2 = 1.0/(std::max(other->model->max.x - other->model->min.x, 
+    float scalefactor2 = 1.0 / ((std::max)(other->model->max.x - other->model->min.x,
             other->model->max.y - other->model->min.y), 
             other->model->max.z - other->model->min.z);
     glm::vec3 sv2 = other->scaleVec * 
@@ -272,7 +272,7 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
     return glm::vec4(0);
 }
 
-glm::vec4 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<Entity>>& entities)
+glm::vec4 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<Entity>>& entities, int *collisionSounds)
 {
     glm::vec4 collisionPlane = vec4(0);
     colliding = false;
@@ -291,9 +291,12 @@ glm::vec4 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<
             if (newCPlane != glm::vec4(0)) {
                 if (e->collider->collectible) {
                     // placeholder collectible response - should activate boid behavior
+                    cout << "COLLECTIBLE" << endl;
+                    collisionSounds[0] = 1;
                     e->position.y += 100;
                 }
                 else {
+                    collisionSounds[0] = 0;
                     colliding = true;
                 }
             }
@@ -321,6 +324,10 @@ void Collider::ExitCollision(){
 float Collider::GetRadial(){
     return radial;
 }
+
+// bool Collider::IsCollected(){
+//     return collected;
+// }
 
 void Collider::CalculateBoundingBox(glm::mat4 modelMatrix) {
     glm::vec3 vertices[8] = {

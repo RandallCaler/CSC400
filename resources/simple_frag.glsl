@@ -61,7 +61,7 @@ vec3 F (vec3 F0, vec3 V, vec3 N) {
 float TestShadow(vec4 LSfPos) {
 
   //0.005 * tan (acos(nDotl)) is better/more precise
-  float depth_buffer = 0.009;
+  float depth_buffer = 0.1;
 
 	//1: shift the coordinates from -1, 1 to 0, 1
   vec3 fLS = (vec3(LSfPos) + vec3(1.0)) * 0.5;

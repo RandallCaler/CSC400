@@ -18,7 +18,9 @@ InputHandler::~InputHandler() {
 
 void InputHandler::handleInput(Entity* penguin, Camera* cam, float deltaTime) {
     float distance;
-    penguin->m.curSpeed = 0.0;
+    if (!penguin->sliding) {
+        penguin->m.curSpeed = 0.0;
+    }
     std::queue<int> q;
     std::vector<float> angles;
 
@@ -47,21 +49,25 @@ void InputHandler::handleInput(Entity* penguin, Camera* cam, float deltaTime) {
         case 0:
             //north
             angles.push_back(0);
+            //penguin->m.curSpeed = WALK_SPEED;
             break;
         case 1:
             //west
             angles.push_back(1.57);
+            //penguin->m.curSpeed = WALK_SPEED;
             break;
         case 2:
             //south
             if (!penguin->gliding) {
                 angles.push_back(0);
+                //penguin->m.curSpeed = -WALK_SPEED;
                 backwards = true;
             }
             break;
         case 3:
             //east
             angles.push_back(-1.57);
+            //penguin->m.curSpeed = WALK_SPEED;
             break;
         case 4:
             //jump
@@ -69,8 +75,18 @@ void InputHandler::handleInput(Entity* penguin, Camera* cam, float deltaTime) {
                 penguin->m.upwardSpeed = JUMP_HEIGHT;
                 penguin->grounded = false;
             }
+            // else{
+            //     if (!penguin->gliding) {
+            //         penguin->m.upwardSpeed = 1.0;
+            //     }
+            //     penguin->gliding = true;
+            // }
             break;
         case 5:
+            // if (penguin->grounded) {
+            //     penguin->m.curSpeed = WALK_SPEED + 5;
+            // }
+
             if (!(penguin->grounded)) {
                 if (!penguin->gliding) {
                     penguin->m.upwardSpeed = 1.0;

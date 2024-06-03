@@ -55,7 +55,7 @@ map<string, shared_ptr<Entity>> worldentities;
 vector<string> tagList = { "" };
 vector<shared_ptr<Entity>> collidables;
 
-shared_ptr<Entity> cur_entity = NULL;
+shared_ptr<Entity> cur_entity = nullptr;
 
 float deltaTime;
 
@@ -64,8 +64,9 @@ Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 
 Camera freeCam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5), true);
 Camera* activeCam = &cam;
 
+// for background music, called once in main loop
 ma_engine engine;
-ma_engine walkingEngine;
+
 // Event e = Event("../resources/cute-world.mp3");
 
 class Application : public EventCallbacks
@@ -104,6 +105,7 @@ public:
 	LevelEditor* leGUI = new LevelEditor();
 
 	InputHandler ih;
+	int collisionSounds[1];
 
 	Entity bf1 = Entity();
 	Entity bf2 = Entity();
@@ -116,7 +118,7 @@ public:
 
 	std::vector<Entity> flowers;
 
-	// EventManager *eManager = new EventManager();
+	EventManager *eManager = new EventManager();
 	// Event *walking = new Event("../resources/music.mp3", &walkingEngine);
 
 
@@ -144,7 +146,10 @@ public:
 	// hmap for terrain
 	shared_ptr<Texture> hmap;
 	vec3 groundPos = vec3(0, 0, 0);
-	
+
+	ma_engine walkingEngine;
+	ma_engine collectionEngine;
+		
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -196,7 +201,7 @@ public:
 						levelEditor->saveToFile(WORLD_FILE_NAME);
 						break;
 					case GLFW_KEY_F:
-						if (cur_entity != NULL) {
+						if (cur_entity) {
 							freeCam.cameraPos = cur_entity->position + vec3(0,2,2);
 							freeCam.pitch = atan((freeCam.cameraPos.z - cur_entity->position.z) /
 								(freeCam.cameraPos.y - cur_entity->position.y));
@@ -247,8 +252,12 @@ public:
 			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_PRESS)){
 				ih.inputStates[5] = 1;
 			}
+
+			if (key == GLFW_KEY_C && (action == GLFW_PRESS)) {
+				player->sliding = true;
+			}
 	
-			if (key == GLFW_KEY_P && action == GLFW_PRESS) {
+			if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
 
@@ -276,6 +285,9 @@ public:
 
 			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_RELEASE)){
 				ih.inputStates[5] = 0;
+			}
+			if (key == GLFW_KEY_C && (action == GLFW_RELEASE)) {
+				player->sliding = false;
 			}
 			
 			if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
@@ -360,12 +372,21 @@ public:
 		cout << "r: " << +data[0] << "   g: " << +data[1] << "   b: " << +data[2] << endl;
 
 		// convert color to entity id
-		int pickedID = 
-			data[0]/10 + 
-			data[1]/10 * 256 +
-			data[2]/10 * 256*256;
+		int pickedID = -1;
 
-		cout << "pickedId = " << pickedID << endl;
+		// Iterate through all possible IDs to find the one that matches the color
+		for (int testID = 0; testID < Entity::NEXT_ID; ++testID) {
+			int r = (testID * 137) % 256;
+			int g = (testID * 149) % 256;
+			int b = (testID * 163) % 256;
+
+			if (r == data[0] && g == data[1] && b == data[2]) {
+				pickedID = testID;
+				break;
+			}
+		}
+
+		//cout << "pickedId = " << pickedID << endl;
 		
 		// find the entity with that id (if an entity was clicked) and set as active
 		map<string, shared_ptr<Entity>>::iterator i;
@@ -467,34 +488,41 @@ public:
 
 	}
 
-	int initSoundEngines(){
+	void initSoundEngines(){
 		
 		ma_result result = ma_engine_init(NULL, &engine);
 		if (result != MA_SUCCESS) {
-			printf("Failed to initialize audio engine.");
-			return -1;
+			printf("Failed to initialize BACKGROUND MUSIC audio engine.");
+			//return -1;
 		}
 
 		result = ma_engine_init(NULL, &walkingEngine);
 		if (result != MA_SUCCESS) {
-			printf("Failed to initialize audio engine.");
-			return -1;
+			printf("Failed to initialize WALKING audio engine.");
+			//return -1;
 		}
-		return 0;
+
+		result = ma_engine_init(NULL, &collectionEngine);
+		if (result != MA_SUCCESS) {
+			printf("Failed to initialize WALKING audio engine.");
+			//return -1;
+		}
+
+		Event *walkingEv = new Event("../resources/walking-grass.mp3", &walkingEngine, true, "walking");
+		eManager->events.insert_or_assign("walking", walkingEv);
+
+		Event *collectionEv = new Event("../resources/marimba-y.mp3", &collectionEngine, false, "collection");
+		eManager->events.insert_or_assign("collection", collectionEv);
+
+		//return 0;
 	}
 
 	void uninitSoundEngines(){
 		ma_engine_uninit(&engine);
 		ma_engine_uninit(&walkingEngine);
+		ma_engine_uninit(&collectionEngine);
 	}
 
-	bool walkingEvent(shared_ptr<Entity> penguin){
-		if(penguin->m.curSpeed != 0.0){
-			return true;
-		}
-		return false;
-	}
-	
 	void initGeom(const std::string& resourceDirectory)
 	{   
 		if (player) {
@@ -745,7 +773,7 @@ public:
 
 			if (entity->collider) {
 				if (entity->id == player->id) {
-					entity->updateMotion(deltaTime, hmap, collidables);
+					entity->updateMotion(deltaTime, hmap, collidables, collisionSounds);
 				}
 			}
 	
@@ -858,34 +886,34 @@ public:
 		Projection->popMatrix();
 
 		// editor mode 
-		if (editMode) {
-			leGUI->NewFrame();
-			leGUI->Update();
-			leGUI->Render();
+		leGUI->NewFrame();
+		leGUI->Update();
+		leGUI->Render();
+	}
+
+	
+	bool walkingEvent(){
+		return ((player->m.curSpeed > 0 || player->m.curSpeed < 0) && (player->grounded));
+	}
+	
+	bool collectionEvent(){
+		return (collisionSounds[0] == 1 && eManager->eventHistory->at("collection") == false);
+	}
+	
+	
+	void checkSounds(){
+		if (walkingEvent()) {eManager->triggerSound("walking");}
+		else {eManager->stoppingSound("walking");}
+
+		if (collectionEvent()) {
+			cout << "collection event triggered, starting sound" << endl;
+			eManager->triggerSound("collection");
+			// collisionSounds[0] == 0;
 		}
+		else {eManager->stoppingSound("collection");}
+
+
 	}
-
-
-	void initQuad() {
-
-	//now set up a simple quad for rendering FBO
-		glGenVertexArrays(1, &quad_VertexArrayID);
-		glBindVertexArray(quad_VertexArrayID);
-
-		static const GLfloat g_quad_vertex_buffer_data[] = {
-		-1.0f, -1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		-1.0f,  1.0f, 0.0f,
-		-1.0f,  1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		1.0f,  1.0f, 0.0f,
-		};
-
-		glGenBuffers(1, &quad_vertexbuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
-	}
-		
 
 	void render(float frametime) {
 		// Get current frame buffer size.
@@ -962,22 +990,8 @@ public:
 				drawObjects(aspect, LSpace, frametime);
 			}
 		}
-
 		
-		
-		//player->updateMotion(frametime, hmap);
-		
-
-		// if(walkingEvent(player)){
-		// 	// cout << "starting sound" << endl;
-		// 	eManager->updateSound("walking");
-		// }
-		// else{
-		// 	eManager->stopSoundM("walking");
-		// }
-
-		// cout << "2 passes" << endl;
-		
+		checkSounds();
 	}
 
 };
@@ -1015,7 +1029,7 @@ int main(int argc, char *argv[]) {
 	application->initSoundEngines();
 
 
-	Event *ev = new Event("../resources/cute-world.mp3", &engine);
+	Event *ev = new Event("../resources/french-mood.mp3", &engine, true, "background");
 	ev->startSound();
 
 	float dt = 1 / 60.0;

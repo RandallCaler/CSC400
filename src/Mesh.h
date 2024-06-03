@@ -92,7 +92,7 @@ public:
         for (size_t v = 0; v < vertices.size(); v++)
         {
             if (vertices[v].Position.x < minX) minX = vertices[v].Position.x;
-            if (v > maxX) maxX = vertices[v].Position.x;
+            if (vertices[v].Position.x > maxX) maxX = vertices[v].Position.x;
 
             if (vertices[v].Position.y < minY) minY = vertices[v].Position.y;
             if (vertices[v].Position.y > maxY) maxY = vertices[v].Position.y;
