@@ -100,7 +100,6 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
     // ground climbing
     bool climbable = grounded && (groundHeight - groundHeight0)/(std::max(EPSILON, length(vec2(deltaX, deltaZ)))) < SLOPE_TOLERANCE || 
         position.y > groundHeight + entityHeight;
-
     if (climbable || length(vec2(deltaX, deltaZ)) < EPSILON) {
         position = newPosition;
     }
