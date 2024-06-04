@@ -953,6 +953,8 @@ public:
 int main(int argc, char *argv[]) {
 	// Where the resources are loaded from
 	std::string resourceDir = "../resources";
+	int frameCount = 0;
+	float fps = 0.0f;
 
 	if (argc >= 2) {
 		resourceDir = argv[1];
@@ -990,6 +992,7 @@ int main(int argc, char *argv[]) {
 	auto lastTime = chrono::high_resolution_clock::now();
 
 	application->leGUI->Init(windowManager->getHandle());
+	float totalTime = 0.0;
 
 	// Loop until the user closes the window.
 	while (!glfwWindowShouldClose(windowManager->getHandle()))
@@ -998,12 +1001,21 @@ int main(int argc, char *argv[]) {
 		auto nextLastTime = chrono::high_resolution_clock::now();
 
 		// get time since last frame
+		frameCount++;
 		deltaTime = 
 			chrono::duration_cast<std::chrono::microseconds>(
-				chrono::high_resolution_clock::now() - lastTime)
+				nextLastTime - lastTime)
 				.count();
+		totalTime += deltaTime;
 		// convert microseconds (weird) to seconds (less weird)
+		if (totalTime > 1000000) {
+			fps = frameCount / (totalTime / 1000000);
+			frameCount = 0;
+			totalTime = 0.0;
+			std::cout << "FPS: " << static_cast<int>(fps) << std::endl;
+		}
 		deltaTime *= 0.000001;
+		
 
 		//deltaTime = glm::min(deltaTime, dt);
 
