@@ -95,7 +95,7 @@ public:
 
 
 	GLuint depthMapFBO;
-	const GLuint S_WIDTH = 4096, S_HEIGHT = 4096;
+	const GLuint S_WIDTH = 16384, S_HEIGHT = 16384;
 	GLuint depthMap;
 	GLuint quad_vertexbuffer;
 	 GLuint quad_VertexArrayID;
@@ -670,7 +670,7 @@ public:
 
 
 	mat4 SetOrthoMatrix(shared_ptr<Program> curShade) {
-		mat4 ortho = glm::ortho(-150.0, 150.0, -150.0, 150.0, 0.001, 200.0);
+		mat4 ortho = glm::ortho(-150.0, 150.0, -150.0, 150.0, 10.0, 500.0);
 
 		glUniformMatrix4fv(curShade->getUniform("LP"), 1, GL_FALSE, value_ptr(ortho));
 		return ortho;
@@ -703,6 +703,32 @@ public:
 				entity->model->Draw(DepthProg);
 			}
 		}
+		
+     	glBindVertexArray(GroundVertexArrayID);
+
+		//draw the ground plane 
+  		mat4 ctm = glm::mat4(1.0f);
+  		glUniformMatrix4fv(DepthProg->getUniform("M"), 1, GL_FALSE, value_ptr(ctm));
+  		glEnableVertexAttribArray(0);
+  		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
+  		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		
+		glEnableVertexAttribArray(1);
+  		glBindBuffer(GL_ARRAY_BUFFER, GrndNorBuffObj);
+  		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		
+		glEnableVertexAttribArray(2);
+  		glBindBuffer(GL_ARRAY_BUFFER, GrndRegionBuffObj);
+  		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		
+
+   		// draw!
+  		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
+  		glDrawElements(GL_TRIANGLES, g_GiboLen, GL_UNSIGNED_INT, 0);
+
+  		glDisableVertexAttribArray(0);
+  		glDisableVertexAttribArray(1);
+  		glDisableVertexAttribArray(2);
 	}
 
 
@@ -919,7 +945,7 @@ public:
 		DepthProg->bind();
 		//TODO you will need to fix these
 		LO = SetOrthoMatrix(DepthProg);
-		LV = SetLightView(DepthProg, player->position + vec3(50) * light_vec, player->position, lightUp);
+		LV = SetLightView(DepthProg, player->position + vec3(100) * light_vec, player->position, lightUp);
 		LSpace = LO*LV;
 		drawShadowMap(LSpace);
 		DepthProg->unbind();
@@ -939,7 +965,7 @@ public:
 			if (GEOM_DEBUG) {
 				DepthProgDebug->bind();
 				LO = SetOrthoMatrix(DepthProg);
-				LV = SetLightView(DepthProg, player->position + vec3(50) * light_vec, player->position, lightUp);
+				LV = SetLightView(DepthProg, player->position + vec3(100) * light_vec, player->position, lightUp);
 				drawShadowMap(LSpace);
 				DepthProgDebug->unbind();
 			}
