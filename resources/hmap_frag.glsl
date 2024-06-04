@@ -28,6 +28,10 @@ float TestShadow(vec4 LSfPos) {
   //0.005 * tan (acos(nDotl)) is better/more precise
   float depth_buffer = 0.0009;
 
+  if (LSfPos.x > 1 || LSfPos.x < -1 || LSfPos.y > 1 || LSfPos.y < -1) {
+    return 0.0;
+  }
+
 	//1: shift the coordinates from -1, 1 to 0, 1
   vec3 fLS = (vec3(LSfPos) + vec3(1.0)) * 0.5;
 
@@ -36,7 +40,7 @@ float TestShadow(vec4 LSfPos) {
 
   for (int i = 0; i < 10; i++) {
     for (int j = 0; j < 10; j++) {
-      in_shadow = texture(shadowDepth, (fLS.xy + (vec2(offset[i], offset[j])/512.0))).r;
+      in_shadow = texture(shadowDepth, (fLS.xy + (vec2(offset[i], offset[j])/16384.0))).r;
       if (fLS.z > in_shadow + depth_buffer)
         count += 1;
     }
