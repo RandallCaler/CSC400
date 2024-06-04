@@ -16,8 +16,8 @@ out OUT_struct {
 	vec2 vTexCoord;
 	vec4 fPosLS;
 	vec3 vColor;
-    vec3 lightDir;
-    vec3 EPos;
+  vec3 lightDir;
+  vec3 EPos;
 } out_struct;
 
 void main() {

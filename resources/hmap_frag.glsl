@@ -41,9 +41,7 @@ float TestShadow(vec4 LSfPos) {
         count += 1;
     }
   }
-  if (count > 50) {
-    count += 10;
-  }
+  
   return (count)/500.0;
 
 
