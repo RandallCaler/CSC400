@@ -21,6 +21,7 @@
 #include "Camera.h"
 #include "LevelEditor.h"
 #include "EventManager.h"
+#include "GameManager.h"
 
 #include <chrono>
 #include <array>
@@ -84,6 +85,7 @@ public:
 	shared_ptr<Entity> player;
 
 	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &textureLibrary, &worldentities, &tagList, &collidables);
+	GameManager *gameManager = new GameManager();
 
 	shared_ptr<Program> DepthProg;
 	GLuint depthMapFBO;
@@ -977,6 +979,7 @@ int main(int argc, char *argv[]) {
 	// may need to initialize or set up different data and state
 
 	application->levelEditor->loadFromFile(WORLD_FILE_NAME);
+	//application->gameManager->init(application->player, worldentities);
 
 	application->init(resourceDir);
 	application->initGeom(resourceDir);
