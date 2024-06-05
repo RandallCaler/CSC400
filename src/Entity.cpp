@@ -68,25 +68,25 @@ float getHeightFromPlane(vec4 plane, vec2 pos) {
     return (plane.w - plane.x * pos.x - plane.z * pos.y) / plane.y;
 }
 
-void Entity::updateBoids(float deltaTime, vector<Entity> *boids, Entity *curBoid, Entity *penguin){
-    vec3 aSeparation = separationForce(boids, curBoid);
-    vec3 aAlignment = alignmentForce(boids, curBoid);
+void Entity::updateBoids(float deltaTime, vector<Entity> *boids, Entity *penguin){
+    vec3 aSeparation = separationForce(boids);
+    vec3 aAlignment = alignmentForce(boids);
     vec3 aLeader = penguin->position;
 
     // sample weightings that Dr. Wood provided
     vec3 accel = (1.5f)*aSeparation + (0.3f)*aAlignment + 0.2f*(aLeader);
     
-    curBoid->velocity += accel; 
-    curBoid->position += (curBoid->velocity * deltaTime); 
+    m.velocity += accel; 
+    position += (m.velocity * deltaTime); 
 }
 
-vec3 Entity::separationForce(vector<Entity> *boids, Entity *curBoid){
+vec3 Entity::separationForce(vector<Entity> *boids){
     vec3 displacement = vec3(0, 0, 0);
     vec3 diff;
 
     for (int i = 0; i < boids.size(); i++){
-        if(boids[i] != curBoid){
-            diff = boids[i].position - curBoid.position;
+        if(boids[i] != this){
+            diff = boids[i]->position - position;
             if(abs(diff)){
                 displacement -= diff;
             }
@@ -96,16 +96,16 @@ vec3 Entity::separationForce(vector<Entity> *boids, Entity *curBoid){
     return displacement;
 }
 
-vec3 Entity::alignmentForce(vector<Entity> *boids, Entity *curBoid){
+vec3 Entity::alignmentForce(vector<Entity> *boids){
     vec3 avg = vec3(0, 0, 0);
 
     for (int i = 0; i < boids.size(); i++){
-        if(boids[i] != curBoid)
-            avg += boids[i].velocity;
+        if(boids[i] != this)
+            avg += boids[i]->m.velocity;
     }
 
     avg /= (boids.size() - 1);
-    return ((avg - curBoid.velocity)/8);
+    return ((avg - m.velocity)/8);
     
 }
 
