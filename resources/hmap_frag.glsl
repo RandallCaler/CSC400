@@ -4,7 +4,7 @@ uniform sampler2D shadowDepth;
 
 
 out vec4 color;
-in vec3 regionColor;
+in vec3 fRegion;
 in vec3 fragNor;
 in float h_vert;
 
@@ -51,9 +51,10 @@ void main() {
   
   float intensity = max(dot(in_struct.lightDir, normalize(in_struct.fragNor)), 0);
   
-  //amb*(baseColor) + (1.0-Shade)*baseColor
-  color = BaseColor;
   //color = vec4(vec3(regionColor) * intensity, 1.0);
-  //color = BaseColor;
+  color = vec4(fRegion, 1);
+	float hNorm = (h_vert + 75) / 150;
+	hNorm = 1.0 - (1.0 - hNorm) * (1.0 - hNorm);
+	// color = BaseColor * vec4(clamp(vec3(hNorm), 0, 1), 1);
 }
 

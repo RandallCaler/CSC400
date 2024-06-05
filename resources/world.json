@@ -3707,7 +3707,8 @@
         "P",
         "V",
         "lightDir",
-        "shadowDepth"
+        "shadowDepth",
+        "fTime"
       ],
       "vertShader": "/hmap_vert.glsl"
     },

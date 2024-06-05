@@ -1,11 +1,12 @@
 #version  330 core
 layout(location = 0) in vec3 vertPos;
 layout(location = 1) in vec3 vertNor;
-layout(location = 2) in vec3 region;
+layout(location = 2) in float region;
 uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
 uniform mat4 LS;
+uniform float fTime;
 
 uniform vec3 lightDir;
 
@@ -18,16 +19,39 @@ out OUT_struct {
 } out_struct;
 
 out float h_vert;
-out vec3 regionColor;
+out vec3 fRegion;
 out vec3 fragNor;
 
 void main() {
-    regionColor = region;
+    if (region < 0.01) {
+        fRegion = vec3(0, 0, 0);
+    }
+    else if (region < 1.001) {
+        fRegion = vec3(1, 0, 0);
+    }
+    else if (region < 2.001) {
+        fRegion = vec3(0, 1, 0);
+    }
+    else if (region < 3.001) {
+        fRegion = vec3(0, 0, 1);
+    }
+    else {
+        fRegion = vec3(1);
+    }
+
     fragNor = vertNor;
     h_vert = vertPos.y;
 
     // complete vertex shading
+    vec3 vPos = vec3(V * M * vec4(vertPos, 1));
+    vec3 flatViewVec = normalize(vec3(vPos.x, 0.0, vPos.z));
+    float lPos = dot(vPos, flatViewVec);
     gl_Position = P * V * M * vec4(vertPos, 1);
+    float centerPosX = round(gl_Position.x / gl_Position.w * 2048) / 2048 * gl_Position.w;
+    if (lPos > 75) {
+        float mixValue = (h_vert + 75)/150;
+	    gl_Position.x = centerPosX + max(20*(1 - mixValue * mixValue) - 0.25, 0) * (centerPosX - gl_Position.x) * (lPos - 43)/64 * sin((0.5 - mixValue) * 10 * fTime);
+    }
     
 
 	/* the position in world coordinates */

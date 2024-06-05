@@ -59,6 +59,16 @@ shared_ptr<Entity> cur_entity = nullptr;
 
 float deltaTime;
 
+float planePos[] = {
+	0.0, 0.0, 
+	1.0, 0.0,
+	0.0, 1.0,
+	1.0, 1.0
+};
+float planeIdx[] = {
+	0, 2, 3, 0, 3, 1
+};
+
 // 	view pitch dist angle playerpos playerrot animate g_eye
 Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5));
 Camera freeCam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5), true);
@@ -90,6 +100,10 @@ public:
 	const GLuint S_WIDTH = 1024, S_HEIGHT = 1024;
 	GLuint depthMap;
 
+	shared_ptr<Program> mirageProg;
+	GLuint mirageFBO;
+	GLuint mirageMap;
+
 	vec3 light_vec = vec3(1.0, 2.5, 1.0);
   
 	LevelEditor* leGUI = new LevelEditor();
@@ -119,9 +133,11 @@ public:
 	// added region buffer to hold regional data (1, 2, 3 = r, g, b)
 	//global data for ground plane - direct load constant defined CPU data to GPU (not obj)
 	GLuint GrndBuffObj, GrndRegionBuffObj, GrndNorBuffObj, GrndTexBuffObj, GIndxBuffObj;
+	GLuint FBOPlaneBufObj, FBOPlaneIdxObj;
 	int g_GiboLen;
 	//ground VAO
 	GLuint GroundVertexArrayID;
+	GLuint PostProcessingFBOPlaneVAO;
   
 	vec3 strafe = vec3(1, 0, 0);
 
@@ -391,6 +407,40 @@ public:
 		}
 	}
 
+	//void initMirage() {
+	//	//generate the FBO for the shadow depth
+	//	glGenFramebuffers(1, &mirageFBO);
+
+	//	//generate the texture
+	//	glGenTextures(1, &mirageMap);
+	//	glBindTexture(GL_TEXTURE_2D, mirageMap);
+	//	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, S_WIDTH, S_HEIGHT,
+	//		0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	//	//bind with framebuffer's depth buffer
+	//	glBindFramebuffer(GL_FRAMEBUFFER, mirageFBO);
+	//	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, mirageMap, 0);
+	//	glDrawBuffer(GL_NONE);
+	//	glReadBuffer(GL_NONE);
+	//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//	glGenVertexArrays(1, &PostProcessingFBOPlaneVAO);
+	//	glBindVertexArray(PostProcessingFBOPlaneVAO);
+
+	//	glGenBuffers(1, &FBOPlaneBufObj);
+	//	glBindBuffer(GL_ARRAY_BUFFER, FBOPlaneBufObj);
+	//	glBufferData(GL_ARRAY_BUFFER, sizeof(planePos), planePos, GL_STATIC_DRAW);
+
+	//	glGenBuffers(1, &FBOPlaneIdxObj);
+	//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, FBOPlaneIdxObj);
+	//	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(planeIdx), planeIdx, GL_STATIC_DRAW);
+	//}
+
 
 	void initShadow() {
 
@@ -441,10 +491,16 @@ public:
 		DepthProg->addAttribute("vertNor");
 		DepthProg->addAttribute("vertTex");
 
+		//mirageProg = make_shared<Program>();
+		//mirageProg->setVerbose(true);
+		//mirageProg->setShaderNames(resourceDirectory + "/mirage_vert.glsl", resourceDirectory + "/mirage_frag.glsl");
+		//mirageProg->init();
+
 		hmap = make_shared<Texture>();
 		hmap->setFilename(resourceDirectory + "/hmap.png");
 		hmap->initHmap();
 		initShadow();
+		//initMirage();
 
 		for (auto ent : worldentities) {
 			if (ent.second->tag == "player") {
@@ -533,9 +589,10 @@ public:
 		for (unsigned int i = 0; i < hmap_dim.second; i++) {
 			for (unsigned int j = 0; j < hmap_dim.first; j++) {
 				bool pit;
-				float hvalr = (float)*(hmap_data + 3 * (i * hmap_dim.first + j));
-				float hvalg = (float)*(hmap_data + 3 * (i * hmap_dim.first + j) + 1);
-				float hvalb = (float)*(hmap_data + 3 * (i * hmap_dim.first + j) + 2);
+				int hvalr = *(hmap_data + 3 * (i * hmap_dim.first + j));
+				int hvalg = *(hmap_data + 3 * (i * hmap_dim.first + j) + 1);
+				int hvalb = *(hmap_data + 3 * (i * hmap_dim.first + j) + 2);
+				int hvalmax = std::max(hvalr, std::max(hvalg, hvalb));
 				float hval = (hvalr + hvalg + hvalb) / (3 * 255.0f);
 				//float hval = (std::max)(hvalr, (std::max)(hvalg, hvalb)) / 255.0f;
 				
@@ -545,9 +602,28 @@ public:
 				vertices.push_back(hval * (Y_MAX - Y_MIN) + Y_MIN);
 				vertices.push_back(i - hmap_dim.second / 2.0f);
 
-				regions.push_back((pit ? 72 : hvalr) / 255.0f);
-				regions.push_back(hvalg / 255.0f);
-				regions.push_back((pit ? 100 : hvalb) / 255.0f);
+				if (pit) {
+					regions.push_back(0);
+				}
+				else if (hvalmax == hvalr) {
+					regions.push_back(1);
+
+				}
+				else if (hvalmax == hvalg) {
+					regions.push_back(2);
+
+				}
+				else if (hvalmax == hvalb) {
+					regions.push_back(3);
+				}
+				else {
+					regions.push_back(4);
+				}
+
+
+				//regions.push_back((pit ? 72 : hvalr) / 255.0f);
+				//regions.push_back(hvalg / 255.0f);
+				//regions.push_back((pit ? 100 : hvalb) / 255.0f);
 			}
 		}
 		// hmap->freeData();
@@ -623,9 +699,8 @@ public:
 		
 		glEnableVertexAttribArray(2);
   		glBindBuffer(GL_ARRAY_BUFFER, GrndRegionBuffObj);
-  		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+  		glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
 		
-
    		// draw!
   		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
   		glDrawElements(GL_TRIANGLES, g_GiboLen, GL_UNSIGNED_INT, 0);
@@ -778,6 +853,7 @@ public:
 		activeCam->SetView(curS->prog, hmap);
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
+		glUniform1f(curS->prog->getUniform("fTime"), glfwGetTime());
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 		drawGround(curS);  //draw ground here
 
@@ -942,7 +1018,19 @@ public:
 			drawEditorObjects(aspect, LSpace, frametime);
 		}
 		else{
+
+			//glBindFramebuffer(GL_FRAMEBUFFER, mirageFBO);
+			//glViewport(0, 0, width, height);
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 			drawObjects(aspect, LSpace, frametime);
+
+			//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			//glBindVertexArray(PostProcessingFBOPlaneVAO);
+			//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, FBOPlaneIdxObj);
+			//glActiveTexture(GL_TEXTURE0);
+			//glBindTexture(GL_TEXTURE_2D, mirageMap);
+
 		}
 		
 		checkSounds();
