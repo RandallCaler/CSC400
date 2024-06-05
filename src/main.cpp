@@ -48,6 +48,7 @@ std::string resourceDir = "../resources";
 std::string WORLD_FILE_NAME = "/world.json";
 bool editMode = false;
 float editSpeed = 7.0f;
+float worldSize = 1.0f;
 
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Texture>> textureLibrary = { {"", nullptr} };
@@ -95,7 +96,7 @@ public:
 
 
 	GLuint depthMapFBO;
-	const GLuint S_WIDTH = 16384, S_HEIGHT = 16384;
+	const GLuint S_WIDTH = 4096, S_HEIGHT = 4096;
 	GLuint depthMap;
 	GLuint quad_vertexbuffer;
 	 GLuint quad_VertexArrayID;
@@ -631,10 +632,10 @@ public:
 		g_GiboLen = indices.size();
 
 		if (player) {
-			player->collider->SetGround(groundPos, vec3(1, Y_MAX - Y_MIN, 1));
+			player->collider->SetGround(worldSize * groundPos, worldSize * vec3(1, Y_MAX - Y_MIN, 1));
 		}
 		
-		cam.collider->SetGround(groundPos, vec3(1,Y_MAX-Y_MIN,1));
+		cam.collider->SetGround(worldSize * groundPos, worldSize * vec3(1,Y_MAX-Y_MIN,1));
 
       }
 	
@@ -643,7 +644,23 @@ public:
      	glBindVertexArray(GroundVertexArrayID);
 
 		//draw the ground plane 
-  		curS->setModel(groundPos, 0, 0, 0, 1);
+  		curS->setModel(worldSize * groundPos, 0, 0, 0, worldSize);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["snow"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain0"), 1);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["rock"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain1"), 2);
+		
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+
   		glEnableVertexAttribArray(0);
   		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
   		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);

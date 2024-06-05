@@ -3711,7 +3711,9 @@
         "P",
         "V",
         "lightDir",
-        "shadowDepth"
+        "shadowDepth",
+        "terrain0",
+        "terrain1"
       ],
       "vertShader": "/hmap_vert.glsl"
     },
@@ -3787,6 +3789,14 @@
     {
       "filePath": "/sky.jpg",
       "name": "sky"
+    },
+    {
+      "filePath": "/rock.png",
+      "name": "rock"
+    },
+    {
+      "filePath": "/snow.jpg",
+      "name": "snow"
     }
   ]
 }
