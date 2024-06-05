@@ -68,46 +68,65 @@ float getHeightFromPlane(vec4 plane, vec2 pos) {
     return (plane.w - plane.x * pos.x - plane.z * pos.y) / plane.y;
 }
 
-void Entity::updateBoids(float deltaTime, vector<Entity> *boids, Entity *penguin){
-    vec3 aSeparation = separationForce(boids);
-    vec3 aAlignment = alignmentForce(boids);
-    vec3 aLeader = penguin->position;
+void Entity::updateBoids(float deltaTime, vector<shared_ptr<Entity>> boids, Entity *penguin){
+    // separation forces
+    vec3 separation = vec3(0, 0, 0);
+    vec3 diff;
+    for (int i = 0; i < boids.size(); i++){
+        // if(boids[i] != this){
+            diff = boids[i]->position - position;
+            if(abs(diff.x) > 100){
+                separation -= diff;
+            }
+        // }
+    }
+
+    // match nearby velocities
+    vec3 alignment = vec3(0, 0, 0);
+    for (int i = 0; i < boids.size(); i++){
+        // if(boids[i] != this)
+            alignment += boids[i]->m.velocity;
+    }
+    alignment /= (boids.size() - 1);
+    alignment = (alignment - m.velocity)/vec3(8, 8, 8);
+
+    // center of motion is set to penguin position might decrement so that it trails behind penguin a bit
+    vec3 leader = penguin->position;
 
     // sample weightings that Dr. Wood provided
-    vec3 accel = (1.5f)*aSeparation + (0.3f)*aAlignment + 0.2f*(aLeader);
-    
+    // overall acceleration with all forces factored in
+    vec3 accel = (1.5f)*separation + (0.3f)*alignment + 0.2f*(leader);
     m.velocity += accel; 
     position += (m.velocity * deltaTime); 
 }
 
-vec3 Entity::separationForce(vector<Entity> *boids){
-    vec3 displacement = vec3(0, 0, 0);
-    vec3 diff;
+// vec3 Entity::separationForce(vector<shared_ptr<Entity>> boids){
+//     vec3 displacement = vec3(0, 0, 0);
+//     vec3 diff;
 
-    for (int i = 0; i < boids.size(); i++){
-        if(boids[i] != this){
-            diff = boids[i]->position - position;
-            if(abs(diff)){
-                displacement -= diff;
-            }
-        }
-    }
+//     for (int i = 0; i < boids.size(); i++){
+//         if(boids[i] != this){
+//             diff = boids[i]->position - position;
+//             if(abs(diff)){
+//                 displacement -= diff;
+//             }
+//         }
+//     }
 
-    return displacement;
-}
+//     return displacement;
+// }
 
-vec3 Entity::alignmentForce(vector<Entity> *boids){
-    vec3 avg = vec3(0, 0, 0);
+// vec3 Entity::alignmentForce(vector<Entity> *boids){
+//     vec3 avg = vec3(0, 0, 0);
 
-    for (int i = 0; i < boids.size(); i++){
-        if(boids[i] != this)
-            avg += boids[i]->m.velocity;
-    }
+//     for (int i = 0; i < boids.size(); i++){
+//         if(boids[i] != this)
+//             avg += boids[i]->m.velocity;
+//     }
 
-    avg /= (boids.size() - 1);
-    return ((avg - m.velocity)/8);
+//     avg /= (boids.size() - 1);
+//     return ((avg - m.velocity)/8);
     
-}
 
 
 void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList, int *collisionSounds) {
