@@ -71,12 +71,13 @@ float getHeightFromPlane(vec4 plane, vec2 pos) {
 void Entity::updateBoids(float deltaTime, vector<shared_ptr<Entity>> boids, Entity *penguin){
     // separation forces
     vec3 separation = vec3(0, 0, 0);
-    vec3 diff;
+    float diff;
     for (int i = 0; i < boids.size(); i++){
         // if(boids[i] != this){
-            diff = boids[i]->position - position;
-            if(abs(diff.x) > 100){
-                separation -= diff;
+            // diff = boids[i]->position - position;
+            diff = abs(glm::distance(boids[i]->position, position));
+            if(diff < 10){
+                separation -= (boids[i]->position - position);
             }
         // }
     }
@@ -87,10 +88,10 @@ void Entity::updateBoids(float deltaTime, vector<shared_ptr<Entity>> boids, Enti
         // if(boids[i] != this)
             alignment += boids[i]->m.velocity;
     }
-    alignment /= (boids.size() - 1);
-    alignment = (alignment - m.velocity)/vec3(8, 8, 8);
+    alignment /= (boids.size() - 1); //avg
+    alignment = (alignment - m.velocity)*vec3(.125); // only match a fraction of nearby velocities
 
-    // center of motion is set to penguin position might decrement so that it trails behind penguin a bit
+    // center of motion is set to penguin position - might alter so that it trails behind penguin a bit
     vec3 leader = penguin->position;
 
     // sample weightings that Dr. Wood provided
@@ -99,35 +100,6 @@ void Entity::updateBoids(float deltaTime, vector<shared_ptr<Entity>> boids, Enti
     m.velocity += accel; 
     position += (m.velocity * deltaTime); 
 }
-
-// vec3 Entity::separationForce(vector<shared_ptr<Entity>> boids){
-//     vec3 displacement = vec3(0, 0, 0);
-//     vec3 diff;
-
-//     for (int i = 0; i < boids.size(); i++){
-//         if(boids[i] != this){
-//             diff = boids[i]->position - position;
-//             if(abs(diff)){
-//                 displacement -= diff;
-//             }
-//         }
-//     }
-
-//     return displacement;
-// }
-
-// vec3 Entity::alignmentForce(vector<Entity> *boids){
-//     vec3 avg = vec3(0, 0, 0);
-
-//     for (int i = 0; i < boids.size(); i++){
-//         if(boids[i] != this)
-//             avg += boids[i]->m.velocity;
-//     }
-
-//     avg /= (boids.size() - 1);
-//     return ((avg - m.velocity)/8);
-    
-
 
 void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList, int *collisionSounds) {
     float distance = m.curSpeed * deltaTime;
