@@ -34,8 +34,10 @@ public:
     Entity();
 
     void updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList, int *collisionSounds);
-
+    void Entity::updateBoids(float deltaTime, vector<Entity> *boids, Entity *curBoid);
     glm::mat4 generateModel();
+    glm::vec3 separationForce(vector<Entity>*boids, Entity *curBoid);
+    glm::vec3 alignmentForce(vector<Entity> *boids, Entity *curBoid);
 
     static int NEXT_ID; // initializes to 0 and increments with every call to initEntity()
     int id;

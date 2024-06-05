@@ -68,6 +68,48 @@ float getHeightFromPlane(vec4 plane, vec2 pos) {
     return (plane.w - plane.x * pos.x - plane.z * pos.y) / plane.y;
 }
 
+void Entity::updateBoids(float deltaTime, vector<Entity> *boids, Entity *curBoid, Entity *penguin){
+    vec3 aSeparation = separationForce(boids, curBoid);
+    vec3 aAlignment = alignmentForce(boids, curBoid);
+    vec3 aLeader = penguin->position;
+
+    // sample weightings that Dr. Wood provided
+    vec3 accel = (1.5f)*aSeparation + (0.3f)*aAlignment + 0.2f*(aLeader);
+    
+    curBoid->velocity += accel; 
+    curBoid->position += (curBoid->velocity * deltaTime); 
+}
+
+vec3 Entity::separationForce(vector<Entity> *boids, Entity *curBoid){
+    vec3 displacement = vec3(0, 0, 0);
+    vec3 diff;
+
+    for (int i = 0; i < boids.size(); i++){
+        if(boids[i] != curBoid){
+            diff = boids[i].position - curBoid.position;
+            if(abs(diff)){
+                displacement -= diff;
+            }
+        }
+    }
+
+    return displacement;
+}
+
+vec3 Entity::alignmentForce(vector<Entity> *boids, Entity *curBoid){
+    vec3 avg = vec3(0, 0, 0);
+
+    for (int i = 0; i < boids.size(); i++){
+        if(boids[i] != curBoid)
+            avg += boids[i].velocity;
+    }
+
+    avg /= (boids.size() - 1);
+    return ((avg - curBoid.velocity)/8);
+    
+}
+
+
 void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList, int *collisionSounds) {
     float distance = m.curSpeed * deltaTime;
     // movement and rotation
