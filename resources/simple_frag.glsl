@@ -25,6 +25,12 @@ in OUT_struct {
    vec3 EPos;
 } in_struct;
 
+
+
+uniform float offset[10] = float[]( 0.025, 0.05, 0.075, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4 );
+uniform float weight[10] = float[]( 0.2270270270, 0.1945945946, 0.1216216216,
+0.0540540541, 0.0162162162, 0.0059383423, 0.00129128391, 0.00129128391, 0.00129128391, 0.00129128391);
+
 /* returns 1 if shadowed */
 /* called with the point projected into the light's coordinate space */
 
@@ -34,7 +40,7 @@ float D (float alpha, vec3 N, vec3 H) {
 
 	float dot_prod = max(0, dot(N, H));
 	float num = pow(alpha, 2.0);
-	float denom = max(0.0005, pow(pow(dot_prod, 2.0) * (pow(alpha, 2.0) - 1.0) + 1.0, 2.0));
+	float denom = max(0.0005, 3.1415 * pow(pow(dot_prod, 2.0) * (pow(alpha, 2.0) - 1.0) + 1.0, 2.0));
 	return num / denom;
 
 }
@@ -42,7 +48,7 @@ float D (float alpha, vec3 N, vec3 H) {
 float G1 (float alpha, vec3 N, vec3 X) {
 	float num = max(0, dot(N, X));
 	float k = alpha/2.0;
-	float denom = max(0.0005, num * (1.0 - k) + k);
+	float denom = max(0.0005, 4 * num * (1.0 - k) + k);
 	return num / denom;
 }
 
@@ -60,21 +66,24 @@ vec3 F (vec3 F0, vec3 V, vec3 N) {
 
 float TestShadow(vec4 LSfPos) {
 
-  //0.005 * tan (acos(nDotl)) is better/more precise
-  float depth_buffer = 0.1;
+   //0.005 * tan (acos(nDotl)) is better/more precise
+  float depth_buffer = 0.0009;
 
 	//1: shift the coordinates from -1, 1 to 0, 1
   vec3 fLS = (vec3(LSfPos) + vec3(1.0)) * 0.5;
 
-	//2: read off the stored depth (.) from the ShadowDepth, using the shifted.xy 
-  float depth = texture(shadowDepth, fLS.xy).r;
+  float count = 0;
+  float in_shadow;
 
-	//3: compare to the current depth (.z) of the projected depth
-  if (fLS.z > depth + depth_buffer)
-    return 1.0;
-  return 0.0;
-
-	//4: return 1 if the point is shadowed
+  for (int i = 0; i < 10; i++) {
+    for (int j = 0; j < 10; j++) {
+      in_shadow = texture(shadowDepth, (fLS.xy + (vec2(offset[i], offset[j])/512.0))).r;
+      if (fLS.z > in_shadow + depth_buffer)
+        count += 1;
+    }
+  }
+  
+  return (count)/500.0;
 
 }
 
@@ -95,10 +104,10 @@ void main() {
 	vec3 Kd = vec3(1.0) - Ks;
 
 	vec3 lambert = albedo;
-	vec3 num = D (roughness, N, H) * G (roughness, N, V, L) * F (reflectance, V, N); //using cook torrance
+	vec3 num = D (roughness, N, H) * G (roughness, N, V, L) * F (reflectance, V, H); //using cook torrance
 	float denom = max(0, dot(V, N)) * max(0, dot(L, N));
-	vec3 BRDF = Kd * lambert + (num / denom);
-	//color = vec4(BRDF * lightColor, 1.0);
+	vec3 BRDF = Kd * lambert + Ks * (num / denom);
+	vec4 color = vec4(BRDF * lightColor, 1.0);
 
 
 	float x_val = max(amb*emissivity.x, emissivity.x + BRDF.x * lightColor.x * max(0.005, dot(N, L)));
@@ -112,7 +121,12 @@ void main() {
 
 	Shade = TestShadow(in_struct.fPosLS);
 
-	Outcolor = amb*(baseColor) + (1.0-Shade)*baseColor;
+	//vec4 baseColor = vec4(BRDF, 1.0);
+
+	//Outcolor = vec4(vec3(Shade), 1.0);
+	//Outcolor = vec4(vec3(1.0-Shade), 1.0);
+	Outcolor = vec4(albedo, 1.0) + (1.0-Shade)*color;
+	Outcolor = vec4(albedo, 1.0) + (1.0-Shade)*baseColor;
 	
 }
 
