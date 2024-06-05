@@ -48,7 +48,6 @@ std::string resourceDir = "../resources";
 std::string WORLD_FILE_NAME = "/world.json";
 bool editMode = false;
 float editSpeed = 7.0f;
-float worldSize = 1.0f;
 
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Texture>> textureLibrary = { {"", nullptr} };
@@ -97,25 +96,15 @@ public:
 	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &textureLibrary, &worldentities, &tagList, &collidables);
 
 	shared_ptr<Program> DepthProg;
-	shared_ptr<Program> DepthProgDebug;
-	shared_ptr<Program> DebugProg;
-
-	bool DEBUG_LIGHT = false;
-	bool GEOM_DEBUG = true;
-	bool SHADOW = true;
-
-
 	GLuint depthMapFBO;
-	const GLuint S_WIDTH = 4096, S_HEIGHT = 4096;
+	const GLuint S_WIDTH = 1024, S_HEIGHT = 1024;
 	GLuint depthMap;
-	GLuint quad_vertexbuffer;
-	 GLuint quad_VertexArrayID;
 
 	shared_ptr<Program> mirageProg;
 	GLuint mirageFBO;
 	GLuint mirageMap;
 
-	vec3 light_vec = normalize(vec3(1.0, 2.5, 1.0));
+	vec3 light_vec = vec3(1.0, 2.5, 1.0);
   
 	LevelEditor* leGUI = new LevelEditor();
 
@@ -303,11 +292,12 @@ public:
 			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_RELEASE)){
 				ih.inputStates[5] = 0;
 			}
+
 			if (key == GLFW_KEY_C && (action == GLFW_RELEASE)) {
 				player->sliding = false;
 			}
 			
-			if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
+			if (key == GLFW_KEY_F1 && action == GLFW_RELEASE) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			}
 
@@ -493,6 +483,8 @@ public:
 		DepthProg->init();
 		DepthProg->addUniform("LP");
 		DepthProg->addUniform("LV");
+		DepthProg->addUniform("P");
+		DepthProg->addUniform("V");
 		DepthProg->addUniform("M");
 		DepthProg->addUniform("Texture0");
 		DepthProg->addAttribute("vertPos");
@@ -503,28 +495,6 @@ public:
 		//mirageProg->setVerbose(true);
 		//mirageProg->setShaderNames(resourceDirectory + "/mirage_vert.glsl", resourceDirectory + "/mirage_frag.glsl");
 		//mirageProg->init();
-    
-		DepthProgDebug = make_shared<Program>();
-		DepthProgDebug->setVerbose(true);
-		DepthProgDebug->setShaderNames(resourceDirectory + "/depth_vertDebug.glsl", resourceDirectory + "/depth_fragDebug.glsl");
-		DepthProgDebug->init();
-
-		DepthProgDebug->addUniform("LP");
-		DepthProgDebug->addUniform("LV");
-		DepthProgDebug->addUniform("M");
-		DepthProgDebug->addAttribute("vertPos");
-		//un-needed, better solution to modifying shape
-		DepthProgDebug->addAttribute("vertNor");
-		DepthProgDebug->addAttribute("vertTex");
-
-
-		DebugProg = make_shared<Program>();
-		DebugProg->setVerbose(true);
-		DebugProg->setShaderNames(resourceDirectory + "/pass_vert.glsl", resourceDirectory + "/pass_texfrag.glsl");
-		DebugProg->init();
-
-		DebugProg->addUniform("texBuf");
-  		DebugProg->addAttribute("vertPos");
 
 		hmap = make_shared<Texture>();
 		hmap->setFilename(resourceDirectory + "/hmap.png");
@@ -588,7 +558,6 @@ public:
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initHMapGround();
-		//initQuad();
 	}
 
 	void applyCollider() {
@@ -707,10 +676,10 @@ public:
 		g_GiboLen = indices.size();
 
 		if (player) {
-			player->collider->SetGround(worldSize * groundPos, worldSize * vec3(1, Y_MAX - Y_MIN, 1));
+			player->collider->SetGround(groundPos, vec3(1, Y_MAX - Y_MIN, 1));
 		}
 		
-		cam.collider->SetGround(worldSize * groundPos, worldSize * vec3(1,Y_MAX-Y_MIN,1));
+		cam.collider->SetGround(groundPos, vec3(1,Y_MAX-Y_MIN,1));
 
       }
 	
@@ -719,23 +688,7 @@ public:
      	glBindVertexArray(GroundVertexArrayID);
 
 		//draw the ground plane 
-  		curS->setModel(worldSize * groundPos, 0, 0, 0, worldSize);
-
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, textureLibrary["snow"]->getID());
-		glUniform1i(curS->prog->getUniform("terrain0"), 1);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, textureLibrary["rock"]->getID());
-		glUniform1i(curS->prog->getUniform("terrain1"), 2);
-		
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-
+  		curS->setModel(groundPos, 0, 0, 0, 1);
   		glEnableVertexAttribArray(0);
   		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
   		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -761,7 +714,7 @@ public:
 
 
 	mat4 SetOrthoMatrix(shared_ptr<Program> curShade) {
-		mat4 ortho = glm::ortho(-150.0, 150.0, -150.0, 150.0, 10.0, 500.0);
+		mat4 ortho = glm::ortho(-15.0, 15.0, -15.0, 15.0, 0.1, 20.0);
 
 		glUniformMatrix4fv(curShade->getUniform("LP"), 1, GL_FALSE, value_ptr(ortho));
 		return ortho;
@@ -776,50 +729,41 @@ public:
 	}
 
 
-	void drawShadowMap(mat4 LSpace) {
-		auto Model = make_shared<MatrixStack>();
+	void drawShadowMap() {
+		float butterfly_height[3] = {1.1, 1.7, 1.5};
 
+		vec3 butterfly_loc[3];
+		butterfly_loc[0] = vec3(-2.3, -1, 3);
+		butterfly_loc[1] = vec3(-2, -1.2, -3);
+		butterfly_loc[2] = vec3(4, -1, 4);
+
+		// BRDFmaterial imported from save file
+		shaders["skybox"]->prog->setVerbose(false);
 		map<string, shared_ptr<Entity>>::iterator i;
 
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 			entity->generateModel();
 		}
-    
+
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
-			if (entity != worldentities["skybox"]) {
-				glUniformMatrix4fv(DepthProg->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
-		
-				entity->model->Draw(DepthProg);
-			}
+			entity->model->Draw(DepthProg);
+
+			
+			//for (int i = 0; i < entity->objs.size(); i++) {	
+			//	entity->objs[i]->draw(DepthProg);
+			//}
 		}
 		
-     	glBindVertexArray(GroundVertexArrayID);
+		DepthProg->unbind();
 
-		//draw the ground plane 
-  		mat4 ctm = glm::mat4(1.0f);
-  		glUniformMatrix4fv(DepthProg->getUniform("M"), 1, GL_FALSE, value_ptr(ctm));
-  		glEnableVertexAttribArray(0);
-  		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
-  		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		
-		glEnableVertexAttribArray(1);
-  		glBindBuffer(GL_ARRAY_BUFFER, GrndNorBuffObj);
-  		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		
-		glEnableVertexAttribArray(2);
-  		glBindBuffer(GL_ARRAY_BUFFER, GrndRegionBuffObj);
-  		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		
+		bounds = std::sqrt(   //update cat's distance from skybox
+			cam.player_pos[0] * cam.player_pos[0]
+			+ cam.player_pos[2] * cam.player_pos[2]
+		);
 
-   		// draw!
-  		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
-  		glDrawElements(GL_TRIANGLES, g_GiboLen, GL_UNSIGNED_INT, 0);
-
-  		glDisableVertexAttribArray(0);
-  		glDisableVertexAttribArray(1);
-  		glDisableVertexAttribArray(2);
+		// Pop matrix stacks.
 	}
 
 
@@ -837,17 +781,21 @@ public:
 		//material shader first
 		shared_ptr<Shader> curS = shaders["reg"];
 		curS->prog->bind();
-
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog, hmap);
 
 		// directional light
-  		glActiveTexture(GL_TEXTURE1);
-  		glBindTexture(GL_TEXTURE_2D, depthMap);
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 
+
+		float butterfly_height[3] = {1.1, 1.7, 1.5};
+
+		vec3 butterfly_loc[3];
+		butterfly_loc[0] = vec3(-2.3, -1, 3);
+		butterfly_loc[1] = vec3(-2, -1.2, -3);
+		butterfly_loc[2] = vec3(4, -1, 4);
 
 		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -903,18 +851,16 @@ public:
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog, hmap);
-  		glActiveTexture(GL_TEXTURE1);
-  		glBindTexture(GL_TEXTURE_2D, depthMap);
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
 		glUniform1f(curS->prog->getUniform("fTime"), glfwGetTime());
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 		drawGround(curS);  //draw ground here
 
-		/*bounds = std::sqrt(   //update cat's distance from skybox
+		bounds = std::sqrt(   //update cat's distance from skybox
 			cam.player_pos[0] * cam.player_pos[0]
 			+ cam.player_pos[2] * cam.player_pos[2]
-		);*/
+		);
 
 		// Pop matrix stacks.
 		Projection->popMatrix();
@@ -936,6 +882,16 @@ public:
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog, hmap);
+
+		float butterfly_height[3] = {1.1, 1.7, 1.5};
+
+		vec3 butterfly_loc[3];
+		butterfly_loc[0] = vec3(-2.3, -1, 3);
+		butterfly_loc[1] = vec3(-2, -1.2, -3);
+		butterfly_loc[2] = vec3(4, -1, 4);
+
+	
+		//vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], player};
 
 		// BRDFmaterial imported from save file
 		map<string, shared_ptr<Entity>>::iterator i;
@@ -975,17 +931,15 @@ public:
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog, hmap);
-  		glActiveTexture(GL_TEXTURE1);
-  		glBindTexture(GL_TEXTURE_2D, depthMap);
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 		drawGround(curS);  //draw ground here
 
-		/*bounds = std::sqrt(   //update cat's distance from skybox
+		bounds = std::sqrt(   //update cat's distance from skybox
 			cam.player_pos[0] * cam.player_pos[0]
 			+ cam.player_pos[2] * cam.player_pos[2]
-		);*/
+		);
 
 		// Pop matrix stacks.
 		Projection->popMatrix();
@@ -1028,70 +982,55 @@ public:
 		vec3 lightLA = vec3(0.0);
     	vec3 lightUp = vec3(0, 1, 0);
 		mat4 LO, LV, LSpace;
-
+		// cout << "before" << endl;
 		glViewport(0, 0, S_WIDTH, S_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glCullFace(GL_FRONT);
 
 		DepthProg->bind();
-		//TODO you will need to fix these
+		  //TODO you will need to fix these
 		LO = SetOrthoMatrix(DepthProg);
-		LV = SetLightView(DepthProg, player->position + vec3(100) * light_vec, player->position, lightUp);
-		LSpace = LO*LV;
-		drawShadowMap(LSpace);
+		LV = SetLightView(DepthProg, light_vec, lightLA, lightUp);
+		drawShadowMap();
 		DepthProg->unbind();
 		glCullFace(GL_BACK);
 		// cout << "1 pass" << endl;
 
-		//this sets the output back to the screen
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		// cout << "before" << endl;
-		
+      //this sets the output back to the screen
+  	 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		glViewport(0, 0, width, height);
 		// Clear framebuffer.
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		if (DEBUG_LIGHT) {
-			if (GEOM_DEBUG) {
-				DepthProgDebug->bind();
-				LO = SetOrthoMatrix(DepthProg);
-				LV = SetLightView(DepthProg, player->position + vec3(100) * light_vec, player->position, lightUp);
-				drawShadowMap(LSpace);
-				DepthProgDebug->unbind();
-			}
-			else {
-				DebugProg->bind();
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, depthMap);
-				glUniform1i(DebugProg->getUniform("texBuf"), 0);
-			
-			//draw the quad
-				glEnableVertexAttribArray(0);
-				glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
-				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
-				glDrawArrays(GL_TRIANGLES, 0, 6);
-				glDisableVertexAttribArray(0);
-				cout << "askdjhfkasdjhflkasdj" << endl;
-				DebugProg->unbind();
-				cout << "after :)" << endl;
-			}
-		}
-		else {
-			glActiveTexture(GL_TEXTURE1);
-  			glBindTexture(GL_TEXTURE_2D, depthMap);
-			if (player) {
-				cam.player_pos = player->position;
-			}
+		glActiveTexture(GL_TEXTURE1);
+  		glBindTexture(GL_TEXTURE_2D, depthMap);
 		
-			float aspect = width/(float)height;
-			if(editMode){
-				drawEditorObjects(aspect, LSpace, frametime);
-			}
-			else{
-				drawObjects(aspect, LSpace, frametime);
-			}
+		//player->updateMotion(frametime, hmap);
+		if (player) {
+			cam.player_pos = player->position;
+		}
+	
+      	LSpace = LO*LV;
+		float aspect = width/(float)height;
+		if(editMode){
+			drawEditorObjects(aspect, LSpace, frametime);
+		}
+		else{
+
+			//glBindFramebuffer(GL_FRAMEBUFFER, mirageFBO);
+			//glViewport(0, 0, width, height);
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			drawObjects(aspect, LSpace, frametime);
+
+			//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			//glBindVertexArray(PostProcessingFBOPlaneVAO);
+			//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, FBOPlaneIdxObj);
+			//glActiveTexture(GL_TEXTURE0);
+			//glBindTexture(GL_TEXTURE_2D, mirageMap);
+
 		}
 		
 		checkSounds();
