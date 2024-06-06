@@ -106,7 +106,7 @@ public:
 	GLuint quad_vertexbuffer;
 	 GLuint quad_VertexArrayID;
 
-	vec3 light_vec = normalize(vec3(3, 5, 5));
+	vec3 light_vec = normalize(vec3(3, 100, 5));
   
 	LevelEditor* leGUI = new LevelEditor();
 
