@@ -573,9 +573,9 @@ public:
 				
 				pit = hval < .01;
 
-				vertices.push_back(j - hmap_dim.first / 2.0f);
-				vertices.push_back(hval * (Y_MAX - Y_MIN) + Y_MIN);
-				vertices.push_back(i - hmap_dim.second / 2.0f);
+				vertices.push_back(worldSize * (j - hmap_dim.first / 2.0f));
+				vertices.push_back(worldSize * (hval * (Y_MAX - Y_MIN) + Y_MIN));
+				vertices.push_back(worldSize * (i - hmap_dim.second / 2.0f));
 
 				regions.push_back((pit ? 72 : hvalr) / 255.0f);
 				regions.push_back(hvalg / 255.0f);
@@ -632,10 +632,10 @@ public:
 		g_GiboLen = indices.size();
 
 		if (player) {
-			player->collider->SetGround(worldSize * groundPos, worldSize * vec3(1, Y_MAX - Y_MIN, 1));
+			player->collider->SetGround(groundPos, worldSize * vec3(1, Y_MAX - Y_MIN, 1));
 		}
 		
-		cam.collider->SetGround(worldSize * groundPos, worldSize * vec3(1,Y_MAX-Y_MIN,1));
+		cam.collider->SetGround(groundPos, worldSize * vec3(1,Y_MAX-Y_MIN,1));
 
       }
 	
@@ -644,7 +644,7 @@ public:
      	glBindVertexArray(GroundVertexArrayID);
 
 		//draw the ground plane 
-  		curS->setModel(worldSize * groundPos, 0, 0, 0, worldSize);
+  		curS->setModel(groundPos, 0, 0, 0, 1);
 
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, textureLibrary["rock"]->getID());
@@ -978,46 +978,20 @@ public:
 		// Clear framebuffer.
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		if (DEBUG_LIGHT) {
-			if (GEOM_DEBUG) {
-				DepthProgDebug->bind();
-				LO = SetOrthoMatrix(DepthProg);
-				LV = SetLightView(DepthProg, player->position + vec3(100) * light_vec, player->position, lightUp);
-				drawShadowMap(LSpace);
-				DepthProgDebug->unbind();
-			}
-			else {
-				DebugProg->bind();
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, depthMap);
-				glUniform1i(DebugProg->getUniform("texBuf"), 0);
-			
-			//draw the quad
-				glEnableVertexAttribArray(0);
-				glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
-				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
-				glDrawArrays(GL_TRIANGLES, 0, 6);
-				glDisableVertexAttribArray(0);
-				cout << "askdjhfkasdjhflkasdj" << endl;
-				DebugProg->unbind();
-				cout << "after :)" << endl;
-			}
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+		if (player) {
+			cam.player_pos = player->position;
 		}
-		else {
-			glActiveTexture(GL_TEXTURE1);
-  			glBindTexture(GL_TEXTURE_2D, depthMap);
-			if (player) {
-				cam.player_pos = player->position;
-			}
-		
-			float aspect = width/(float)height;
-			if(editMode){
-				drawEditorObjects(aspect, LSpace, frametime);
-			}
-			else{
-				drawObjects(aspect, LSpace, frametime);
-			}
+	
+		float aspect = width/(float)height;
+		if(editMode){
+			drawEditorObjects(aspect, LSpace, frametime);
 		}
+		else{
+			drawObjects(aspect, LSpace, frametime);
+		}
+
 		
 		checkSounds();
 	}
