@@ -5,13 +5,6 @@ uniform sampler2D shadowDepth;
 out vec4 Outcolor;
 
 
-uniform vec3 lightColor;
-uniform vec3 albedo;
-uniform vec3 emissivity;
-uniform vec3 reflectance;
-uniform float roughness;
-
-
 in OUT_struct {
    vec3 fPos;
    vec3 fragNor;

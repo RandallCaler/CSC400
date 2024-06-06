@@ -13,7 +13,7 @@
 #include "Mesh.h"
 #include "Program.h"
 #include "stb_image.h"
-//#include "Animdata.h"
+#include "Animdata.h"
 #include "assimp_glm_helpers.h"
 
 #include <string>
@@ -75,11 +75,11 @@ public:
         }
     }
 
-    //auto& GetBoneInfoMap() { return m_BoneInfoMap; }
-    //int& GetBoneCount() { return m_BoneCounter; }
+    auto& GetBoneInfoMap() { return m_BoneInfoMap; }
+    int& GetBoneCount() { return m_BoneCounter; }
     
 private:
-    //map<string, BoneInfo> m_BoneInfoMap;
+    map<string, BoneInfo> m_BoneInfoMap;
     int m_BoneCounter = 0;
 
     // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
@@ -192,7 +192,7 @@ private:
         vector<shared_ptr<Texture>> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height", scene);
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
         
-        //ExtractBoneWeightForVertices(vertices, mesh, scene);
+        ExtractBoneWeightForVertices(vertices, mesh, scene);
         // return a mesh object created from the extracted mesh data
         return Mesh(vertices, indices, textures, mesh->mName.C_Str());
     }
@@ -210,42 +210,42 @@ private:
         }
     }
 
-    //void ExtractBoneWeightForVertices(vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene)
-    //{
-    //    auto& boneInfoMap = m_BoneInfoMap;
-    //    int& boneCount = m_BoneCounter;
+    void ExtractBoneWeightForVertices(vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene)
+    {
+        auto& boneInfoMap = m_BoneInfoMap;
+        int& boneCount = m_BoneCounter;
 
-    //    //cout << "number of bones: " << mesh->mNumBones << endl;
-    //    for (int boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex)
-    //    {
-    //        int boneID = -1;
-    //        string boneName = mesh->mBones[boneIndex]->mName.C_Str();
-    //        if (boneInfoMap.find(boneName) == boneInfoMap.end())
-    //        {
-    //            BoneInfo newBoneInfo;
-    //            newBoneInfo.id = boneCount;
-    //            newBoneInfo.offset = AssimpGLMHelpers::ConvertMatrixToGLMFormat(mesh->mBones[boneIndex]->mOffsetMatrix);
-    //            boneInfoMap[boneName] = newBoneInfo;
-    //            boneID = boneCount;
-    //            boneCount++;
-    //        }
-    //        else
-    //        {
-    //            boneID = boneInfoMap[boneName].id;
-    //        }
-    //        assert(boneID != -1);
-    //        auto weights = mesh->mBones[boneIndex]->mWeights;
-    //        int numWeights = mesh->mBones[boneIndex]->mNumWeights;
+        cout << "number of bones: " << mesh->mNumBones << endl;
+        for (int boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex)
+        {
+            int boneID = -1;
+            string boneName = mesh->mBones[boneIndex]->mName.C_Str();
+            if (boneInfoMap.find(boneName) == boneInfoMap.end())
+            {
+                BoneInfo newBoneInfo;
+                newBoneInfo.id = boneCount;
+                newBoneInfo.offset = AssimpGLMHelpers::ConvertMatrixToGLMFormat(mesh->mBones[boneIndex]->mOffsetMatrix);
+                boneInfoMap[boneName] = newBoneInfo;
+                boneID = boneCount;
+                boneCount++;
+            }
+            else
+            {
+                boneID = boneInfoMap[boneName].id;
+            }
+            assert(boneID != -1);
+            auto weights = mesh->mBones[boneIndex]->mWeights;
+            int numWeights = mesh->mBones[boneIndex]->mNumWeights;
 
-    //        for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
-    //        {
-    //            int vertexId = weights[weightIndex].mVertexId;
-    //            float weight = weights[weightIndex].mWeight;
-    //            assert(vertexId <= vertices.size());
-    //            SetVertexBoneData(vertices[vertexId], boneID, weight);
-    //        }
-    //    }
-    //}
+            for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
+            {
+                int vertexId = weights[weightIndex].mVertexId;
+                float weight = weights[weightIndex].mWeight;
+                assert(vertexId <= vertices.size());
+                SetVertexBoneData(vertices[vertexId], boneID, weight);
+            }
+        }
+    }
 
     // checks all material textures of a given type and loads the textures if they're not loaded yet.
     // the required info is returned as a Texture struct.

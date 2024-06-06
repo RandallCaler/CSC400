@@ -3109,7 +3109,7 @@
     },
     {
       "collider": 1,
-      "file": "/penguin.obj",
+      "file": "/penguin.fbx",
       "meshes": [
         {
           "material": {
@@ -3136,6 +3136,58 @@
             "roughness": 0.699999988079071
           },
           "mesh": "Circle"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Circle-mesh"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Circle.001"
         },
         {
           "material": {
@@ -3218,6 +3270,32 @@
         {
           "material": {
             "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cylinder-mesh"
+        },
+        {
+          "material": {
+            "albedo": [
               0.5,
               0.2199999988079071,
               0.11999999731779099
@@ -3244,6 +3322,32 @@
         {
           "material": {
             "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Plane-mesh"
+        },
+        {
+          "material": {
+            "albedo": [
               0.800000011920929,
               0.800000011920929,
               0.800000011920929
@@ -3266,6 +3370,32 @@
             "roughness": 0.5
           },
           "mesh": "Sphere"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Sphere-mesh"
         }
       ],
       "name": "penguin",
@@ -3284,7 +3414,7 @@
         1.0,
         1.0
       ],
-      "shader": "reg",
+      "shader": "animate",
       "tag": "player",
       "texture": ""
     },
@@ -3680,6 +3810,28 @@
   "shaders": [
     {
       "attributes": [
+        "boneIds",
+        "vertNor",
+        "vertPos",
+        "vertTex",
+        "weights"
+      ],
+      "fragShader": "/tex_frag0.glsl",
+      "shaderName": "animate",
+      "uniforms": [
+        "LS",
+        "M",
+        "P",
+        "Texture0",
+        "V",
+        "finalBonesMatrices",
+        "lightDir",
+        "shadowDepth"
+      ],
+      "vertShader": "/mod_vert.glsl"
+    },
+    {
+      "attributes": [
         "vertPos"
       ],
       "fragShader": "/edit_frag.glsl",
@@ -3765,13 +3917,7 @@
         "P",
         "Texture0",
         "V",
-        "albedo",
-        "emissivity",
-        "flip",
-        "lightColor",
         "lightDir",
-        "reflectance",
-        "roughness",
         "shadowDepth"
       ],
       "vertShader": "/tex_vert.glsl"

@@ -21,6 +21,8 @@
 #include "Camera.h"
 #include "LevelEditor.h"
 #include "EventManager.h"
+#include "Animation.h"
+#include "Animator.h"
 
 #include <chrono>
 #include <array>
@@ -150,6 +152,10 @@ public:
 
 	ma_engine walkingEngine;
 	ma_engine collectionEngine;
+
+	shared_ptr<Animation> walking;
+	shared_ptr<Animation> jumping;
+	Animator animator = Animator();
 		
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -232,6 +238,10 @@ public:
 		else {
 			if (key == GLFW_KEY_W && (action == GLFW_PRESS)) {
 				ih.inputStates[0] = 1;
+				if (player->grounded) {
+					animator.PlayAnimation(walking);
+				}
+				
 			}
 
 			if (key == GLFW_KEY_A && (action == GLFW_PRESS)) {
@@ -248,6 +258,18 @@ public:
 
 			if (key == GLFW_KEY_SPACE && (action == GLFW_PRESS)){
 				ih.inputStates[4] = 1;
+				if (player->grounded) {
+					if (animator.getCurrentAnimation() == jumping) {
+						if (animator.m_AnimationCompletedOnce) {
+							animator.PlayAnimation(jumping);
+						}
+					}
+					else {
+						animator.PlayAnimation(jumping);
+					}
+					
+				}
+				
 			}
 
 			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_PRESS)){
@@ -536,6 +558,11 @@ public:
 		//initQuad();
 	}
 
+	void initAnimation() {
+		walking = make_shared<Animation>(player->model, 1);
+		jumping = make_shared<Animation>(player->model, 0);
+	}
+
 	void applyCollider() {
 		for (auto ent : collidables) {
 			ent->collider = new Collider(ent.get());
@@ -793,6 +820,16 @@ public:
 				glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 				activeCam->SetView(curS->prog, hmap);
 			}	
+
+			if (shaders["animate"] == curS) {
+				animator.UpdateAnimation(deltaTime);
+				auto transforms = animator.GetFinalBoneMatrices();
+				GLuint baseLocation = curS->prog->getUniform("finalBonesMatrices");
+				for (int i = 0; i < transforms.size(); ++i) {
+					glUniformMatrix4fv(baseLocation + i, 1, GL_FALSE, value_ptr(transforms[i]));
+				}
+			}
+
 			if (shaders["skybox"] == curS) {
 				entity->position = activeCam->cameraPos;
 				// skybox is always the furthest surface away
@@ -809,9 +846,12 @@ public:
 			glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
 			glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
-      
+
+			//cout << i->first << endl;
 			for (auto& meshPair : entity->model->meshes) {
-				curS->setMaterial(meshPair.second.mat);
+				if (curS == shaders["reg"]) {
+					curS->setMaterial(meshPair.second.mat);
+				}			
 				meshPair.second.Draw(curS->prog);
 			}
 			
@@ -983,6 +1023,10 @@ public:
 		if (player) {
 			cam.player_pos = player->position;
 		}
+
+		if (player->grounded && animator.getCurrentAnimation() == jumping && animator.m_AnimationCompletedOnce) {
+			animator.setCurrentAnimation(walking);
+		}
 	
 		float aspect = width/(float)height;
 		if(editMode){
@@ -1026,11 +1070,12 @@ int main(int argc, char *argv[]) {
 	// This is the code that will likely change program to program as you
 	// may need to initialize or set up different data and state
 
+	
 	application->levelEditor->loadFromFile(WORLD_FILE_NAME);
-
 	application->init(resourceDir);
 	application->initGeom(resourceDir);
 	application->initSoundEngines();
+	application->initAnimation();
 
 
 	Event *ev = new Event("../resources/french-mood.mp3", &engine, true, "background");
@@ -1038,6 +1083,7 @@ int main(int argc, char *argv[]) {
 
 	float dt = 1 / 60.0;
 	auto lastTime = chrono::high_resolution_clock::now();
+	auto start = lastTime;
 
 	application->leGUI->Init(windowManager->getHandle());
 	float totalTime = 0.0;
