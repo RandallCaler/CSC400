@@ -205,15 +205,15 @@
       "texture": "cheeseTex"
     },
     {
-      "collider": 0,
+      "collider": 1,
       "file": "/cube.obj",
       "meshes": [
         {
           "material": {
             "albedo": [
-              1.0,
-              1.0,
-              1.0
+              0.009999999776482582,
+              0.009999999776482582,
+              0.009999999776482582
             ],
             "emissivity": [
               0.0,
@@ -237,19 +237,19 @@
       ],
       "name": "cube",
       "position": [
-        -61.34000015258789,
-        -73.83999633789063,
-        175.9199981689453
+        92.87000274658203,
+        -74.5,
+        46.459999084472656
       ],
       "rotation": [
         0.0,
-        -0.7941247820854187,
+        0.0,
         0.0
       ],
       "scale": [
-        3.690000057220459,
-        0.11999999731779099,
-        4.440000057220459
+        2.7699999809265137,
+        0.18000000715255737,
+        3.6500000953674316
       ],
       "shader": "reg",
       "tag": "",
@@ -970,7 +970,7 @@
       "texture": ""
     },
     {
-      "collider": 0,
+      "collider": 1,
       "file": "/cube.obj",
       "meshes": [
         {
@@ -1888,422 +1888,7 @@
       "texture": ""
     },
     {
-      "collider": 1,
-      "file": "/fishPie.obj",
-      "meshes": [
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Crust"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Cube"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Cube.001"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Cube.002"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Cube.003"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Cube.004"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "FakeFishLayer"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Fish.001|Cone|Dupli|"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Fish.002|Cone|Dupli|"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Fish.003|Cone|Dupli|"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Fish.004|Cone|Dupli|"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Fish.005|Cone|Dupli|"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Fish.006|Cone|Dupli|"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Fish|Cone|Dupli|"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Pan"
-        }
-      ],
-      "name": "fishPie",
-      "position": [
-        74.27999877929688,
-        -74.30999755859375,
-        13.630000114440918
-      ],
-      "rotation": [
-        0.0,
-        -0.7853981852531433,
-        0.0
-      ],
-      "scale": [
-        1.0,
-        1.0,
-        1.0
-      ],
-      "shader": "reg",
-      "tag": "food",
-      "texture": ""
-    },
-    {
-      "collider": 1,
+      "collider": 0,
       "file": "/frenchFries.obj",
       "meshes": [
         {
@@ -3089,9 +2674,9 @@
       ],
       "name": "frenchFries",
       "position": [
-        73.98999786376953,
-        -74.5999984741211,
-        8.0
+        62.869998931884766,
+        -67.56999969482422,
+        -4.5
       ],
       "rotation": [
         0.0,
@@ -3104,7 +2689,7 @@
         1.0
       ],
       "shader": "reg",
-      "tag": "food",
+      "tag": "",
       "texture": ""
     },
     {
@@ -4102,9 +3687,9 @@
       ],
       "name": "grapes",
       "position": [
-        81.2699966430664,
-        -74.43000030517578,
-        16.010000228881836
+        76.69999694824219,
+        -63.869998931884766,
+        -30.719999313354492
       ],
       "rotation": [
         0.0,
@@ -4112,9 +3697,9 @@
         0.0
       ],
       "scale": [
-        0.8700000047683716,
-        0.8700000047683716,
-        0.8600000143051147
+        1.0,
+        1.0,
+        1.0
       ],
       "shader": "reg",
       "tag": "food",
@@ -4122,14 +3707,40 @@
     },
     {
       "collider": 1,
-      "file": "/penguin.obj",
+      "file": "/penguin.fbx",
       "meshes": [
         {
           "material": {
             "albedo": [
-              0.009999999776482582,
-              0.009999999776482582,
-              0.009999999776482582
+              0.03921568766236305,
+              0.10588235408067703,
+              0.239215686917305
+            ],
+            "emissivity": [
+              0.07058823853731155,
+              0.07058823853731155,
+              0.2235294133424759
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.08627451211214066,
+              0.08235294371843338,
+              0.14509804546833038
+            ],
+            "roughness": 0.699999988079071
+          },
+          "mesh": "Circle"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
             ],
             "emissivity": [
               0.0,
@@ -4146,9 +3757,35 @@
               0.0,
               0.0
             ],
-            "roughness": 0.699999988079071
+            "roughness": 0.0
           },
-          "mesh": "Circle"
+          "mesh": "Circle-mesh"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Circle.001"
         },
         {
           "material": {
@@ -4205,6 +3842,32 @@
         {
           "material": {
             "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube.001"
+        },
+        {
+          "material": {
+            "albedo": [
               0.5299999713897705,
               0.10000000149011612,
               0.10000000149011612
@@ -4227,6 +3890,32 @@
             "roughness": 0.6000000238418579
           },
           "mesh": "Cylinder"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cylinder-mesh"
         },
         {
           "material": {
@@ -4257,6 +3946,32 @@
         {
           "material": {
             "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Plane-mesh"
+        },
+        {
+          "material": {
+            "albedo": [
               0.800000011920929,
               0.800000011920929,
               0.800000011920929
@@ -4279,17 +3994,43 @@
             "roughness": 0.5
           },
           "mesh": "Sphere"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Sphere-mesh"
         }
       ],
       "name": "penguin",
       "position": [
-        80.30911254882813,
-        -74.5,
-        13.877410888671875
+        73.99525451660156,
+        -64.9156265258789,
+        -15.756789207458496
       ],
       "rotation": [
         0.0,
-        -4.052425861358643,
+        -0.7220281362533569,
         0.0
       ],
       "scale": [
@@ -4297,8 +4038,59 @@
         1.0,
         1.0
       ],
-      "shader": "reg",
+      "shader": "animate",
       "tag": "player",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/sphere.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Icosphere"
+        }
+      ],
+      "name": "respawn",
+      "position": [
+        79.20999908447266,
+        -65.38999938964844,
+        -17.68000030517578
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        0.019999999552965164,
+        1.0
+      ],
+      "shader": "reg",
+      "tag": "respawn",
       "texture": ""
     },
     {
@@ -4693,6 +4485,28 @@
   "shaders": [
     {
       "attributes": [
+        "boneIds",
+        "vertNor",
+        "vertPos",
+        "vertTex",
+        "weights"
+      ],
+      "fragShader": "/tex_frag0.glsl",
+      "shaderName": "animate",
+      "uniforms": [
+        "LS",
+        "M",
+        "P",
+        "Texture0",
+        "V",
+        "finalBonesMatrices",
+        "lightDir",
+        "shadowDepth"
+      ],
+      "vertShader": "/mod_vert.glsl"
+    },
+    {
+      "attributes": [
         "vertPos"
       ],
       "fragShader": "/edit_frag.glsl",
@@ -4720,7 +4534,9 @@
         "P",
         "V",
         "lightDir",
-        "shadowDepth"
+        "shadowDepth",
+        "terrain0",
+        "terrain1"
       ],
       "vertShader": "/hmap_vert.glsl"
     },
@@ -4776,13 +4592,7 @@
         "P",
         "Texture0",
         "V",
-        "albedo",
-        "emissivity",
-        "flip",
-        "lightColor",
         "lightDir",
-        "reflectance",
-        "roughness",
         "shadowDepth"
       ],
       "vertShader": "/tex_vert.glsl"
@@ -4794,8 +4604,16 @@
       "name": "cheeseTex"
     },
     {
+      "filePath": "/rock.png",
+      "name": "rock"
+    },
+    {
       "filePath": "/sky.jpg",
       "name": "sky"
+    },
+    {
+      "filePath": "/snow.jpg",
+      "name": "snow"
     }
   ]
 }

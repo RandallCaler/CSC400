@@ -5,13 +5,6 @@ uniform sampler2D shadowDepth;
 out vec4 Outcolor;
 
 
-uniform vec3 lightColor;
-uniform vec3 albedo;
-uniform vec3 emissivity;
-uniform vec3 reflectance;
-uniform float roughness;
-
-
 in OUT_struct {
    vec3 fPos;
    vec3 fragNor;
@@ -60,7 +53,7 @@ void main() {
 
   Shade = TestShadow(in_struct.fPosLS);
 
-  Outcolor = amb*(texColor0) + (1.0-Shade)*texColor0*BaseColor;
+  Outcolor = amb*(texColor0) + texColor0*BaseColor; //(1.0-Shade)*
 }
 
 

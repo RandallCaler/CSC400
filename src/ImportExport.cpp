@@ -163,7 +163,6 @@ void ImporterExporter::loadFromFile(string path) {
 		cerr << "Failed to open save file at " << fullPath << endl;
 		return;
 	}
-
 	json j;
 	saveFile >> j;  // Load the entire JSON structure from the file
 
@@ -174,7 +173,6 @@ void ImporterExporter::loadFromFile(string path) {
 			loadShader(shaderData);
 		}
 	}
-
 	if (j.contains("textures")) {
 		for (const auto& texData : j["textures"]) {
 			loadTexture(texData);
