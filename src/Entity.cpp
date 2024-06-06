@@ -109,6 +109,7 @@ void Entity::updateBoids(float deltaTime, vector<shared_ptr<Entity>> boids, shar
         if (glm::length(m.velocity) > 2){
             m.velocity = (m.velocity/glm::length(m.velocity)) * 2.0f;
         }
+        // check position within penguin radius, modify velocity
         position += (m.velocity * deltaTime); 
     }
 }
