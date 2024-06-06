@@ -215,7 +215,7 @@ private:
         auto& boneInfoMap = m_BoneInfoMap;
         int& boneCount = m_BoneCounter;
 
-        cout << "number of bones: " << mesh->mNumBones << endl;
+        //cout << "number of bones: " << mesh->mNumBones << endl;
         for (int boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex)
         {
             int boneID = -1;
