@@ -90,6 +90,8 @@ void Entity::updateBoids(float deltaTime, shared_ptr<Texture> hmap, vector<share
     // sample weightings that Dr. Wood provided
     // overall acceleration with all forces factored in
     if(collider->boided == true){
+        collidable = false;
+
         if (activeboids > 1){
             alignment /= (activeboids - 1); //avg
             alignment = (alignment - m.velocity)*vec3(.005); // only match a fraction of nearby velocities
@@ -108,13 +110,15 @@ void Entity::updateBoids(float deltaTime, shared_ptr<Texture> hmap, vector<share
         float groundHeight = getHeightFromPlane(groundPlane, vec2(position.x, position.z));
         // check position within penguin radius, modify velocity
         position += (m.velocity * deltaTime);
-        // if(position.y < groundHeight){
-        //     position.y = groundHeight;
+        // if(position.y < (groundHeight + 2)){
+        //     position.y = groundHeight + 2;
+
         // }
-        if (glm::distance(position, player->position) < .7){
-            // vec4 tempV = vec4(m.velocity, 1.0);
-            // mat4 rotM= glm::rotate(mat4(1.0f), 1.57f, vec3(0, 1, 0));
-            // tempV = rotM * tempV;
+        
+        if (glm::distance(position, player->position) < 1){
+            vec4 tempV = vec4(m.velocity, 1.0);
+            mat4 rotM= glm::rotate(mat4(1.0f), 2.0f, vec3(0, 1, 0));
+            tempV = rotM * tempV;
             // m.velocity = vec3(tempV);
             m.velocity = -1.0f*(m.velocity);
         }
