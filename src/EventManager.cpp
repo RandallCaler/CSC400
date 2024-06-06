@@ -8,6 +8,7 @@ Event::Event(const char* sp, ma_engine *en, bool loop, string type){
     looping = loop;
     id = type;
     ma_sound_get_length_in_pcm_frames(&sound, &soundDuration);  
+    startTime = 0;
 }
 
 Event::Event(){}
@@ -22,7 +23,7 @@ void Event::startSound(){
         else {
             result = ma_sound_start(&sound);
         } 
-        startTime = ma_engine_get_time_in_pcm_frames(engine);
+        ma_sound_get_cursor_in_pcm_frames(&sound, &startTime);
         //cout << "START SOUND : " << (result == MA_SUCCESS) << endl;
     }
 }
@@ -35,17 +36,25 @@ bool Event::isPlaying(){
     return (MA_TRUE == ma_sound_is_playing(&sound));
 }
 
-void Event::stopSound(){
-    if (isPlaying()){
-        if ((id != "walking") && (id != "background")){
-            if (ma_engine_get_time_in_pcm_frames(engine) - startTime >= soundDuration) {
+bool Event::stopSound(){
+   if (isPlaying()) {
+        if ((id != "walking") && (id != "background")) {
+            ma_uint64 currentFrame;
+            ma_sound_get_cursor_in_pcm_frames(&sound, &currentFrame);
+
+            if (currentFrame - startTime >= soundDuration) {
+                cout << "premature stop"<< endl;
                 ma_sound_stop(&sound);
+                return false;
             }
-        }
-        else{
+
+        } else {  
             ma_sound_stop(&sound);
+            return false;
         }
+        return true;
     }
+    return false;
 }
 
 EventManager::EventManager(){
@@ -70,7 +79,7 @@ void EventManager::addEvent(Event e){
 
 void EventManager::stoppingSound(string id){
    // cout << "stopping sound" << endl;
-    eventHistory->insert_or_assign(id, false);
-    events.at(id)->stopSound();
+    bool check = events.at(id)->stopSound();
+    eventHistory->insert_or_assign(id, check);   
 
 }

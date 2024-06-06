@@ -68,7 +68,11 @@ float getHeightFromPlane(vec4 plane, vec2 pos) {
     return (plane.w - plane.x * pos.x - plane.z * pos.y) / plane.y;
 }
 
-void Entity::updateBoids(float deltaTime, vector<shared_ptr<Entity>> boids, Entity *penguin){
+// void Entity::drawBoids(float deltaTime){
+
+// }
+
+void Entity::updateBoids(float deltaTime, vector<shared_ptr<Entity>> boids, shared_ptr<Entity> player){
     // separation forces
     vec3 separation = vec3(0, 0, 0);
     float diff;
@@ -92,7 +96,7 @@ void Entity::updateBoids(float deltaTime, vector<shared_ptr<Entity>> boids, Enti
     alignment = (alignment - m.velocity)*vec3(.125); // only match a fraction of nearby velocities
 
     // center of motion is set to penguin position - might alter so that it trails behind penguin a bit
-    vec3 leader = penguin->position;
+    vec3 leader = player->position;
 
     // sample weightings that Dr. Wood provided
     // overall acceleration with all forces factored in

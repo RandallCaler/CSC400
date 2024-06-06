@@ -54,6 +54,7 @@ map<string, shared_ptr<Texture>> textureLibrary = { {"", nullptr} };
 map<string, shared_ptr<Entity>> worldentities;
 vector<string> tagList = { "" };
 vector<shared_ptr<Entity>> collidables;
+vector<shared_ptr<Entity>> boids;
 
 shared_ptr<Entity> cur_entity = nullptr;
 
@@ -83,7 +84,7 @@ public:
 
 	shared_ptr<Entity> player;
 
-	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &textureLibrary, &worldentities, &tagList, &collidables);
+	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &textureLibrary, &worldentities, &tagList, &collidables, &boids);
 
 	shared_ptr<Program> DepthProg;
 	GLuint depthMapFBO;
@@ -515,6 +516,7 @@ public:
 				ent->collider->entityName = 'c';
 			}
 			if (ent->tag == "food") {
+				cout << "SET COLLECTIBLE TAG TO TRUE" << endl;
 				ent->collider->collectible = true;
 			}			
 		}
@@ -750,7 +752,12 @@ public:
 				if (entity->id == player->id) {
 					entity->updateMotion(deltaTime, hmap, collidables, collisionSounds);
 				}
+				// if (entity->collider->collectible == true){
+				// 	entity->updateBoids(deltaTime, boids, player);
+				// }
 			}
+
+			
 	
 			glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 			glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
@@ -889,11 +896,16 @@ public:
 		else {eManager->stoppingSound("walking");}
 
 		if (collectionEvent()) {
-			cout << "collection event triggered, starting sound" << endl;
+			//cout <<  "collection event triggered, starting sound: " << collisionSounds[0] <<eManager->eventHistory->at("collection") << endl;
 			eManager->triggerSound("collection");
-			// collisionSounds[0] == 0;
+		
+			// eManager->eventHistory->at("collection") == true;
+			
 		}
-		else {eManager->stoppingSound("collection");}
+		else {
+			eManager->stoppingSound("collection");
+			collisionSounds[0] = 0;
+		}
 
 
 	}
@@ -984,9 +996,12 @@ int main(int argc, char *argv[]) {
 	application->initGeom(resourceDir);
 	application->initSoundEngines();
 
+	// for (int i = 0; i < boids.size(); i++){
+	// 	cout << (boids[i]->id) << "BOID" << (boids[i]->collider->collectible) << endl;
+	// }
 
 	Event *ev = new Event("../resources/french-mood.mp3", &engine, true, "background");
-	ev->startSound();
+	// ev->startSound();
 
 	float dt = 1 / 60.0;
 	auto lastTime = chrono::high_resolution_clock::now();
