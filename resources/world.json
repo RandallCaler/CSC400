@@ -3419,6 +3419,108 @@
       "texture": ""
     },
     {
+      "collider": 1,
+      "file": "/sphere.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Icosphere"
+        }
+      ],
+      "name": "respawn",
+      "position": [
+        79.20999908447266,
+        -65.38999938964844,
+        -17.68000030517578
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        0.019999999552965164,
+        1.0
+      ],
+      "shader": "reg",
+      "tag": "respawn",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/sphere.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Icosphere"
+        }
+      ],
+      "name": "respawn2",
+      "position": [
+        -92.08999633789063,
+        -69.16999816894531,
+        -32.52945327758789
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.3200000524520874,
+        0.05000000074505806,
+        1.3200000524520874
+      ],
+      "shader": "reg",
+      "tag": "respawn",
+      "texture": ""
+    },
+    {
       "collider": 0,
       "file": "/sphereWTex.obj",
       "meshes": [

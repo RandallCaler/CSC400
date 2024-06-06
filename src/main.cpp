@@ -21,6 +21,7 @@
 #include "Camera.h"
 #include "LevelEditor.h"
 #include "EventManager.h"
+#include "GameManager.h"
 #include "Animation.h"
 #include "Animator.h"
 
@@ -87,6 +88,7 @@ public:
 	shared_ptr<Entity> player;
 
 	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &textureLibrary, &worldentities, &tagList, &collidables);
+	GameManager *gameManager = new GameManager();
 
 	shared_ptr<Program> DepthProg;
 	shared_ptr<Program> DepthProgDebug;
@@ -1087,6 +1089,8 @@ int main(int argc, char *argv[]) {
 	application->initSoundEngines();
 	application->initAnimation();
 
+	application->gameManager->init(application->player, worldentities);
+
 
 	Event *ev = new Event("../resources/french-mood.mp3", &engine, true, "background");
 	ev->startSound();
@@ -1128,6 +1132,7 @@ int main(int argc, char *argv[]) {
 		lastTime = nextLastTime;
 
 		activeCam->updateCamera(deltaTime);
+		application->gameManager->update();
 		// Render scene.
 		application->render(deltaTime);
 
