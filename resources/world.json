@@ -1888,422 +1888,7 @@
       "texture": ""
     },
     {
-      "collider": 1,
-      "file": "/fishPie.obj",
-      "meshes": [
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Crust"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Cube"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Cube.001"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Cube.002"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Cube.003"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Cube.004"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "FakeFishLayer"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Fish.001|Cone|Dupli|"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Fish.002|Cone|Dupli|"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Fish.003|Cone|Dupli|"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Fish.004|Cone|Dupli|"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Fish.005|Cone|Dupli|"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Fish.006|Cone|Dupli|"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Fish|Cone|Dupli|"
-        },
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Pan"
-        }
-      ],
-      "name": "fishPie",
-      "position": [
-        -46.90999984741211,
-        -71.37999725341797,
-        68.36000061035156
-      ],
-      "rotation": [
-        0.0,
-        -0.7853981852531433,
-        0.0
-      ],
-      "scale": [
-        1.0,
-        1.0,
-        1.0
-      ],
-      "shader": "reg",
-      "tag": "food",
-      "texture": ""
-    },
-    {
-      "collider": 1,
+      "collider": 0,
       "file": "/frenchFries.obj",
       "meshes": [
         {
@@ -3089,9 +2674,1022 @@
       ],
       "name": "frenchFries",
       "position": [
-        -40.099998474121094,
-        -69.4800033569336,
-        54.38999938964844
+        62.869998931884766,
+        -67.56999969482422,
+        -4.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "shader": "reg",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
+      "file": "/grapes.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cylinder"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.001|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.002|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.003|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.004|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.005|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.006|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.007|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.008|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.009|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.010|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.011|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.012|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.013|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.014|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.015|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.016|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.017|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.019|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.020|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.021|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.022|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.023|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.024|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.025|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.026|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.027|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.028|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.029|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.030|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.031|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.032|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.033|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.034|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.035|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.036|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape.037|Sphere|Dupli|"
+        },
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Grape|Sphere|Dupli|"
+        }
+      ],
+      "name": "grapes",
+      "position": [
+        76.69999694824219,
+        -63.869998931884766,
+        -30.719999313354492
       ],
       "rotation": [
         0.0,
@@ -4030,6 +4628,10 @@
     {
       "filePath": "/cheese_Base_color.png",
       "name": "cheeseTex"
+    },
+    {
+      "filePath": "/rock.png",
+      "name": "rock"
     },
     {
       "filePath": "/sky.jpg",

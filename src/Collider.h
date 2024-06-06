@@ -29,6 +29,7 @@ public:
     
     char entityName;
     bool collectible;
+    bool boided = false;
 
     Collider();
     Collider(Entity *owner, bool collectible = false);

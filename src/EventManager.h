@@ -35,7 +35,7 @@ class Event {
         Event(const char *sp, ma_engine *en, bool looping, string id);
         Event();
         void startSound();
-        void stopSound();
+        bool stopSound();
         void rewindSound();
         bool isPlaying();
 };

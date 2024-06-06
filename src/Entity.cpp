@@ -32,9 +32,6 @@ Entity::Entity() {
     editorColor = em;
 };
 
-// void Entity::updateScale(float newScale) {
-//     scale = newScale;
-// }
 
 glm::mat4 Entity::generateModel() {
     MatrixStack* M = new MatrixStack();
@@ -66,6 +63,70 @@ glm::mat4 Entity::generateModel() {
 
 float getHeightFromPlane(vec4 plane, vec2 pos) {
     return (plane.w - plane.x * pos.x - plane.z * pos.y) / plane.y;
+}
+
+
+void Entity::updateBoids(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>> boids, shared_ptr<Entity> player){
+    
+    // separation forces
+    vec3 separation = vec3(0, 0, 0);
+    float diff;
+
+    // match nearby velocities
+    vec3 alignment = vec3(0, 0, 0);
+
+    int activeboids = 0;
+    for (int i = 0; i < boids.size(); i++){
+        if(boids[i]->collider->boided){
+            diff = abs(glm::distance(boids[i]->position, position));
+            if(diff < 1){
+                separation -= (boids[i]->position - position);
+            }
+            alignment += boids[i]->m.velocity;
+            activeboids++;
+        }
+    }
+
+    // sample weightings that Dr. Wood provided
+    // overall acceleration with all forces factored in
+    if(collider->boided == true){
+        collidable = false;
+
+        if (activeboids > 1){
+            alignment /= (activeboids - 1); //avg
+            alignment = (alignment - m.velocity)*vec3(.005); // only match a fraction of nearby velocities
+        }
+        // center of motion is set to penguin position - might alter so that it trails behind penguin a bit
+        vec3 leader = (player->position - this->position);
+        // vec3 accel = (1.5f)*separation + (0.3f)*alignment + 0.2f*(leader);
+        vec3 accel = 0.2f*(normalize(leader)) + 0.7f*(separation);
+
+        m.velocity += accel; 
+        if (glm::length(m.velocity) > 5){
+            m.velocity = (m.velocity/glm::length(m.velocity)) * 2.0f;
+        }
+
+        vec4 groundPlane = collider->CheckGroundCollision(hmap);
+        float groundHeight = getHeightFromPlane(groundPlane, vec2(position.x, position.z));
+        // check position within penguin radius, modify velocity
+        position += (m.velocity * deltaTime);
+        // if(position.y < (groundHeight + 2)){
+        //     position.y = groundHeight + 2;
+
+        // }
+        
+        if (glm::distance(position, player->position) < 1){
+            vec4 tempV = vec4(m.velocity, 1.0);
+            mat4 rotM= glm::rotate(mat4(1.0f), 2.0f, vec3(0, 1, 0));
+            tempV = rotM * tempV;
+            // m.velocity = vec3(tempV);
+            m.velocity = -1.0f*(m.velocity);
+        }
+        if(glm::length(scaleVec) > .5){
+            scaleVec *= 0.9f;
+        }    
+
+    }
 }
 
 void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList, int *collisionSounds) {
