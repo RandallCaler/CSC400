@@ -67,7 +67,7 @@ vec3 F (vec3 F0, vec3 V, vec3 N) {
 float TestShadow(vec4 LSfPos) {
 
    //0.005 * tan (acos(nDotl)) is better/more precise
-  float depth_buffer = 0.0009;
+  float depth_buffer = 0.000;
 
 	//1: shift the coordinates from -1, 1 to 0, 1
   vec3 fLS = (vec3(LSfPos) + vec3(1.0)) * 0.5;
@@ -77,7 +77,7 @@ float TestShadow(vec4 LSfPos) {
 
   for (int i = 0; i < 10; i++) {
     for (int j = 0; j < 10; j++) {
-      in_shadow = texture(shadowDepth, (fLS.xy + (vec2(offset[i], offset[j])/512.0))).r;
+      in_shadow = texture(shadowDepth, (fLS.xy + (vec2(offset[i], offset[j])/256.0))).r;
       if (fLS.z > in_shadow + depth_buffer)
         count += 1;
     }
@@ -109,6 +109,8 @@ void main() {
 	vec3 BRDF = Kd * lambert + Ks * (num / denom);
 	vec4 color = vec4(BRDF * lightColor, 1.0);
 
+	BRDF = Kd * lambert;
+
 
 	float x_val = max(amb*emissivity.x, emissivity.x + BRDF.x * lightColor.x * max(0.005, dot(N, L)));
 	float y_val = max(amb*emissivity.y, emissivity.y + BRDF.y * lightColor.y * max(0.005, dot(N, L))); 
@@ -123,45 +125,10 @@ void main() {
 
 	//vec4 baseColor = vec4(BRDF, 1.0);
 
-	//Outcolor = vec4(vec3(Shade), 1.0);
-	//Outcolor = vec4(vec3(1.0-Shade), 1.0);
-	Outcolor = vec4(albedo, 1.0) + (1.0-Shade)*color;
-	Outcolor = vec4(albedo, 1.0) + (1.0-Shade)*baseColor;
+	//Outcolor = vec4(albedo, 1.0) + (1.0-Shade)*color;
+	//Outcolor = amb*vec4(albedo, 1.0) + (1.0-Shade)*baseColor;
+
+	Outcolor = 0.5*vec4(albedo, 1.0) + (1.0-Shade)*baseColor;
 	
 }
 
-
-
-/*#version 330 core 
-
-out vec4 color;
-
-// reflective properties of material
-uniform vec3 MatAmb;
-uniform vec3 MatDif;
-uniform vec3 MatSpec;
-uniform float MatShine;
-
-in vec3 fragNor; // vertex normal in view space
-in vec3 LDir; // light source vector in view space
-in vec3 EPos; // vertex position in view space
-
-void main() {
-	// normal unit vector to vertex geometry
-	vec3 normal = normalize(fragNor);
-	// unit vector toward light source
-	vec3 light = normalize(LDir);
-	// unit vector angularly halfway between light and camera
-	vec3 halfway = normalize(light - normalize(EPos));
-	
-	// diffusion coefficient
-	float diffuse = max(0, dot(normal, light));
-	diffuse = floor(diffuse * 5) / 5.0;
-	// specular coefficient
-	float specular = pow(max(0, dot(normal, halfway)), MatShine);
-	specular = floor(specular * 5) / 5.0;
-	
-	// total reflective profile
-	color = vec4(MatAmb + vec3(specular)*MatSpec, 1.0) + vec4(vec3(diffuse)*MatDif, 1.0);
-}
-*/

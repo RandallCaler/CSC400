@@ -40,12 +40,12 @@ float TestShadow(vec4 LSfPos) {
 
   for (int i = 0; i < 10; i++) {
     for (int j = 0; j < 10; j++) {
-      in_shadow = texture(shadowDepth, (fLS.xy + (vec2(offset[i], offset[j])/16384.0))).r;
+      in_shadow = texture(shadowDepth, (fLS.xy + (vec2(offset[i], offset[j])/256.0))).r;
       if (fLS.z > in_shadow + depth_buffer)
         count += 1;
     }
   }
-  
+
   return (count)/500.0;
 
 

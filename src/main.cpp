@@ -95,7 +95,7 @@ public:
 
 
 	GLuint depthMapFBO;
-	const GLuint S_WIDTH = 16384, S_HEIGHT = 16384;
+	const GLuint S_WIDTH = 8192, S_HEIGHT = 8192;
 	GLuint depthMap;
 	GLuint quad_vertexbuffer;
 	 GLuint quad_VertexArrayID;
@@ -741,7 +741,7 @@ public:
 
 		// Apply perspective projection.
 		Projection->pushMatrix();
-		Projection->perspective(45.0f, aspect, 0.01f, 1000.0f);
+		Projection->perspective(45.0f, aspect, 0.01f, 100.0f);
 		
 		//material shader first
 		shared_ptr<Shader> curS = shaders["reg"];
