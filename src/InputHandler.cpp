@@ -113,7 +113,7 @@ void InputHandler::handleInput(Entity* penguin, Camera* cam, float deltaTime) {
         // cout << sum / angles.size() << endl;
     }
     else {
-        penguin->rotY = -PI / 2 ;
+        penguin->rotY = 0;
     }
     if (backwards) {
         penguin->m.curSpeed = -WALK_SPEED;
