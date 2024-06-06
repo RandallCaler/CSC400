@@ -44,7 +44,7 @@ float TestShadow(vec4 LSfPos) {
     }
   }
 
-  return (count)/500.0;
+  return (count)/100.0;
 
 
 	//2: read off the stored depth (.) from the ShadowDepth, using the shifted.xy 
@@ -64,8 +64,6 @@ void main() {
   float amb = 0.3;
 
   vec4 terrainTex = texture(terrain1, in_struct.fPos.xz/10) * length(vec2(in_struct.fragNor.x, in_struct.fragNor.z)) + texture(terrain0, in_struct.fPos.xz/10) * (1-length(vec2(in_struct.fragNor.x, in_struct.fragNor.z)));
-  //terrainTex = texture(terrain1, in_struct.fPos.xz) * length(vec2(in_struct.fragNor.x, in_struct.fragNor.z));
-  //terrainTex = texture(terrain0, in_struct.fPos.xz) * abs(in_struct.fragNor.y * in_struct.fragNor.y);
 
   vec4 BaseColor = vec4(in_struct.vColor * terrainTex.xyz, 1);
 
@@ -76,9 +74,7 @@ void main() {
   
   float intensity = max(dot(in_struct.lightDir, normalize(in_struct.fragNor)), 0);
   
-  //amb*(baseColor) + (1.0-Shade)*baseColor
   color = amb*(BaseColor) + (1.0-Shade) * BaseColor;
   //color = vec4(vec3(regionColor) * intensity, 1.0);
-  //color = BaseColor;
 }
 
