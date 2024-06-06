@@ -292,7 +292,10 @@ glm::vec4 Collider::CheckCollision(float deltaTime, std::vector<std::shared_ptr<
                 if (e->collider->collectible) {
                     // placeholder collectible response - should activate boid behavior
                     //cout << "COLLECTIBLE" << endl;
-                    collisionSounds[0] = 1;
+                    if(!e->collider->boided){
+                        collisionSounds[0] = 1;
+                    }
+                    e->collider->boided = true;
                     colliding = true;
 
                     // e->position.y += 100;

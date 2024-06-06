@@ -73,36 +73,44 @@ float getHeightFromPlane(vec4 plane, vec2 pos) {
 // }
 
 void Entity::updateBoids(float deltaTime, vector<shared_ptr<Entity>> boids, shared_ptr<Entity> player){
+    
     // separation forces
     vec3 separation = vec3(0, 0, 0);
     float diff;
-    for (int i = 0; i < boids.size(); i++){
-        // if(boids[i] != this){
-            // diff = boids[i]->position - position;
-            diff = abs(glm::distance(boids[i]->position, position));
-            if(diff < 10){
-                separation -= (boids[i]->position - position);
-            }
-        // }
-    }
 
     // match nearby velocities
     vec3 alignment = vec3(0, 0, 0);
-    for (int i = 0; i < boids.size(); i++){
-        // if(boids[i] != this)
-            alignment += boids[i]->m.velocity;
-    }
-    alignment /= (boids.size() - 1); //avg
-    alignment = (alignment - m.velocity)*vec3(.125); // only match a fraction of nearby velocities
 
-    // center of motion is set to penguin position - might alter so that it trails behind penguin a bit
-    vec3 leader = player->position;
+    int activeboids = 0;
+    for (int i = 0; i < boids.size(); i++){
+        if(boids[i]->collider->boided){
+            diff = abs(glm::distance(boids[i]->position, position));
+            if(diff < 1){
+                separation -= (boids[i]->position - position);
+            }
+            alignment += boids[i]->m.velocity;
+            activeboids++;
+        }
+    }
 
     // sample weightings that Dr. Wood provided
     // overall acceleration with all forces factored in
-    vec3 accel = (1.5f)*separation + (0.3f)*alignment + 0.2f*(leader);
-    m.velocity += accel; 
-    position += (m.velocity * deltaTime); 
+    if(collider->boided == true){
+        if (activeboids > 1){
+            alignment /= (activeboids - 1); //avg
+            alignment = (alignment - m.velocity)*vec3(.005); // only match a fraction of nearby velocities
+        }
+        // center of motion is set to penguin position - might alter so that it trails behind penguin a bit
+        vec3 leader = (player->position - this->position);
+        // vec3 accel = (1.5f)*separation + (0.3f)*alignment + 0.2f*(leader);
+        vec3 accel = 0.2f*(normalize(leader)) + 0.2f*(separation);
+
+        m.velocity += accel; 
+        if (glm::length(m.velocity) > 2){
+            m.velocity = (m.velocity/glm::length(m.velocity)) * 2.0f;
+        }
+        position += (m.velocity * deltaTime); 
+    }
 }
 
 void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList, int *collisionSounds) {

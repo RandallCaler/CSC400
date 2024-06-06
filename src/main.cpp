@@ -752,12 +752,11 @@ public:
 				if (entity->id == player->id) {
 					entity->updateMotion(deltaTime, hmap, collidables, collisionSounds);
 				}
-				// if (entity->collider->collectible == true){
-				// 	entity->updateBoids(deltaTime, boids, player);
-				// }
+				if (entity->collider->collectible){
+					entity->updateBoids(deltaTime, boids, player);
+					// cout << "BOIDED: " << entity->collider->boided << endl;
+				}
 			}
-
-			
 	
 			glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 			glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
@@ -892,8 +891,8 @@ public:
 	
 	
 	void checkSounds(){
-		if (walkingEvent()) {eManager->triggerSound("walking");}
-		else {eManager->stoppingSound("walking");}
+		// if (walkingEvent()) {eManager->triggerSound("walking");}
+		// else {eManager->stoppingSound("walking");}
 
 		if (collectionEvent()) {
 			//cout <<  "collection event triggered, starting sound: " << collisionSounds[0] <<eManager->eventHistory->at("collection") << endl;
@@ -996,9 +995,10 @@ int main(int argc, char *argv[]) {
 	application->initGeom(resourceDir);
 	application->initSoundEngines();
 
-	// for (int i = 0; i < boids.size(); i++){
-	// 	cout << (boids[i]->id) << "BOID" << (boids[i]->collider->collectible) << endl;
-	// }
+	for (int i = 0; i < boids.size(); i++){
+		cout << "boids in population" << endl;
+		cout << (boids[i]->id) << " BOID " << (boids[i]->collider->collectible) << endl;
+	}
 
 	Event *ev = new Event("../resources/french-mood.mp3", &engine, true, "background");
 	// ev->startSound();
