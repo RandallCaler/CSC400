@@ -37,7 +37,7 @@ public:
 				m_AnimationCompletedOnce = true;
 			}
 
-			CalculateBoneTransform(&m_CurrentAnimation->GetRootNode(), m_CurrentAnimation->GetGlobalInverseTransformation());
+			CalculateBoneTransform(&m_CurrentAnimation->GetRootNode(), glm::mat4(1.0f));
 		}
 	}
 

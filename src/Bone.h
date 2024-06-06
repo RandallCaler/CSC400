@@ -68,6 +68,12 @@ public:
 			KeyScale data;
 			data.scale = AssimpGLMHelpers::GetGLMVec(scale);
 			data.timeStamp = timeStamp;
+
+			if (m_Name == "Penguin_Armature")
+			{
+				data.scale = glm::vec3(1.0f, 1.0f, 1.0f);
+			}
+
 			m_Scales.push_back(data);
 		}
 	}
