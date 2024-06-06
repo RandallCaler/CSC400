@@ -24,21 +24,22 @@ out vec3 fragNor;
 
 void main() {
     float mirageAmp;
+    int bands = 4096;
     if (region < 0.01) {
         fRegion = vec3(0, 0, 0);
-        mirageAmp = 15;
+        mirageAmp = 0.15;
     }
     else if (region < 1.001) {
         fRegion = vec3(1, 0, 0);
-        mirageAmp = 25;
+        mirageAmp = 0.75;
     }
     else if (region < 2.001) {
         fRegion = vec3(0, 1, 0);
-        mirageAmp = 5;
+        mirageAmp = 0.25;
     }
     else if (region < 3.001) {
         fRegion = vec3(0, 0, 1);
-        mirageAmp = 5;
+        mirageAmp = 0.25;
     }
     else {
         fRegion = vec3(1);
@@ -50,14 +51,15 @@ void main() {
 
     // complete vertex shading
     vec3 vPos = vec3(V * M * vec4(vertPos, 1));
-    vec3 mPos = vec3(M * vec4(vertPos, 1));
     vec3 flatViewVec = normalize(vec3(vPos.x, 0.0, vPos.z));
     float lPos = dot(vPos, flatViewVec);
     gl_Position = P * V * M * vec4(vertPos, 1);
-    float centerPosX = round(gl_Position.x / gl_Position.w * 2048) / 2048 * gl_Position.w;
-    if (lPos > 50) {
-        float mixValue = (h_vert + 75)/150;
-	    gl_Position.x = centerPosX + max(mirageAmp*(1 - mixValue * mixValue) - 0.25, 0) * (centerPosX - gl_Position.x) * (lPos - 43)/64 * sin((0.5 - mixValue) * 10 * fTime);
+    // float centerPosX = round(gl_Position.x / gl_Position.w * bands) / bands * gl_Position.w;
+    float centerPosX = gl_Position.x;
+    if (lPos > 100) {
+        float mixValue = (h_vert + 37.5)/75;
+	    // gl_Position.x = centerPosX + max(1*(1 - mixValue * mixValue) - 0.25, 0) * (centerPosX - gl_Position.x) * (lPos - 43)/64 * sin((0.5 - mixValue) * 10 * fTime);
+	    gl_Position.x = centerPosX + mirageAmp*(1 - mixValue * mixValue) * (lPos - 95)/200 * sin((1 - mixValue) * 10 * fTime);
     }
     
 
