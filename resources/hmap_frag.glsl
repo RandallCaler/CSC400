@@ -5,7 +5,7 @@ uniform sampler2D terrain0;
 uniform sampler2D terrain1;
 
 out vec4 color;
-in vec3 regionColor;
+in vec3 fRegion;
 in vec3 fragNor;
 in float h_vert;
 
@@ -74,7 +74,7 @@ void main() {
   
   float intensity = max(dot(in_struct.lightDir, normalize(in_struct.fragNor)), 0);
   
-  color = amb*(BaseColor) + (1.0-Shade) * BaseColor;
-  //color = vec4(vec3(regionColor) * intensity, 1.0);
+  color = amb*(BaseColor)*vec4(fRegion, 1) + (1.0-Shade) * BaseColor;
+  //color = vec4(fRegion * intensity, 1.0);
 }
 

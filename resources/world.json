@@ -3963,7 +3963,8 @@
         "lightDir",
         "shadowDepth",
         "terrain0",
-        "terrain1"
+        "terrain1",
+        "fTime"
       ],
       "vertShader": "/hmap_vert.glsl"
     },

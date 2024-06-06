@@ -589,9 +589,10 @@ public:
 		for (unsigned int i = 0; i < hmap_dim.second; i++) {
 			for (unsigned int j = 0; j < hmap_dim.first; j++) {
 				bool pit;
-				float hvalr = (float)*(hmap_data + 3 * (i * hmap_dim.first + j));
-				float hvalg = (float)*(hmap_data + 3 * (i * hmap_dim.first + j) + 1);
-				float hvalb = (float)*(hmap_data + 3 * (i * hmap_dim.first + j) + 2);
+				int hvalr = *(hmap_data + 3 * (i * hmap_dim.first + j));
+				int hvalg = *(hmap_data + 3 * (i * hmap_dim.first + j) + 1);
+				int hvalb = *(hmap_data + 3 * (i * hmap_dim.first + j) + 2);
+				int hvalmax = std::max(hvalr, std::max(hvalg, hvalb));
 				float hval = (hvalr + hvalg + hvalb) / (3 * 255.0f);
 				//float hval = (std::max)(hvalr, (std::max)(hvalg, hvalb)) / 255.0f;
 				
@@ -601,9 +602,18 @@ public:
 				vertices.push_back(worldSize * (hval * (Y_MAX - Y_MIN) + Y_MIN));
 				vertices.push_back(worldSize * (i - hmap_dim.second / 2.0f));
 
-				regions.push_back((pit ? 72 : hvalr) / 255.0f);
-				regions.push_back(hvalg / 255.0f);
-				regions.push_back((pit ? 100 : hvalb) / 255.0f);
+				if (pit) {
+					regions.push_back(0);
+				}
+				else if (hvalmax == hvalr) {
+					regions.push_back(1);
+				}
+				else if (hvalmax == hvalg) {
+					regions.push_back(2);
+				}
+				else if (hvalmax == hvalb) {
+					regions.push_back(3);
+				}
 			}
 		}
 		// hmap->freeData();
@@ -695,7 +705,7 @@ public:
 		
 		glEnableVertexAttribArray(2);
   		glBindBuffer(GL_ARRAY_BUFFER, GrndRegionBuffObj);
-  		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+  		glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
 		
 
    		// draw!
@@ -782,7 +792,7 @@ public:
 
 		// Apply perspective projection.
 		Projection->pushMatrix();
-		Projection->perspective(45.0f, aspect, 0.01f, 100.0f);
+		Projection->perspective(45.0f, aspect, 0.01f, 350.0f);
 		
 		//material shader first
 		shared_ptr<Shader> curS = shaders["reg"];
@@ -870,6 +880,7 @@ public:
   		glBindTexture(GL_TEXTURE_2D, depthMap);
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
+		glUniform1f(curS->prog->getUniform("fTime"), glfwGetTime());
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 		drawGround(curS);  //draw ground here
 
