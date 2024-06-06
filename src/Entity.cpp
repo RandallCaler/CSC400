@@ -32,9 +32,6 @@ Entity::Entity() {
     editorColor = em;
 };
 
-// void Entity::updateScale(float newScale) {
-//     scale = newScale;
-// }
 
 glm::mat4 Entity::generateModel() {
     MatrixStack* M = new MatrixStack();
@@ -68,11 +65,8 @@ float getHeightFromPlane(vec4 plane, vec2 pos) {
     return (plane.w - plane.x * pos.x - plane.z * pos.y) / plane.y;
 }
 
-// void Entity::drawBoids(float deltaTime){
 
-// }
-
-void Entity::updateBoids(float deltaTime, vector<shared_ptr<Entity>> boids, shared_ptr<Entity> player){
+void Entity::updateBoids(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>> boids, shared_ptr<Entity> player){
     
     // separation forces
     vec3 separation = vec3(0, 0, 0);
@@ -103,14 +97,31 @@ void Entity::updateBoids(float deltaTime, vector<shared_ptr<Entity>> boids, shar
         // center of motion is set to penguin position - might alter so that it trails behind penguin a bit
         vec3 leader = (player->position - this->position);
         // vec3 accel = (1.5f)*separation + (0.3f)*alignment + 0.2f*(leader);
-        vec3 accel = 0.2f*(normalize(leader)) + 0.2f*(separation);
+        vec3 accel = 0.2f*(normalize(leader)) + 0.7f*(separation);
 
         m.velocity += accel; 
-        if (glm::length(m.velocity) > 2){
+        if (glm::length(m.velocity) > 5){
             m.velocity = (m.velocity/glm::length(m.velocity)) * 2.0f;
         }
+
+        vec4 groundPlane = collider->CheckGroundCollision(hmap);
+        float groundHeight = getHeightFromPlane(groundPlane, vec2(position.x, position.z));
         // check position within penguin radius, modify velocity
-        position += (m.velocity * deltaTime); 
+        position += (m.velocity * deltaTime);
+        // if(position.y < groundHeight){
+        //     position.y = groundHeight;
+        // }
+        if (glm::distance(position, player->position) < .7){
+            // vec4 tempV = vec4(m.velocity, 1.0);
+            // mat4 rotM= glm::rotate(mat4(1.0f), 1.57f, vec3(0, 1, 0));
+            // tempV = rotM * tempV;
+            // m.velocity = vec3(tempV);
+            m.velocity = -1.0f*(m.velocity);
+        }
+        if(glm::length(scaleVec) > .5){
+            scaleVec *= 0.9f;
+        }    
+
     }
 }
 

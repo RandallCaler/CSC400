@@ -34,7 +34,7 @@ public:
     Entity();
 
     void updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>>& collisionList, int *collisionSounds);
-    void updateBoids(float deltaTime, vector<shared_ptr<Entity>> boids, shared_ptr<Entity> player);
+    void updateBoids(float deltaTime, shared_ptr<Texture> hmap, vector<shared_ptr<Entity>> boids, shared_ptr<Entity> player);
     glm::mat4 generateModel();
     // glm::vec3 separationForce(vector<Entity> boids);
     // glm::vec3 alignmentForce(vector<Entity> *boids);

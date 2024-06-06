@@ -753,7 +753,7 @@ public:
 					entity->updateMotion(deltaTime, hmap, collidables, collisionSounds);
 				}
 				if (entity->collider->collectible){
-					entity->updateBoids(deltaTime, boids, player);
+					entity->updateBoids(deltaTime, hmap, boids, player);
 					// cout << "BOIDED: " << entity->collider->boided << endl;
 				}
 			}
@@ -891,8 +891,8 @@ public:
 	
 	
 	void checkSounds(){
-		// if (walkingEvent()) {eManager->triggerSound("walking");}
-		// else {eManager->stoppingSound("walking");}
+		if (walkingEvent()) {eManager->triggerSound("walking");}
+		else {eManager->stoppingSound("walking");}
 
 		if (collectionEvent()) {
 			//cout <<  "collection event triggered, starting sound: " << collisionSounds[0] <<eManager->eventHistory->at("collection") << endl;
@@ -1001,7 +1001,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	Event *ev = new Event("../resources/french-mood.mp3", &engine, true, "background");
-	// ev->startSound();
+	ev->startSound();
 
 	float dt = 1 / 60.0;
 	auto lastTime = chrono::high_resolution_clock::now();
