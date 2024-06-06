@@ -32,8 +32,11 @@ void GameManager::respawn() {
 	player->position = nearest->position;
 }
 
-void GameManager::init(shared_ptr<Entity> player, map<string, shared_ptr<Entity>> worldentities) {
-	player = player;
+void GameManager::init(shared_ptr<Entity> playerIn, map<string, shared_ptr<Entity>> worldentities) {
+	player = playerIn;
+	if (player != NULL) {
+		cout << "manchot has been found in game manager." << endl;
+	}
 
 	//grab respawn points and collectibles
 	map<string, shared_ptr<Entity>>::iterator i;
@@ -44,11 +47,13 @@ void GameManager::init(shared_ptr<Entity> player, map<string, shared_ptr<Entity>
 		// check if the current entity key is a respawn
 		if (i->first.find("respawn") != std::string::npos) {
 			respawnPoints.push_back(entity);
+			cout << "respawn added to game manager respawn list." << endl;
 		}
 
 		// add collectibles to list of collectibles
 		if (entity->tag == "collectible") {
 			collectibles.push_back(entity);
+			cout << "collectible added to game manager collectible list." << endl;
 		}
 	}
 }

@@ -979,11 +979,12 @@ int main(int argc, char *argv[]) {
 	// may need to initialize or set up different data and state
 
 	application->levelEditor->loadFromFile(WORLD_FILE_NAME);
-	//application->gameManager->init(application->player, worldentities);
 
 	application->init(resourceDir);
 	application->initGeom(resourceDir);
 	application->initSoundEngines();
+
+	application->gameManager->init(application->player, worldentities);
 
 
 	Event *ev = new Event("../resources/french-mood.mp3", &engine, true, "background");
@@ -1015,6 +1016,7 @@ int main(int argc, char *argv[]) {
 		lastTime = nextLastTime;
 
 		activeCam->updateCamera(deltaTime);
+		application->gameManager->update();
 		// Render scene.
 		application->render(deltaTime);
 
