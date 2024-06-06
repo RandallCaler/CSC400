@@ -237,11 +237,7 @@ public:
 		}
 		else {
 			if (key == GLFW_KEY_W && (action == GLFW_PRESS)) {
-				ih.inputStates[0] = 1;
-				if (player->grounded) {
-					animator.PlayAnimation(walking);
-				}
-				
+				ih.inputStates[0] = 1;			
 			}
 
 			if (key == GLFW_KEY_A && (action == GLFW_PRESS)) {
@@ -257,17 +253,15 @@ public:
 			}
 
 			if (key == GLFW_KEY_SPACE && (action == GLFW_PRESS)){
-				ih.inputStates[4] = 1;
-				if (player->grounded) {
-					if (animator.getCurrentAnimation() == jumping) {
-						if (animator.m_AnimationCompletedOnce) {
-							animator.PlayAnimation(jumping);
-						}
+				ih.inputStates[4] = 1;	
+
+				if (player->grounded){
+					if (animator.getCurrentAnimation() == jumping && animator.m_AnimationCompletedOnce) {
+						animator.PlayAnimation(jumping);
 					}
 					else {
 						animator.PlayAnimation(jumping);
 					}
-					
 				}
 				
 			}
@@ -561,6 +555,7 @@ public:
 	void initAnimation() {
 		walking = make_shared<Animation>(player->model, 1);
 		jumping = make_shared<Animation>(player->model, 0);
+		animator.PlayAnimation(walking);
 	}
 
 	void applyCollider() {
@@ -985,6 +980,24 @@ public:
 
 	}
 
+	void updateAnimation() {
+		if (player->grounded) {
+			if (player->m.curSpeed != 0) {
+				if (animator.getCurrentAnimation() != walking && animator.m_AnimationCompletedOnce) {
+					animator.PlayAnimation(walking);
+				}			
+			}
+			else {
+				if (animator.getCurrentAnimation() != walking && animator.m_AnimationCompletedOnce) {
+					animator.PlayAnimation(walking);
+				}
+			}
+		}
+		else {
+
+		}
+	}
+
 	void render(float frametime) {
 		// Get current frame buffer size.
 		int width, height;
@@ -1023,16 +1036,13 @@ public:
 		if (player) {
 			cam.player_pos = player->position;
 		}
-
-		if (player->grounded && animator.getCurrentAnimation() == jumping && animator.m_AnimationCompletedOnce) {
-			animator.setCurrentAnimation(walking);
-		}
 	
 		float aspect = width/(float)height;
 		if(editMode){
 			drawEditorObjects(aspect, LSpace, frametime);
 		}
 		else{
+			updateAnimation();
 			drawObjects(aspect, LSpace, frametime);
 		}
 
