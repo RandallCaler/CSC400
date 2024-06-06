@@ -95,7 +95,7 @@ public:
 
 
 	GLuint depthMapFBO;
-	const GLuint S_WIDTH = 4096, S_HEIGHT = 4096;
+	const GLuint S_WIDTH = 8192, S_HEIGHT = 8192;
 	GLuint depthMap;
 	GLuint quad_vertexbuffer;
 	 GLuint quad_VertexArrayID;
