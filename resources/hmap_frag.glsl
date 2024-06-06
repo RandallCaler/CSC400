@@ -1,7 +1,8 @@
 #version 330 core 
 
 uniform sampler2D shadowDepth;
-
+uniform sampler2D terrain0;
+uniform sampler2D terrain1;
 
 out vec4 color;
 in vec3 regionColor;
@@ -16,12 +17,9 @@ in OUT_struct {
    vec3 lightDir;
 } in_struct;
 
-
-
 uniform float offset[10] = float[]( 0.025, 0.05, 0.075, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4 );
 uniform float weight[10] = float[]( 0.2270270270, 0.1945945946, 0.1216216216,
 0.0540540541, 0.0162162162, 0.0059383423, 0.00129128391, 0.00129128391, 0.00129128391, 0.00129128391);
-
 
 float TestShadow(vec4 LSfPos) {
 
@@ -65,7 +63,11 @@ void main() {
   float Shade;
   float amb = 0.3;
 
-  vec4 BaseColor = vec4(in_struct.vColor, 1);
+  vec4 terrainTex = texture(terrain1, in_struct.fPos.xz/10) * length(vec2(in_struct.fragNor.x, in_struct.fragNor.z)) + texture(terrain0, in_struct.fPos.xz/10) * (1-length(vec2(in_struct.fragNor.x, in_struct.fragNor.z)));
+  //terrainTex = texture(terrain1, in_struct.fPos.xz) * length(vec2(in_struct.fragNor.x, in_struct.fragNor.z));
+  //terrainTex = texture(terrain0, in_struct.fPos.xz) * abs(in_struct.fragNor.y * in_struct.fragNor.y);
+
+  vec4 BaseColor = vec4(in_struct.vColor * terrainTex.xyz, 1);
 
   Shade = TestShadow(in_struct.fPosLS);
 
