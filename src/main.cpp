@@ -51,7 +51,7 @@ std::string resourceDir = "../resources";
 std::string WORLD_FILE_NAME = "/world.json";
 bool editMode = false;
 float editSpeed = 7.0f;
-float worldSize = 1.0f;
+float worldSize = 0.5f;
 
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Texture>> textureLibrary = { {"", nullptr} };
