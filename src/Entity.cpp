@@ -88,7 +88,7 @@ void Entity::updateBoids(float deltaTime, shared_ptr<Texture> hmap, vector<share
     }
 
     // sample weightings that Dr. Wood provided
-    // overall acceleration with all forces factored in
+    // overall acceleration with all forces factored inp
     if(collider->boided == true){
         collidable = false;
 
