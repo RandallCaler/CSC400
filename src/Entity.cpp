@@ -210,7 +210,6 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
     vec3 collisionPlane = vec3(collider->CheckCollision(deltaTime, collisionList, collisionSounds));
     // oriented bounding box restrictions
     if (collisionPlane != vec3(0)) {
-        printf("%.3f %.3f %.3f\n", collisionPlane.x, collisionPlane.y, collisionPlane.z);
         // handle gravity response when colliding with y planes
         // binary response: the player is on a standing surface and is grounded, or is not and will slide off it
 

@@ -702,7 +702,7 @@ public:
 		//draw the ground plane 
   		curS->setModel(groundPos, 0, 0, 0, 1);
 
-		glUniform1f(curS->prog->getUniform("h_min"), Y_MIN);
+	glUniform1f(curS->prog->getUniform("h_min"), Y_MIN);
 		glUniform1f(curS->prog->getUniform("h_max"), Y_MAX);
 
 		glActiveTexture(GL_TEXTURE2);
@@ -1101,7 +1101,7 @@ public:
 		LO = SetOrthoMatrix(DepthProg);
 		LV = SetLightView(DepthProg, player->position + vec3(100) * light_vec, player->position, lightUp);
 		LSpace = LO*LV;
-		// drawShadowMap(LSpace);
+		drawShadowMap(LSpace);
 		DepthProg->unbind();
 		glCullFace(GL_BACK);
 		// cout << "1 pass" << endl;

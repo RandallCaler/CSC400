@@ -171,7 +171,6 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
     float scalefactor1 = 1.0 / std::max(std::max(owner->model->max.x - owner->model->min.x,
             owner->model->max.y - owner->model->min.y), 
             owner->model->max.z - owner->model->min.z);
-    printf("sf1 %.3f\n", scalefactor1);
     glm::vec3 sv1 = owner->scaleVec * 
         glm::vec3((owner->model->max.x - owner->model->min.x)/2*scalefactor1,
             (owner->model->max.y - owner->model->min.y)/2*scalefactor1, 
@@ -180,7 +179,6 @@ glm::vec4 Collider::orientedCollision(float deltaTime, std::shared_ptr<Entity> o
     float scalefactor2 = 1.0 / std::max(std::max(other->model->max.x - other->model->min.x,
             other->model->max.y - other->model->min.y), 
             other->model->max.z - other->model->min.z);
-    printf("sf2 %.3f\n", scalefactor2);
     glm::vec3 sv2 = other->scaleVec * 
         glm::vec3((other->model->max.x - other->model->min.x)/2 *scalefactor2,
             (other->model->max.y - other->model->min.y)/2*scalefactor2, 
