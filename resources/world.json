@@ -33,21 +33,6 @@
       ],
       "name": "cube",
       "position": [
-        77.69999694824219,
-        -32.099998474121094,
-        -5.460000038146973
-      ],
-      "rotation": [
-        0.0,
-        0.0,
-        0.0
-      ],
-      "scale": [
-        4.300000190734863,
-        0.36000001430511475,
-        5.849999904632568
-      ],
-      "shader": "platform",
         -23.190000534057617,
         -33.459999084472656,
         98.48999786376953
@@ -539,14 +524,13 @@
       ],
       "name": "penguin",
       "position": [
-
-        76.8201904296875,
-        -31.670804977416992,
-        -5.295791149139404
+        -22.891048431396484,
+        -34.091758728027344,
+        104.3983383178711
       ],
       "rotation": [
         0.0,
-        6.473235607147217,
+        3.276172637939453,
         0.0
       ],
       "scale": [
@@ -1172,8 +1156,8 @@
         "vertPos",
         "vertTex"
       ],
-      "fragShader": "/platform_frag.glsl",
-      "shaderName": "platform",
+      "fragShader": "/simple_frag.glsl",
+      "shaderName": "reg",
       "uniforms": [
         "LS",
         "M",
@@ -1195,8 +1179,8 @@
         "vertPos",
         "vertTex"
       ],
-      "fragShader": "/simple_frag.glsl",
-      "shaderName": "reg",
+      "fragShader": "/platform_frag.glsl",
+      "shaderName": "platform",
       "uniforms": [
         "LS",
         "M",
