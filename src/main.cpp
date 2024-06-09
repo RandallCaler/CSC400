@@ -842,9 +842,7 @@ public:
     
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
-			cout << i->first << endl;
 			if (shaders[entity->defaultShaderName] != curS) {
-				cout << "first unbind" << endl;
 				curS->prog->unbind();
 				curS = shaders[entity->defaultShaderName];
 				curS->prog->bind();
@@ -896,7 +894,6 @@ public:
 			}
 		}
 		
-		cout << "second unbind" << endl;
 		curS->prog->unbind();
 
 		curS = shaders["hmap"];
@@ -1069,14 +1066,12 @@ public:
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glCullFace(GL_FRONT);
 
-		cout << "here" << endl;
 		DepthProg->bind();
 		//TODO you will need to fix these
 		LO = SetOrthoMatrix(DepthProg);
 		LV = SetLightView(DepthProg, player->position + vec3(100) * light_vec, player->position, lightUp);
 		LSpace = LO*LV;
 		drawShadowMap(LSpace);
-		//cout << "here" << endl;
 		DepthProg->unbind();
 		glCullFace(GL_BACK);
 		// cout << "1 pass" << endl;
