@@ -67,7 +67,7 @@ vec3 F (vec3 F0, vec3 V, vec3 N) {
 float TestShadow(vec4 LSfPos) {
 
    //0.005 * tan (acos(nDotl)) is better/more precise
-  float depth_buffer = 0.000;
+  float depth_buffer = 0.0009;
 
 	//1: shift the coordinates from -1, 1 to 0, 1
   vec3 fLS = (vec3(LSfPos) + vec3(1.0)) * 0.5;
@@ -115,7 +115,8 @@ void main() {
 	float x_val = max(amb*emissivity.x, emissivity.x + BRDF.x * lightColor.x * max(0.005, dot(N, L)));
 	float y_val = max(amb*emissivity.y, emissivity.y + BRDF.y * lightColor.y * max(0.005, dot(N, L))); 
 	float z_val = max(amb*emissivity.z, emissivity.z + BRDF.z * lightColor.z * max(0.005, dot(N, L))); 
-	vec4 baseColor = vec4(x_val, y_val, z_val, 1.0);
+	//vec4 baseColor = vec4(x_val, y_val, z_val, 1.0);
+	vec4 baseColor = vec4(BRDF, 1.0);
 
 
   	//vec4 BaseColor = vec4(in_struct.vColor, 1);
@@ -128,7 +129,7 @@ void main() {
 	//Outcolor = vec4(albedo, 1.0) + (1.0-Shade)*color;
 	//Outcolor = amb*vec4(albedo, 1.0) + (1.0-Shade)*baseColor;
 
-	Outcolor = 0.5*vec4(albedo, 1.0) + (1.0-Shade)*baseColor;
+	Outcolor = 0.7*(1.0-Shade)*vec4(albedo, 1.0); //0.5*  + *vec4(albedo, 1.0)
 	
 }
 
