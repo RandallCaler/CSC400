@@ -156,8 +156,11 @@ public:
 	ma_engine walkingEngine;
 	ma_engine collectionEngine;
 
+	shared_ptr<Animation> idle;
 	shared_ptr<Animation> walking;
 	shared_ptr<Animation> jumping;
+	shared_ptr<Animation> gliding;
+	shared_ptr<Animation> waving;
 	Animator animator = Animator();
 		
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -312,6 +315,12 @@ public:
 			
 			if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			}
+
+			if (key == GLFW_KEY_1 && (action == GLFW_PRESS)) {
+				if (animator.getCurrentAnimation() != waving) {
+					animator.PlayAnimation(waving);
+				}
 			}
 
 			// Entity *catptr = &catEnt;
@@ -556,9 +565,12 @@ public:
 	}
 
 	void initAnimation() {
-		walking = make_shared<Animation>(player->model, 1);
-		jumping = make_shared<Animation>(player->model, 0);
-		animator.PlayAnimation(walking);
+		idle = make_shared<Animation>(player->model, 2);
+		jumping = make_shared<Animation>(player->model, 3);
+		walking = make_shared<Animation>(player->model, 4);
+		waving = make_shared<Animation>(player->model, 5);
+		gliding = make_shared<Animation>(player->model, 1);
+		animator.PlayAnimation(idle);
 	}
 
 	void applyCollider() {
@@ -1007,17 +1019,28 @@ public:
 	void updateAnimation() {
 		if (player->grounded) {
 			if (player->m.curSpeed != 0) {
-				if (animator.getCurrentAnimation() != walking && animator.m_AnimationCompletedOnce) {
-					animator.PlayAnimation(walking);
-				}			
+				if (animator.getCurrentAnimation() != walking) {
+					if (animator.getCurrentAnimation() == idle) {
+						animator.PlayAnimation(walking);
+					}
+					else if (animator.m_AnimationCompletedOnce) {
+						animator.PlayAnimation(walking);
+					}
+					
+				}
 			}
 			else {
-				if (animator.getCurrentAnimation() != walking && animator.m_AnimationCompletedOnce) {
-					animator.PlayAnimation(walking);
-				}
+				if (animator.getCurrentAnimation() != idle && animator.getCurrentAnimation() != waving) {
+					animator.PlayAnimation(idle);
+				}			
 			}
 		}
 		else {
+			if (player->gliding) {
+				if (animator.getCurrentAnimation() != gliding) {
+					animator.PlayAnimation(gliding);
+				}
+			}
 
 		}
 	}

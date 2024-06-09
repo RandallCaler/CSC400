@@ -98,8 +98,9 @@ void Entity::updateBoids(float deltaTime, shared_ptr<Texture> hmap, vector<share
         }
         // center of motion is set to penguin position - might alter so that it trails behind penguin a bit
         vec3 leader = (player->position - this->position);
+        vec3 tangentialVec = glm::cross(leader, vec3(0, 1, 0));
         // vec3 accel = (1.5f)*separation + (0.3f)*alignment + 0.2f*(leader);
-        vec3 accel = 0.2f*(normalize(leader)) + 0.7f*(separation);
+        vec3 accel = 0.2f*(normalize(leader)) + 0.7f*(separation) + (length(leader) < 1 ? 0.3f : 0.0f) * normalize(tangentialVec);
 
         m.velocity += accel; 
         if (glm::length(m.velocity) > 5){
