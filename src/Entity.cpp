@@ -179,6 +179,7 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
     // FALLING physics
     if (gliding == true) {
         m.upwardSpeed = std::max(m.upwardSpeed + (GRAVITY - AIR_RESISTANCE) * deltaTime, -3.0f);
+        m.curSpeed += (GRAVITY - AIR_RESISTANCE) * deltaTime;
     }
     else {
         m.upwardSpeed += GRAVITY * deltaTime;

@@ -273,7 +273,17 @@ public:
 			}
 
 			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_PRESS)){
-				ih.inputStates[5] = 1;
+				//ih.inputStates[5] = 1;
+				
+				if (!penguin->gliding) {
+					if (!(penguin->grounded)) {
+						penguin->m.upwardSpeed = 1.0;
+						penguin->gliding = true;
+					}
+				}
+				else {
+					penguin->gliding = false;
+				}
 			}
 
 			if (key == GLFW_KEY_C && (action == GLFW_PRESS)) {
@@ -764,7 +774,7 @@ public:
 			shared_ptr<Entity> entity = i->second;
 			if (entity != worldentities["skybox"]) {
 				glUniformMatrix4fv(DepthProg->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
-		
+				printf("draw shadow map\n");
 				entity->model->Draw(DepthProg);
 			}
 		}
@@ -876,8 +886,10 @@ public:
 			for (auto& meshPair : entity->model->meshes) {
 				if (curS == shaders["reg"]) {
 					curS->setMaterial(meshPair.second.mat);
-				}			
+				}
+				printf("shader: %s\tmodel: %s\n", entity->defaultShaderName.c_str(), entity->model->filePath.c_str());
 				meshPair.second.Draw(curS->prog);
+				printf("end draw call\n");
 			}
 			
 			if (shaders["skybox"] == curS) {
@@ -950,6 +962,7 @@ public:
 	
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
 			glUniform3fv(curS->prog->getUniform("PickingColor"), 1, value_ptr(glm::vec3(entity->editorColor.r, entity->editorColor.g, entity->editorColor.b)));
+			printf("shader: %s\tmodel: %s\n", entity->defaultShaderName.c_str(), entity->model->filePath.c_str());
 			entity->model->Draw(curS->prog);
 	
 			//for (int i = 0; i < entity->objs.size(); i++) {
@@ -1085,7 +1098,7 @@ public:
 		}
 	
 		float aspect = width/(float)height;
-		if(editMode){
+		if(editMode) {
 			drawEditorObjects(aspect, LSpace, frametime);
 		}
 		else{
