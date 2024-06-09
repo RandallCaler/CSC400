@@ -126,7 +126,7 @@ private:
     {
         for (int i = 0; i < MAX_BONE_INFLUENCE; i++)
         {
-            vertex.m_BoneIDs[i] == -1;
+            vertex.m_BoneIDs[i] = -1;
             vertex.m_Weights[i] = 0.0f;
         }
     }

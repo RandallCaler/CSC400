@@ -1648,8 +1648,15 @@
         "fTime",
         "lightDir",
         "shadowDepth",
+        "h_min",
+        "h_max",
         "terrain0",
-        "terrain1"
+        "terrain1",
+        "terrain2",
+        "terrain3",
+        "terrain4",
+        "terrain5",
+        "fTime"
       ],
       "vertShader": "/hmap_vert.glsl"
     },
@@ -1661,6 +1668,29 @@
       ],
       "fragShader": "/simple_frag.glsl",
       "shaderName": "reg",
+      "uniforms": [
+        "LS",
+        "M",
+        "P",
+        "V",
+        "albedo",
+        "emissivity",
+        "lightColor",
+        "lightDir",
+        "reflectance",
+        "roughness",
+        "shadowDepth"
+      ],
+      "vertShader": "/simple_vert.glsl"
+    },
+    {
+      "attributes": [
+        "vertNor",
+        "vertPos",
+        "vertTex"
+      ],
+      "fragShader": "/platform_frag.glsl",
+      "shaderName": "platform",
       "uniforms": [
         "LS",
         "M",
@@ -1717,7 +1747,7 @@
       "name": "cheeseTex"
     },
     {
-      "filePath": "/rock.png",
+      "filePath": "/rock.jpg",
       "name": "rock"
     },
     {
@@ -1727,6 +1757,18 @@
     {
       "filePath": "/snow.jpg",
       "name": "snow"
+    },
+    {
+      "filePath": "/grass.jpg",
+      "name": "grass"
+    },
+    {
+      "filePath": "/sand.png",
+      "name": "sand"
+    },
+    {
+      "filePath": "/water.jpg",
+      "name": "water"
     }
   ]
 }

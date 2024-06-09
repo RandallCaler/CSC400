@@ -3,11 +3,17 @@
 uniform sampler2D shadowDepth;
 uniform sampler2D terrain0;
 uniform sampler2D terrain1;
+uniform sampler2D terrain2;
+uniform sampler2D terrain3;
+uniform sampler2D terrain4;
+uniform sampler2D terrain5;
 
 out vec4 color;
 in vec3 fRegion;
 in vec3 fragNor;
 in float h_vert;
+in float h_min;
+in float h_max;
 
 in OUT_struct {
    vec3 fPos;
@@ -20,6 +26,25 @@ in OUT_struct {
 uniform float offset[10] = float[]( 0.025, 0.05, 0.075, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4 );
 uniform float weight[10] = float[]( 0.2270270270, 0.1945945946, 0.1216216216,
 0.0540540541, 0.0162162162, 0.0059383423, 0.00129128391, 0.00129128391, 0.00129128391, 0.00129128391);
+
+vec3 getTerrainTexture() {
+  float slopeFactor = length(vec2(in_struct.fragNor.x, in_struct.fragNor.z));
+  vec2 texCoord = in_struct.fPos.xz/2;
+  vec3 totalTex = vec3(0);
+  if (fRegion.x > 0) {
+    totalTex += fRegion.x * texture(terrain0, texCoord).xyz * slopeFactor;
+    totalTex += fRegion.x * texture(terrain1, texCoord).xyz * (1-slopeFactor);
+  }
+  if (fRegion.y > 0) {
+    totalTex += fRegion.y * texture(terrain2, texCoord).xyz * slopeFactor;
+    totalTex += fRegion.y * texture(terrain3, texCoord).xyz * (1-slopeFactor);
+  }
+  if (fRegion.z > 0) {
+    totalTex += fRegion.z * texture(terrain4, texCoord).xyz * slopeFactor;
+    totalTex += fRegion.z * texture(terrain5, texCoord).xyz * (1-slopeFactor);
+  }
+  return totalTex;
+}
 
 float TestShadow(vec4 LSfPos) {
 
@@ -63,9 +88,9 @@ void main() {
   float Shade;
   float amb = 0.3;
 
-  vec4 terrainTex = texture(terrain1, in_struct.fPos.xz/10) * length(vec2(in_struct.fragNor.x, in_struct.fragNor.z)) + texture(terrain0, in_struct.fPos.xz/10) * (1-length(vec2(in_struct.fragNor.x, in_struct.fragNor.z)));
+  vec3 terrainTex = getTerrainTexture();
 
-  vec4 BaseColor = vec4(in_struct.vColor * terrainTex.xyz, 1);
+  vec4 BaseColor = vec4(in_struct.vColor * terrainTex, 1);
 
   Shade = TestShadow(in_struct.fPosLS);
 
@@ -74,7 +99,7 @@ void main() {
   
   float intensity = max(dot(in_struct.lightDir, normalize(in_struct.fragNor)), 0);
   
-  color = amb*(BaseColor)*vec4(fRegion, 1) + (1.0-Shade) * BaseColor;
+  color = amb*(BaseColor) + (1.0-Shade) * BaseColor;
   //color = vec4(fRegion * intensity, 1.0);
 }
 
