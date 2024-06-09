@@ -280,7 +280,7 @@ public:
 				player->sliding = true;
 			}
 	
-			if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
+			if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
 
