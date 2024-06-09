@@ -87,6 +87,7 @@ public:
 	// shared_ptr<Shader> tex;
 
 	shared_ptr<Entity> player;
+	shared_ptr<Entity> glider;
 
 	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &textureLibrary, &worldentities, &tagList, &collidables, &boids);
 	GameManager *gameManager = new GameManager();
@@ -164,7 +165,9 @@ public:
 	shared_ptr<Animation> jumping;
 	shared_ptr<Animation> gliding;
 	shared_ptr<Animation> waving;
+	shared_ptr<Animation> floating;
 	Animator animator = Animator();
+	Animator animator1 = Animator();
 		
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -515,6 +518,9 @@ public:
 			if (ent.second->tag == "player") {
 				player = ent.second;
 			}
+			if (ent.second->tag == "glider") {
+				glider = ent.second;
+			}
 		}
 
 		//eManager->events.insert_or_assign("walking", walking);
@@ -571,12 +577,14 @@ public:
 	}
 
 	void initAnimation() {
-		idle = make_shared<Animation>(player->model, 2);
-		jumping = make_shared<Animation>(player->model, 3);
-		walking = make_shared<Animation>(player->model, 4);
-		waving = make_shared<Animation>(player->model, 5);
-		gliding = make_shared<Animation>(player->model, 1);
+		idle = make_shared<Animation>(player->model, 1);
+		jumping = make_shared<Animation>(player->model, 2);
+		walking = make_shared<Animation>(player->model, 3);
+		waving = make_shared<Animation>(player->model, 4);
+		gliding = make_shared<Animation>(player->model, 0);
+		floating = make_shared<Animation>(glider->model, 0);
 		animator.PlayAnimation(idle);
+		animator1.PlayAnimation(floating);
 	}
 
 	void applyCollider() {
@@ -888,6 +896,22 @@ public:
 					glUniformMatrix4fv(baseLocation + i, 1, GL_FALSE, value_ptr(transforms[i]));
 				}
 			}
+			else if (shaders["animate1"] == curS) {
+				if (player->gliding) {
+					entity->position = player->position;
+					entity->position.y += 0.85;
+					entity->rotY = player->rotY;
+				}
+				else {
+					glider->position = vec3(0, 100, 0);
+				}				
+				animator1.UpdateAnimation(deltaTime);
+				auto transforms = animator1.GetFinalBoneMatrices();
+				GLuint baseLocation = curS->prog->getUniform("finalBonesMatrices");
+				for (int i = 0; i < transforms.size(); ++i) {
+					glUniformMatrix4fv(baseLocation + i, 1, GL_FALSE, value_ptr(transforms[i]));
+				}
+			}
 
 			if (shaders["skybox"] == curS) {
 				entity->position = activeCam->cameraPos;
@@ -1057,13 +1081,7 @@ public:
 		if (player->grounded) {
 			if (player->m.curSpeed != 0) {
 				if (animator.getCurrentAnimation() != walking) {
-					if (animator.getCurrentAnimation() == idle) {
-						animator.PlayAnimation(walking);
-					}
-					else if (animator.m_AnimationCompletedOnce) {
-						animator.PlayAnimation(walking);
-					}
-					
+					animator.PlayAnimation(walking);			
 				}
 			}
 			else {
@@ -1078,7 +1096,6 @@ public:
 					animator.PlayAnimation(gliding);
 				}
 			}
-
 		}
 	}
 

@@ -1,6 +1,57 @@
 {
   "entities": [
     {
+      "collider": 0,
+      "file": "/glider.glb",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Plane.001"
+        }
+      ],
+      "name": "glider",
+      "position": [
+        82.52632141113281,
+        -30.483171463012695,
+        -17.094213485717773
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "shader": "animate1",
+      "tag": "glider",
+      "texture": ""
+    },
+    {
       "collider": 1,
       "file": "/cheese.obj",
       "meshes": [
@@ -1034,13 +1085,13 @@
       ],
       "name": "penguin",
       "position": [
-        -50.71425247192383,
-        -12.049348831176758,
-        50.88457489013672
+        81.1034927368164,
+        -31.10418128967285,
+        -16.46258544921875
       ],
       "rotation": [
         0.0,
-        -45.1517448425293,
+        -3.915001630783081,
         0.0
       ],
       "scale": [
@@ -1605,6 +1656,28 @@
       ],
       "fragShader": "/tex_frag0.glsl",
       "shaderName": "animate",
+      "uniforms": [
+        "LS",
+        "M",
+        "P",
+        "Texture0",
+        "V",
+        "finalBonesMatrices",
+        "lightDir",
+        "shadowDepth"
+      ],
+      "vertShader": "/mod_vert.glsl"
+    },
+    {
+      "attributes": [
+        "boneIds",
+        "vertNor",
+        "vertPos",
+        "vertTex",
+        "weights"
+      ],
+      "fragShader": "/tex_frag0.glsl",
+      "shaderName": "animate1",
       "uniforms": [
         "LS",
         "M",
