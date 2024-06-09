@@ -874,7 +874,7 @@ public:
 
 			//cout << i->first << endl;
 			for (auto& meshPair : entity->model->meshes) {
-				if (curS == shaders["reg"]) {
+				if (curS == shaders["reg"] || curS == shaders["platform"]) {
 					curS->setMaterial(meshPair.second.mat);
 				}			
 				meshPair.second.Draw(curS->prog);

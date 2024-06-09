@@ -2,6 +2,57 @@
   "entities": [
     {
       "collider": 1,
+      "file": "/cube.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.6705882549285889,
+              0.6509804129600525,
+              0.6235294342041016
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cube"
+        }
+      ],
+      "name": "cube",
+      "position": [
+        77.69999694824219,
+        -32.099998474121094,
+        -5.460000038146973
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        4.300000190734863,
+        0.36000001430511475,
+        5.849999904632568
+      ],
+      "shader": "platform",
+      "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 1,
       "file": "/penguin.fbx",
       "meshes": [
         {
@@ -319,13 +370,13 @@
       ],
       "name": "penguin",
       "position": [
-        79.20999908447266,
-        -31.068958282470703,
-        -17.68000030517578
+        76.8201904296875,
+        -31.670804977416992,
+        -5.295791149139404
       ],
       "rotation": [
         0.0,
-        -0.5684688687324524,
+        6.473235607147217,
         0.0
       ],
       "scale": [
@@ -886,6 +937,29 @@
         "terrain1"
       ],
       "vertShader": "/hmap_vert.glsl"
+    },
+    {
+      "attributes": [
+        "vertNor",
+        "vertPos",
+        "vertTex"
+      ],
+      "fragShader": "/platform_frag.glsl",
+      "shaderName": "platform",
+      "uniforms": [
+        "LS",
+        "M",
+        "P",
+        "V",
+        "albedo",
+        "emissivity",
+        "lightColor",
+        "lightDir",
+        "reflectance",
+        "roughness",
+        "shadowDepth"
+      ],
+      "vertShader": "/simple_vert.glsl"
     },
     {
       "attributes": [
