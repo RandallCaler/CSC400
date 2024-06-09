@@ -4,6 +4,7 @@ x64/
 .vscode/settings.json
 .idea/
 cmake-build-debug/
+config.cmake
 
 resources/testOut.txt
 build2/

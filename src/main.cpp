@@ -25,6 +25,9 @@
 #include "Animation.h"
 #include "Animator.h"
 
+#include <ft2build.h>
+#include FT_FREETYPE_H  
+
 #include <chrono>
 #include <array>
 
@@ -45,6 +48,13 @@
 using namespace std;
 using namespace glm;
 
+//define a type for use with freetype
+struct Character {
+	unsigned int TextureID; // ID handle of the glyph texture
+	glm::ivec2   Size;      // Size of glyph
+	glm::ivec2   Bearing;   // Offset from baseline to left/top of glyph
+	unsigned int Advance;   // Horizontal offset to advance to next glyph
+};
 
 // Where the resources are loaded from
 std::string resourceDir = "../resources";
@@ -95,6 +105,8 @@ public:
 	shared_ptr<Program> DepthProg;
 	shared_ptr<Program> DepthProgDebug;
 	shared_ptr<Program> DebugProg;
+	shared_ptr<Program> textProg; 
+
 
 	bool DEBUG_LIGHT = false;
 	bool GEOM_DEBUG = true;
@@ -105,7 +117,13 @@ public:
 	const GLuint S_WIDTH = 8192, S_HEIGHT = 8192;
 	GLuint depthMap;
 	GLuint quad_vertexbuffer;
-	 GLuint quad_VertexArrayID;
+	GLuint quad_VertexArrayID;
+
+	//Free type data
+	FT_Library ft;
+	FT_Face face;
+	std::map<GLchar, Character> Characters;
+	unsigned int TextVAO, TextVBO;
 
 	vec3 light_vec = normalize(vec3(3, 100, 5));
   
@@ -514,6 +532,20 @@ public:
 		hmap->initHmap();
 		initShadow();
 
+		textProg = make_shared<Program>();
+		textProg->setVerbose(true);
+		textProg->setShaderNames(resourceDirectory + "/textVert.glsl", resourceDirectory + "/textFrag.glsl");
+		textProg->init();
+
+		textProg->addAttribute("vertex");
+		textProg->addUniform("projection");
+		textProg->addUniform("textTex");
+		textProg->addUniform("textColor");
+
+		int fError = initFont();
+
+		initTextQuad();
+
 		for (auto ent : worldentities) {
 			if (ent.second->tag == "player") {
 				player = ent.second;
@@ -585,6 +617,85 @@ public:
 		floating = make_shared<Animation>(glider->model, 0);
 		animator.PlayAnimation(idle);
 		animator1.PlayAnimation(floating);
+	}
+
+	/*similar to bill board quad, keeping separate for ease in copy and paste between projects */
+	void initTextQuad() {
+		glGenVertexArrays(1, &TextVAO);
+		glGenBuffers(1, &TextVBO);
+		glBindVertexArray(TextVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, TextVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+	}
+
+	/*initiatlization of the free type types in order to include text */
+	int initFont() {
+
+		if (FT_Init_FreeType(&ft)) {
+			std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+			return -1;
+		}
+
+		FT_Face face;
+		/*TODO you may need to change where this points - where is the arial file for you? */
+		if (FT_New_Face(ft, "../resources/frenchFont.ttf", 0, &face)) {
+			std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+			return -1;
+		}
+		else {
+			// set size to load glyphs as
+			FT_Set_Pixel_Sizes(face, 0, 18);
+
+			// disable byte-alignment restriction
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+			// load first 128 characters of ASCII set
+			for (unsigned char c = 0; c < 128; c++)
+			{
+				// Load character glyph 
+				if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+				{
+					std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+					continue;
+				}
+				// generate texture
+				unsigned int texture;
+				glGenTextures(1, &texture);
+				glBindTexture(GL_TEXTURE_2D, texture);
+				glTexImage2D(
+					GL_TEXTURE_2D,
+					0,
+					GL_RED,
+					face->glyph->bitmap.width,
+					face->glyph->bitmap.rows,
+					0,
+					GL_RED,
+					GL_UNSIGNED_BYTE,
+					face->glyph->bitmap.buffer
+				);
+				// set texture options
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				// now store character for later use
+				Character character = {
+					texture,
+					glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+					glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+					static_cast<unsigned int>(face->glyph->advance.x)
+				};
+				Characters.insert(std::pair<char, Character>(c, character));
+			}
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+
+		return glGetError();
+		//cout << "End of init font: " << glGetError() << endl;	
 	}
 
 	void applyCollider() {
