@@ -183,6 +183,7 @@ public:
 						player = ent.second;
 					}
 				}
+				applyCollider();
 			}
 		}
 
@@ -577,20 +578,25 @@ public:
 
 	void applyCollider() {
 		for (auto ent : collidables) {
-			ent->collider = new Collider(ent.get());
-			ent->collider->SetEntityID(ent->id);
-			if (ent == player) {
-				ent->collider->entityName = 'p';
-			}
-			else {
-				ent->collider->entityName = 'c';
-			}
-			if (ent->tag == "food") {
-				cout << "SET COLLECTIBLE TAG TO TRUE" << endl;
-				ent->collider->collectible = true;
-			}			
+			if (!ent->collider) {
+				ent->collider = new Collider(ent.get());
+				ent->collider->SetEntityID(ent->id);
+				if (ent == player) {
+					ent->collider->entityName = 'p';
+				}
+				else {
+					ent->collider->entityName = 'c';
+				}
+				if (ent->tag == "food") {
+					cout << "SET COLLECTIBLE TAG TO TRUE" << endl;
+					ent->collider->collectible = true;
+				}
+			}	
 		}
-		cam.collider = new Collider(&cam);
+		if (!cam.collider) {
+			cam.collider = new Collider(&cam);
+		}
+		
 	}
 
 	//directly pass quad for the ground to the GPU
@@ -836,7 +842,9 @@ public:
     
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
+			cout << i->first << endl;
 			if (shaders[entity->defaultShaderName] != curS) {
+				cout << "first unbind" << endl;
 				curS->prog->unbind();
 				curS = shaders[entity->defaultShaderName];
 				curS->prog->bind();
@@ -845,7 +853,7 @@ public:
 			}	
 
 			if (shaders["animate"] == curS) {
-				// animator.UpdateAnimation(deltaTime);
+				animator.UpdateAnimation(deltaTime);
 				auto transforms = animator.GetFinalBoneMatrices();
 				GLuint baseLocation = curS->prog->getUniform("finalBonesMatrices");
 				for (int i = 0; i < transforms.size(); ++i) {
@@ -888,7 +896,7 @@ public:
 			}
 		}
 		
-
+		cout << "second unbind" << endl;
 		curS->prog->unbind();
 
 		curS = shaders["hmap"];
@@ -1061,12 +1069,14 @@ public:
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glCullFace(GL_FRONT);
 
+		cout << "here" << endl;
 		DepthProg->bind();
 		//TODO you will need to fix these
 		LO = SetOrthoMatrix(DepthProg);
 		LV = SetLightView(DepthProg, player->position + vec3(100) * light_vec, player->position, lightUp);
 		LSpace = LO*LV;
 		drawShadowMap(LSpace);
+		//cout << "here" << endl;
 		DepthProg->unbind();
 		glCullFace(GL_BACK);
 		// cout << "1 pass" << endl;
