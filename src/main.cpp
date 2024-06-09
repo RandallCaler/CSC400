@@ -144,6 +144,9 @@ public:
 	double cursor_x = 0;
 	double cursor_y = 0;
 
+	const float Y_MAX = 75;
+	const float Y_MIN = -Y_MAX;
+
 	//bounds for world
 	double bounds;
 
@@ -601,9 +604,6 @@ public:
 
 	//directly pass quad for the ground to the GPU
 	void initHMapGround() {
-		const float Y_MAX = 75;
-		const float Y_MIN = -Y_MAX;
-
 		vector<float> vertices;
 		vector<float> regions;
 		auto hmap_dim = hmap->getDim();
@@ -702,16 +702,46 @@ public:
 		//draw the ground plane 
   		curS->setModel(groundPos, 0, 0, 0, 1);
 
+		glUniform1f(curS->prog->getUniform("h_min"), Y_MIN);
+		glUniform1f(curS->prog->getUniform("h_max"), Y_MAX);
+
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, textureLibrary["rock"]->getID());
-		glUniform1i(curS->prog->getUniform("terrain1"), 2);
+		glUniform1i(curS->prog->getUniform("terrain0"), 2);
 		
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["sand"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain1"), 3);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glActiveTexture(GL_TEXTURE4);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["rock"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain2"), 4);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glActiveTexture(GL_TEXTURE5);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["grass"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain3"), 5);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glActiveTexture(GL_TEXTURE6);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["rock"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain4"), 6);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glActiveTexture(GL_TEXTURE7);
 		glBindTexture(GL_TEXTURE_2D, textureLibrary["snow"]->getID());
-		glUniform1i(curS->prog->getUniform("terrain0"), 3);
+		glUniform1i(curS->prog->getUniform("terrain5"), 7);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -1071,7 +1101,7 @@ public:
 		LO = SetOrthoMatrix(DepthProg);
 		LV = SetLightView(DepthProg, player->position + vec3(100) * light_vec, player->position, lightUp);
 		LSpace = LO*LV;
-		drawShadowMap(LSpace);
+		// drawShadowMap(LSpace);
 		DepthProg->unbind();
 		glCullFace(GL_BACK);
 		// cout << "1 pass" << endl;

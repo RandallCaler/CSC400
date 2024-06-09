@@ -1138,8 +1138,15 @@
         "fTime",
         "lightDir",
         "shadowDepth",
+        "h_min",
+        "h_max",
         "terrain0",
-        "terrain1"
+        "terrain1",
+        "terrain2",
+        "terrain3",
+        "terrain4",
+        "terrain5",
+        "fTime"
       ],
       "vertShader": "/hmap_vert.glsl"
     },
@@ -1207,7 +1214,7 @@
       "name": "cheeseTex"
     },
     {
-      "filePath": "/rock.png",
+      "filePath": "/rock.jpg",
       "name": "rock"
     },
     {
@@ -1217,6 +1224,18 @@
     {
       "filePath": "/snow.jpg",
       "name": "snow"
+    },
+    {
+      "filePath": "/grass.jpg",
+      "name": "grass"
+    },
+    {
+      "filePath": "/sand.png",
+      "name": "sand"
+    },
+    {
+      "filePath": "/water.jpg",
+      "name": "water"
     }
   ]
 }
