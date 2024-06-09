@@ -24,6 +24,7 @@
 #include "GameManager.h"
 #include "Animation.h"
 #include "Animator.h"
+#include "particleSys.h"
 
 #include <chrono>
 #include <array>
@@ -95,6 +96,8 @@ public:
 	shared_ptr<Program> DepthProgDebug;
 	shared_ptr<Program> DebugProg;
 
+	std::shared_ptr<Program> partProg;
+
 	bool DEBUG_LIGHT = false;
 	bool GEOM_DEBUG = true;
 	bool SHADOW = true;
@@ -123,6 +126,8 @@ public:
 	std::vector<Entity> trees;
 
 	std::vector<Entity> flowers;
+
+	particleSys* thePartSystem;
 
 	EventManager *eManager = new EventManager();
 	// Event *walking = new Event("../resources/music.mp3", &walkingEngine);
@@ -502,6 +507,27 @@ public:
 		DebugProg->addUniform("texBuf");
   		DebugProg->addAttribute("vertPos");
 
+		partProg = make_shared<Program>();
+		partProg->setVerbose(true);
+		partProg->setShaderNames(
+			resourceDirectory + "/particle_vert.glsl",
+			resourceDirectory + "/particle_frag.glsl");
+		if (!partProg->init())
+		{
+			std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+			exit(1);
+		}
+		partProg->addUniform("P");
+		partProg->addUniform("M");
+		partProg->addUniform("V");
+		//partProg->addUniform("pColor");
+		partProg->addUniform("alphaTexture");
+		partProg->addAttribute("vertPos");
+		partProg->addAttribute("color");
+
+		thePartSystem = new particleSys(vec3(0, 0, 0));
+		thePartSystem->gpuSetup();
+
 
 		hmap = make_shared<Texture>();
 		hmap->setFilename(resourceDirectory + "/hmap.png");
@@ -515,6 +541,11 @@ public:
 		}
 
 		//eManager->events.insert_or_assign("walking", walking);
+		//Particle stuff
+		CHECKED_GL_CALL(glEnable(GL_DEPTH_TEST));
+		CHECKED_GL_CALL(glEnable(GL_BLEND));
+		CHECKED_GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+		CHECKED_GL_CALL(glPointSize(24.0f));
 
 	}
 
@@ -1099,6 +1130,18 @@ public:
 			updateAnimation();
 			drawObjects(aspect, LSpace, frametime);
 		}
+
+		partProg->bind();
+		//SetView(partProg);
+		//texture3->bind(partProg->getUniform("alphaTexture"));
+		//CHECKED_GL_CALL(glUniformMatrix4fv(partProg->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix())));
+		//CHECKED_GL_CALL(glUniformMatrix4fv(partProg->getUniform("V"), 1, GL_FALSE, value_ptr(View->topMatrix())));
+		//CHECKED_GL_CALL(glUniformMatrix4fv(partProg->getUniform("M"), 1, GL_FALSE, value_ptr(Model->topMatrix())));
+
+		thePartSystem->drawMe(partProg);
+		thePartSystem->update();
+
+		partProg->unbind();
 
 		
 		checkSounds();
