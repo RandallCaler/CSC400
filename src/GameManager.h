@@ -16,7 +16,7 @@ class GameManager {
 		void update();
 
 	private:
-		float deathHeight = -36.0;
+		float deathHeight = -36.75f;
 		float collectionDistance = .01;
 		shared_ptr<Entity> player;
 		vector<shared_ptr<Entity>> respawnPoints;
