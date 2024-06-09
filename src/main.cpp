@@ -330,6 +330,7 @@ public:
 
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
 		cam.angle -= 10 * (deltaX / 57.296);
+		player->rotY -= 10 * (deltaX / 57.296);
 	}
 
 
@@ -382,6 +383,7 @@ public:
 		}
 		else {
 			cam.angle -= 0.001*(x-cursor_x);
+			player->rotY -= 0.001*(x-cursor_x);
 			cursor_x = x;
 			cursor_y = y;
 		}
