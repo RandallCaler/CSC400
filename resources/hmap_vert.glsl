@@ -59,7 +59,7 @@ void main() {
     if (lPos > 100) {
         float mixValue = (h_vert + 37.5)/75;
 	    // gl_Position.x = centerPosX + max(1*(1 - mixValue * mixValue) - 0.25, 0) * (centerPosX - gl_Position.x) * (lPos - 43)/64 * sin((0.5 - mixValue) * 10 * fTime);
-	    gl_Position.x = centerPosX + mirageAmp*(1 - mixValue * mixValue) * (lPos - 95)/200 * sin((1 - mixValue) * 10 * fTime);
+	    gl_Position.x = centerPosX + 2.5*mirageAmp*(1 - mixValue * mixValue) * (lPos - 95)/200 * sin((1 - mixValue) * 10 * fTime);
     }
     
 
