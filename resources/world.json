@@ -33,6 +33,21 @@
       ],
       "name": "cube",
       "position": [
+        77.69999694824219,
+        -32.099998474121094,
+        -5.460000038146973
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        4.300000190734863,
+        0.36000001430511475,
+        5.849999904632568
+      ],
+      "shader": "platform",
         -23.190000534057617,
         -33.459999084472656,
         98.48999786376953
@@ -524,13 +539,14 @@
       ],
       "name": "penguin",
       "position": [
-        -22.891048431396484,
-        -34.091758728027344,
-        104.3983383178711
+
+        76.8201904296875,
+        -31.670804977416992,
+        -5.295791149139404
       ],
       "rotation": [
         0.0,
-        3.276172637939453,
+        6.473235607147217,
         0.0
       ],
       "scale": [
@@ -1149,6 +1165,29 @@
         "fTime"
       ],
       "vertShader": "/hmap_vert.glsl"
+    },
+    {
+      "attributes": [
+        "vertNor",
+        "vertPos",
+        "vertTex"
+      ],
+      "fragShader": "/platform_frag.glsl",
+      "shaderName": "platform",
+      "uniforms": [
+        "LS",
+        "M",
+        "P",
+        "V",
+        "albedo",
+        "emissivity",
+        "lightColor",
+        "lightDir",
+        "reflectance",
+        "roughness",
+        "shadowDepth"
+      ],
+      "vertShader": "/simple_vert.glsl"
     },
     {
       "attributes": [
