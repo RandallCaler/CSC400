@@ -857,7 +857,7 @@
         "vertPos"
       ],
       "fragShader": "/particle_frag.glsl",
-      "shaderName": "partProg",
+      "shaderName": "particle",
       "uniforms": [
         "alphaTexture",
         "P",
@@ -964,6 +964,10 @@
     {
       "filePath": "/cheese_Base_color.png",
       "name": "cheeseTex"
+    },
+    {
+      "filePath": "/alpha/bmp",
+      "name": "firePart"
     },
     {
       "filePath": "/rock.png",

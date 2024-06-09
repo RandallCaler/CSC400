@@ -96,7 +96,7 @@ public:
 	shared_ptr<Program> DepthProgDebug;
 	shared_ptr<Program> DebugProg;
 
-	std::shared_ptr<Program> partProg;
+	//std::shared_ptr<Program> partProg;
 
 	bool DEBUG_LIGHT = false;
 	bool GEOM_DEBUG = true;
@@ -507,23 +507,23 @@ public:
 		DebugProg->addUniform("texBuf");
   		DebugProg->addAttribute("vertPos");
 
-		partProg = make_shared<Program>();
-		partProg->setVerbose(true);
-		partProg->setShaderNames(
-			resourceDirectory + "/particle_vert.glsl",
-			resourceDirectory + "/particle_frag.glsl");
-		if (!partProg->init())
-		{
-			std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
-			exit(1);
-		}
-		partProg->addUniform("P");
-		partProg->addUniform("M");
-		partProg->addUniform("V");
-		//partProg->addUniform("pColor");
-		partProg->addUniform("alphaTexture");
-		partProg->addAttribute("vertPos");
-		partProg->addAttribute("color");
+		//partProg = make_shared<Program>();
+		//partProg->setVerbose(true);
+		//partProg->setShaderNames(
+		//	resourceDirectory + "/particle_vert.glsl",
+		//	resourceDirectory + "/particle_frag.glsl");
+		//if (!partProg->init())
+		//{
+		//	std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
+		//	exit(1);
+		//}
+		//partProg->addUniform("P");
+		//partProg->addUniform("M");
+		//partProg->addUniform("V");
+		////partProg->addUniform("pColor");
+		//partProg->addUniform("alphaTexture");
+		//partProg->addAttribute("vertPos");
+		//partProg->addAttribute("color");
 
 		thePartSystem = new particleSys(vec3(0, 0, 0));
 		thePartSystem->gpuSetup();
@@ -1131,17 +1131,17 @@ public:
 			drawObjects(aspect, LSpace, frametime);
 		}
 
-		partProg->bind();
-		SetView(partProg);
-		texture3->bind(partProg->getUniform("alphaTexture"));
-		CHECKED_GL_CALL(glUniformMatrix4fv(partProg->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix())));
-		//CHECKED_GL_CALL(glUniformMatrix4fv(partProg->getUniform("V"), 1, GL_FALSE, value_ptr(View->topMatrix())));
-		CHECKED_GL_CALL(glUniformMatrix4fv(partProg->getUniform("M"), 1, GL_FALSE, value_ptr(Model->topMatrix())));
+		//partProg->bind();
+		//SetView(partProg);
+		//firePart->bind(partProg->getUniform("alphaTexture"));
+		//CHECKED_GL_CALL(glUniformMatrix4fv(partProg->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix())));
+		////CHECKED_GL_CALL(glUniformMatrix4fv(partProg->getUniform("V"), 1, GL_FALSE, value_ptr(View->topMatrix())));
+		//CHECKED_GL_CALL(glUniformMatrix4fv(partProg->getUniform("M"), 1, GL_FALSE, value_ptr(Model->topMatrix())));
 
-		thePartSystem->drawMe(partProg);
-		thePartSystem->update();
+		//thePartSystem->drawMe(partProg);
+		//thePartSystem->update();
 
-		partProg->unbind();
+		//partProg->unbind();
 
 		
 		checkSounds();
