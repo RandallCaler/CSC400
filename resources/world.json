@@ -853,6 +853,21 @@
     },
     {
       "attributes": [
+        "color",
+        "vertPos"
+      ],
+      "fragShader": "/particle_frag.glsl",
+      "shaderName": "partProg",
+      "uniforms": [
+        "alphaTexture",
+        "P",
+        "M",
+        "V"
+      ],
+      "vertShader": "/particle_vert.glsl"
+    },
+    {
+      "attributes": [
         "vertPos"
       ],
       "fragShader": "/edit_frag.glsl",
