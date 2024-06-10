@@ -127,9 +127,9 @@ void main() {
 	//vec4 baseColor = vec4(BRDF, 1.0);
 
 	//Outcolor = vec4(albedo, 1.0) + (1.0-Shade)*color;
-	//Outcolor = amb*vec4(albedo, 1.0) + (1.0-Shade)*baseColor;
+	Outcolor = amb*vec4(albedo, 1.0) + (1.0-Shade)*baseColor;
 
-	Outcolor = 0.7*(1.0-Shade)*vec4(albedo, 1.0); //0.5*  + *vec4(albedo, 1.0)
+	//Outcolor = 0.7*(1.0-Shade)*vec4(albedo, 1.0); //0.5*  + *vec4(albedo, 1.0)
 	
 }
 
