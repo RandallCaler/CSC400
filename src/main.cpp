@@ -857,7 +857,6 @@ public:
 
 
 	void drawObjects(float aspect, mat4 LSpace, float deltaTime) {
-	
 		// Create the matrix stacks - please leave these alone for now
 		auto Projection = make_shared<MatrixStack>();
 		auto Model = make_shared<MatrixStack>();
@@ -1219,6 +1218,7 @@ int main(int argc, char *argv[]) {
 	application->leGUI->Init(windowManager->getHandle());
 	float totalTime = 0.0;
 
+	glEnable(GL_CULL_FACE);
 	// Loop until the user closes the window.
 	while (!glfwWindowShouldClose(windowManager->getHandle()))
 	{
