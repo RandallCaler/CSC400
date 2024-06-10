@@ -157,13 +157,13 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
         groundPlane = groundPlaneB;
         groundHeight = groundHeightB;
     }
-    float entityHeight = scaleVec.y * (2.0 / std::max(std::max(model->max.x - model->min.x,
+    /*float entityHeight = scaleVec.y* (2.0 / std::max(std::max(model->max.x - model->min.x,
             model->max.y - model->min.y),
-            model->max.z - model->min.z));
+            model->max.z - model->min.z));*/
 
     // ground climbing
     bool climbable = grounded && (groundHeight - groundHeight0)/(std::max(EPSILON, length(vec2(deltaX, deltaZ)))) < SLOPE_TOLERANCE || 
-        position.y > groundHeight + entityHeight;
+        position.y > groundHeight;// + entityHeight;
     if (climbable || length(vec2(deltaX, deltaZ)) < EPSILON) {
         position = newPosition;
     }
@@ -175,7 +175,6 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
         groundHeight = groundHeight0;
     }
 
-    // printf("%.3f\t", m.upwardSpeed);
     // FALLING physics
     if (gliding == true) {
         m.upwardSpeed = std::max(m.upwardSpeed + (GRAVITY - AIR_RESISTANCE) * deltaTime, -3.0f);
@@ -183,15 +182,14 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
     else {
         m.upwardSpeed += GRAVITY * deltaTime;
     }
-    // printf("+ %.3f * %.3f -> %.3f\t", GRAVITY, deltaTime, m.upwardSpeed);
     position += vec3(0.0f, m.upwardSpeed * deltaTime, 0.0f);
 
-    if (position.y > groundHeight + entityHeight + 0.1) {
+    if (position.y > groundHeight + 0.1) { // + entityHeight
         grounded = false;
     }
 
     // uses the terrain height to prevent character from indefinitely falling
-    if (position.y < groundHeight + entityHeight) {
+    if (position.y < groundHeight + EPSILON) { // + entityHeight
         if (!sliding) {
             grounded = true;
         }
@@ -203,8 +201,7 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
         }
         gliding = false;
         m.upwardSpeed = std::max(0.0f, m.upwardSpeed);
-        position.y = groundHeight + entityHeight;
-        // printf("grounded: %.4f vs %.4f\n", position.y - entityHeight, groundHeight);
+        position.y = groundHeight + EPSILON;// + entityHeight;
     }
 
     vec3 collisionPlane = vec3(collider->CheckCollision(deltaTime, collisionList, collisionSounds));
@@ -230,7 +227,7 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
         position = oldPosition;
         float fP = abs(dot(delta, collisionPlane));
         position += delta + collisionPlane * fP;
-        if (position.y < groundHeight + entityHeight) {
+        if (position.y < groundHeight + EPSILON) { // + entityHeight
             position = oldPosition;
         }
 

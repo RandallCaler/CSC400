@@ -1678,6 +1678,8 @@
         "terrain3",
         "terrain4",
         "terrain5",
+        "terrain6",
+        "DuDvMap",
         "fTime"
       ],
       "vertShader": "/hmap_vert.glsl"
@@ -1787,6 +1789,10 @@
     {
       "filePath": "/water.jpg",
       "name": "water"
+    },
+    {
+      "filePath": "/water_dudv.png",
+      "name": "dudvwater"
     }
   ]
 }
