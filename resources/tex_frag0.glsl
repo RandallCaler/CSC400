@@ -46,12 +46,12 @@ float TestShadow(vec4 LSfPos) {
 void main() {
 
   float Shade;
-  float amb = 0.7;
+  float amb = 0.3;
 
   vec4 texColor0 = texture(Texture0, in_struct.vTexCoord);
 
   Shade = TestShadow(in_struct.fPosLS);
 
-  Outcolor = amb*texColor0*vec4(1.0) + 0.3*(1.0-Shade)*texColor0*vec4(1.0); //(1.0-Shade)*   amb*(texColor0) + 
+  Outcolor = amb*texColor0*vec4(1.0) + 0.7*(1.0-Shade)*texColor0*vec4(1.0);
 
 }

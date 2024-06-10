@@ -1,57 +1,6 @@
 {
   "entities": [
     {
-      "collider": 0,
-      "file": "/glider.glb",
-      "meshes": [
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "Plane.001"
-        }
-      ],
-      "name": "glider",
-      "position": [
-        82.52632141113281,
-        -30.483171463012695,
-        -17.094213485717773
-      ],
-      "rotation": [
-        0.0,
-        0.0,
-        0.0
-      ],
-      "scale": [
-        1.0,
-        1.0,
-        1.0
-      ],
-      "shader": "animate1",
-      "tag": "glider",
-      "texture": ""
-    },
-    {
       "collider": 1,
       "file": "/cube.obj",
       "meshes": [
@@ -98,7 +47,7 @@
         0.10000000149011612,
         2.0
       ],
-      "shader": "reg",
+      "shader": "platform",
       "tag": "",
       "texture": ""
     },
@@ -149,7 +98,7 @@
         0.10000000149011612,
         5.0
       ],
-      "shader": "reg",
+      "shader": "platform",
       "tag": "",
       "texture": ""
     },
@@ -200,7 +149,7 @@
         0.10000000149011612,
         4.0
       ],
-      "shader": "reg",
+      "shader": "platform",
       "tag": "",
       "texture": ""
     },
@@ -251,7 +200,7 @@
         0.10000000149011612,
         2.0
       ],
-      "shader": "reg",
+      "shader": "platform",
       "tag": "",
       "texture": ""
     },
@@ -302,7 +251,7 @@
         0.10000000149011612,
         3.0
       ],
-      "shader": "reg",
+      "shader": "platform",
       "tag": "",
       "texture": ""
     },
@@ -353,7 +302,7 @@
         0.10000000149011612,
         4.0
       ],
-      "shader": "reg",
+      "shader": "platform",
       "tag": "",
       "texture": ""
     },
@@ -404,7 +353,7 @@
         0.10000000149011612,
         3.0
       ],
-      "shader": "reg",
+      "shader": "platform",
       "tag": "",
       "texture": ""
     },
@@ -455,7 +404,7 @@
         0.30000001192092896,
         3.0
       ],
-      "shader": "reg",
+      "shader": "platform",
       "tag": "",
       "texture": ""
     },
@@ -506,7 +455,7 @@
         0.46000000834465027,
         7.389999866485596
       ],
-      "shader": "reg",
+      "shader": "platform",
       "tag": "",
       "texture": ""
     },
@@ -557,7 +506,7 @@
         0.10000000149011612,
         1.0
       ],
-      "shader": "reg",
+      "shader": "platform",
       "tag": "",
       "texture": ""
     },
@@ -608,7 +557,7 @@
         0.25,
         1.909999966621399
       ],
-      "shader": "reg",
+      "shader": "platform",
       "tag": "",
       "texture": ""
     },
@@ -713,6 +662,57 @@
       ],
       "shader": "reg",
       "tag": "",
+      "texture": ""
+    },
+    {
+      "collider": 0,
+      "file": "/glider.glb",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Plane.001"
+        }
+      ],
+      "name": "glider",
+      "position": [
+        0.0,
+        100.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "shader": "animate1",
+      "tag": "glider",
       "texture": ""
     },
     {
@@ -1034,13 +1034,13 @@
       ],
       "name": "penguin",
       "position": [
-        81.1034927368164,
-        -31.10418128967285,
-        -16.46258544921875
+        -16.410165786743164,
+        -34.06852722167969,
+        107.17057800292969
       ],
       "rotation": [
         0.0,
-        -3.915001630783081,
+        -1.6549433469772339,
         0.0
       ],
       "scale": [
@@ -1161,9 +1161,9 @@
         {
           "material": {
             "albedo": [
-              1.0,
-              1.0,
-              1.0
+              0.8941176533699036,
+              0.886274516582489,
+              0.0
             ],
             "emissivity": [
               0.0,
@@ -1188,7 +1188,7 @@
       "name": "respawn3",
       "position": [
         -17.6299991607666,
-        -33.900001525878906,
+        -34.08000183105469,
         106.0999984741211
       ],
       "rotation": [
@@ -1201,7 +1201,7 @@
         0.10000000149011612,
         1.0
       ],
-      "shader": "reg",
+      "shader": "platform",
       "tag": "respawn",
       "texture": ""
     },
@@ -1663,24 +1663,23 @@
       "fragShader": "/hmap_frag.glsl",
       "shaderName": "hmap",
       "uniforms": [
+        "DuDvMap",
         "LS",
         "M",
         "P",
         "V",
         "fTime",
+        "h_max",
+        "h_min",
         "lightDir",
         "shadowDepth",
-        "h_min",
-        "h_max",
         "terrain0",
         "terrain1",
         "terrain2",
         "terrain3",
         "terrain4",
         "terrain5",
-        "terrain6",
-        "DuDvMap",
-        "fTime"
+        "terrain6"
       ],
       "vertShader": "/hmap_vert.glsl"
     },
@@ -1690,8 +1689,8 @@
         "vertPos",
         "vertTex"
       ],
-      "fragShader": "/simple_frag.glsl",
-      "shaderName": "reg",
+      "fragShader": "/platform_frag.glsl",
+      "shaderName": "platform",
       "uniforms": [
         "LS",
         "M",
@@ -1713,8 +1712,8 @@
         "vertPos",
         "vertTex"
       ],
-      "fragShader": "/platform_frag.glsl",
-      "shaderName": "platform",
+      "fragShader": "/simple_frag.glsl",
+      "shaderName": "reg",
       "uniforms": [
         "LS",
         "M",
@@ -1767,8 +1766,20 @@
   ],
   "textures": [
     {
+      "filePath": "/water_dudv.png",
+      "name": "dudvwater"
+    },
+    {
+      "filePath": "/grass.jpg",
+      "name": "grass"
+    },
+    {
       "filePath": "/rock.jpg",
       "name": "rock"
+    },
+    {
+      "filePath": "/sand.png",
+      "name": "sand"
     },
     {
       "filePath": "/sky.jpg",
@@ -1779,20 +1790,8 @@
       "name": "snow"
     },
     {
-      "filePath": "/grass.jpg",
-      "name": "grass"
-    },
-    {
-      "filePath": "/sand.png",
-      "name": "sand"
-    },
-    {
       "filePath": "/water.jpg",
       "name": "water"
-    },
-    {
-      "filePath": "/water_dudv.png",
-      "name": "dudvwater"
     }
   ]
 }
