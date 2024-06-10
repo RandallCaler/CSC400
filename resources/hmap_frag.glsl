@@ -118,6 +118,6 @@ void main() {
 	// specular coefficient
 	float specular = pow(max(0, dot(normal, halfway)), 10);
 	
-	color = vec4(vec3((specular + diffuse) * (1 - Shade)) * terrainTex, 1.0);
+	color = vec4(vec3(0.1) + vec3((specular + diffuse) * (1 - Shade)) * terrainTex, 1.0);
 }
 

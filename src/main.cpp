@@ -796,7 +796,7 @@ public:
 
 
 	mat4 SetOrthoMatrix(shared_ptr<Program> curShade) {
-		mat4 ortho = glm::ortho(-150.0, 150.0, -150.0, 150.0, 10.0, 500.0);
+		mat4 ortho = glm::ortho(-150.0, 150.0, -150.0, 150.0, 10.0, 100.0);
 
 		glUniformMatrix4fv(curShade->getUniform("LP"), 1, GL_FALSE, value_ptr(ortho));
 		return ortho;
@@ -1133,7 +1133,7 @@ public:
 		DepthProg->bind();
 		//TODO you will need to fix these
 		LO = SetOrthoMatrix(DepthProg);
-		LV = SetLightView(DepthProg, player->position + vec3(100) * light_vec, player->position, lightUp);
+		LV = SetLightView(DepthProg, player->position + vec3(50) * light_vec, player->position, lightUp);
 		LSpace = LO*LV;
 		drawShadowMap(LSpace);
 		printf("unbind depth buf\n");
