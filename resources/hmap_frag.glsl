@@ -100,6 +100,7 @@ float TestShadow(vec4 LSfPos) {
 void main() {
 
   float Shade;
+  float Shine;
   float amb = 0.3;
 
   vec3 terrainTex = getTerrainTexture();
@@ -107,7 +108,15 @@ void main() {
   Shade = TestShadow(in_struct.fPosLS);
 
   // normal unit vector to vertex geometry
-	vec3 normal = normalize(in_struct.fragNor + vec3(normDistortion.x, 0.0, normDistortion.y));
+  vec3 normal;
+  if (in_struct.fPos.y < h_min + 0.1) {
+    Shine = 200;
+	  normal = normalize(vec3(normDistortion.x, 0.2, normDistortion.y));
+  }
+  else {
+    Shine = 10;
+	  normal = in_struct.fragNor;
+  }
 	// unit vector toward light source
 	vec3 light = normalize(in_struct.lightDir);
 	// unit vector angularly halfway between light and camera
@@ -116,7 +125,7 @@ void main() {
 	// diffusion coefficient
 	float diffuse = max(0, dot(normal, light));
 	// specular coefficient
-	float specular = pow(max(0, dot(normal, halfway)), 10);
+	float specular = pow(max(0, dot(normal, halfway)), Shine);
 	
 	color = vec4(vec3(0.1) + vec3((specular + diffuse) * (1 - Shade)) * terrainTex, 1.0);
 }

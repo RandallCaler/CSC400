@@ -710,7 +710,6 @@ public:
 		//draw the ground plane 
   		curS->setModel(groundPos, 0, 0, 0, 1);
 
-		printf("hmin %.3f\thmax %.3f\tplayerh %.3f\n", Y_MIN, Y_MAX, player->position.y);
 		glUniform1f(curS->prog->getUniform("h_min"), worldSize * Y_MIN);
 		glUniform1f(curS->prog->getUniform("h_max"), worldSize * Y_MAX);
 
@@ -764,7 +763,7 @@ public:
 
 		glActiveTexture(GL_TEXTURE9);
 		glBindTexture(GL_TEXTURE_2D, textureLibrary["dudvwater"]->getID());
-		glUniform1i(curS->prog->getUniform("terrain7"), 9);
+		glUniform1i(curS->prog->getUniform("DuDvMap"), 9);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -789,7 +788,6 @@ public:
   		glDisableVertexAttribArray(0);
   		glDisableVertexAttribArray(1);
   		glDisableVertexAttribArray(2);
-		printf("unbind ground\n");
   		curS->prog->unbind();
      }
 
@@ -896,7 +894,6 @@ public:
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 			if (shaders[entity->defaultShaderName] != curS) {
-				printf("unbind entity %s\n", entity->model->filePath.c_str());
 				curS->prog->unbind();
 				curS = shaders[entity->defaultShaderName];
 				curS->prog->bind();
@@ -964,7 +961,6 @@ public:
 			}
 		}
 		
-		printf("unbind\n");
 		curS->prog->unbind();
 
 		curS = shaders["hmap"];
@@ -1037,7 +1033,6 @@ public:
 			//}
 		}
 	
-		printf("unbind\n");
 		curS->prog->unbind();
 		curS = shaders["hmap"];
 
@@ -1136,7 +1131,6 @@ public:
 		LV = SetLightView(DepthProg, player->position + vec3(50) * light_vec, player->position, lightUp);
 		LSpace = LO*LV;
 		drawShadowMap(LSpace);
-		printf("unbind depth buf\n");
 		DepthProg->unbind();
 		glCullFace(GL_BACK);
 		// cout << "1 pass" << endl;
