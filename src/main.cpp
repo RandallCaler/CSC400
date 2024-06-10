@@ -702,8 +702,9 @@ public:
 		//draw the ground plane 
   		curS->setModel(groundPos, 0, 0, 0, 1);
 
-	glUniform1f(curS->prog->getUniform("h_min"), Y_MIN);
-		glUniform1f(curS->prog->getUniform("h_max"), Y_MAX);
+		printf("hmin %.3f\thmax %.3f\tplayerh %.3f\n", Y_MIN, Y_MAX, player->position.y);
+		glUniform1f(curS->prog->getUniform("h_min"), worldSize * Y_MIN);
+		glUniform1f(curS->prog->getUniform("h_max"), worldSize * Y_MAX);
 
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, textureLibrary["rock"]->getID());
@@ -746,6 +747,19 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+		glActiveTexture(GL_TEXTURE8);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["water"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain6"), 8);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glActiveTexture(GL_TEXTURE9);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["dudvwater"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain7"), 9);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
   		glEnableVertexAttribArray(0);
   		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
@@ -767,6 +781,7 @@ public:
   		glDisableVertexAttribArray(0);
   		glDisableVertexAttribArray(1);
   		glDisableVertexAttribArray(2);
+		printf("unbind ground\n");
   		curS->prog->unbind();
      }
 
@@ -873,6 +888,7 @@ public:
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 			if (shaders[entity->defaultShaderName] != curS) {
+				printf("unbind entity %s\n", entity->model->filePath.c_str());
 				curS->prog->unbind();
 				curS = shaders[entity->defaultShaderName];
 				curS->prog->bind();
@@ -924,6 +940,7 @@ public:
 			}
 		}
 		
+		printf("unbind\n");
 		curS->prog->unbind();
 
 		curS = shaders["hmap"];
@@ -996,7 +1013,7 @@ public:
 			//}
 		}
 	
-
+		printf("unbind\n");
 		curS->prog->unbind();
 		curS = shaders["hmap"];
 
@@ -1102,6 +1119,7 @@ public:
 		LV = SetLightView(DepthProg, player->position + vec3(100) * light_vec, player->position, lightUp);
 		LSpace = LO*LV;
 		drawShadowMap(LSpace);
+		printf("unbind depth buf\n");
 		DepthProg->unbind();
 		glCullFace(GL_BACK);
 		// cout << "1 pass" << endl;
