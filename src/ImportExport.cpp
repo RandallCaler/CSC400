@@ -1,12 +1,13 @@
 #include "ImportExport.h"
 
-ImporterExporter::ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Texture>>* textureLibrary, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList, vector<shared_ptr<Entity>>* collidables) {
+ImporterExporter::ImporterExporter(map<string, shared_ptr<Shader>>* shaders, map<string, shared_ptr<Texture>>* textureLibrary, map<string, shared_ptr<Entity>>* worldentities, vector<string>* tagList, vector<shared_ptr<Entity>>* collidables, vector<shared_ptr<Entity>> *boids) {
 	// mutable references to main's shaders and entities
 	this->shaders = shaders;
 	this->textureLibrary = textureLibrary;
 	this->worldentities = worldentities;
 	this->tagList = tagList;
 	this->collidables = collidables;
+	this->boids = boids;
 }
 
 ImporterExporter::~ImporterExporter() {
@@ -94,6 +95,9 @@ void ImporterExporter::loadEntity(const json& entData) {
 
 	if (collision == 1) {
 		newEntity->collidable = true;
+		if (newEntity->tag == "food"){
+			boids->push_back(newEntity);
+		}
 		collidables->push_back(newEntity);
 	}
 	else {
@@ -104,6 +108,8 @@ void ImporterExporter::loadEntity(const json& entData) {
 	newEntity->position.x = entData["position"][0];
 	newEntity->position.y = entData["position"][1];
 	newEntity->position.z = entData["position"][2];
+
+	newEntity->m.velocity = vec3(0.0f);
 
 	newEntity->rotX = entData["rotation"][0];
 	newEntity->rotY = entData["rotation"][1];
@@ -157,7 +163,6 @@ void ImporterExporter::loadFromFile(string path) {
 		cerr << "Failed to open save file at " << fullPath << endl;
 		return;
 	}
-
 	json j;
 	saveFile >> j;  // Load the entire JSON structure from the file
 
@@ -168,7 +173,6 @@ void ImporterExporter::loadFromFile(string path) {
 			loadShader(shaderData);
 		}
 	}
-
 	if (j.contains("textures")) {
 		for (const auto& texData : j["textures"]) {
 			loadTexture(texData);

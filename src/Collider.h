@@ -29,6 +29,7 @@ public:
     
     char entityName;
     bool collectible;
+    bool boided = false;
 
     Collider();
     Collider(Entity *owner, bool collectible = false);
@@ -36,7 +37,7 @@ public:
     void UpdateColliderSize();
     glm::vec3 pixelToWorldSpace(glm::vec3 p, std::pair<int, int> mapSize);
     glm::vec4 CheckGroundCollision(std::shared_ptr<Texture> hMap);
-    glm::vec4 CheckCollision(float deltaTime, std::vector<std::shared_ptr<Entity>>& entities);
+    glm::vec4 CheckCollision(float deltaTime, std::vector<std::shared_ptr<Entity>>& entities, int *collisionSounds);
     void SetEntityID(int ID);
     void SetGround(glm::vec3 origin, glm::vec3 scale) { ground.origin = origin; ground.scale = scale; };
     bool IsColliding();

@@ -21,6 +21,9 @@
 #include "Camera.h"
 #include "LevelEditor.h"
 #include "EventManager.h"
+#include "GameManager.h"
+#include "Animation.h"
+#include "Animator.h"
 
 #include <chrono>
 #include <array>
@@ -48,14 +51,16 @@ std::string resourceDir = "../resources";
 std::string WORLD_FILE_NAME = "/world.json";
 bool editMode = false;
 float editSpeed = 7.0f;
+float worldSize = 0.5f;
 
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Texture>> textureLibrary = { {"", nullptr} };
 map<string, shared_ptr<Entity>> worldentities;
 vector<string> tagList = { "" };
 vector<shared_ptr<Entity>> collidables;
+vector<shared_ptr<Entity>> boids;
 
-shared_ptr<Entity> cur_entity = NULL;
+shared_ptr<Entity> cur_entity = nullptr;
 
 float deltaTime;
 
@@ -64,8 +69,9 @@ Camera cam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 
 Camera freeCam = Camera(vec3(0, 0, 1), 17, 4, 0, vec3(0, -1.12, 0), 0, vec3(0, 0.5, 5), true);
 Camera* activeCam = &cam;
 
+// for background music, called once in main loop
 ma_engine engine;
-ma_engine walkingEngine;
+
 // Event e = Event("../resources/cute-world.mp3");
 
 class Application : public EventCallbacks
@@ -81,19 +87,32 @@ public:
 	// shared_ptr<Shader> tex;
 
 	shared_ptr<Entity> player;
+	shared_ptr<Entity> glider;
 
-	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &textureLibrary, &worldentities, &tagList, &collidables);
+	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &textureLibrary, &worldentities, &tagList, &collidables, &boids);
+	GameManager *gameManager = new GameManager();
 
 	shared_ptr<Program> DepthProg;
-	GLuint depthMapFBO;
-	const GLuint S_WIDTH = 1024, S_HEIGHT = 1024;
-	GLuint depthMap;
+	shared_ptr<Program> DepthProgDebug;
+	shared_ptr<Program> DebugProg;
 
-	vec3 light_vec = vec3(1.0, 2.5, 1.0);
+	bool DEBUG_LIGHT = false;
+	bool GEOM_DEBUG = true;
+	bool SHADOW = true;
+
+
+	GLuint depthMapFBO;
+	const GLuint S_WIDTH = 8192, S_HEIGHT = 8192;
+	GLuint depthMap;
+	GLuint quad_vertexbuffer;
+	 GLuint quad_VertexArrayID;
+
+	vec3 light_vec = normalize(vec3(3, 100, 5));
   
 	LevelEditor* leGUI = new LevelEditor();
 
 	InputHandler ih;
+	int collisionSounds[1];
 
 	Entity bf1 = Entity();
 	Entity bf2 = Entity();
@@ -106,7 +125,7 @@ public:
 
 	std::vector<Entity> flowers;
 
-	// EventManager *eManager = new EventManager();
+	EventManager *eManager = new EventManager();
 	// Event *walking = new Event("../resources/music.mp3", &walkingEngine);
 
 
@@ -126,6 +145,9 @@ public:
 	double cursor_x = 0;
 	double cursor_y = 0;
 
+	const float Y_MAX = 75;
+	const float Y_MIN = -Y_MAX;
+
 	//bounds for world
 	double bounds;
 
@@ -134,7 +156,19 @@ public:
 	// hmap for terrain
 	shared_ptr<Texture> hmap;
 	vec3 groundPos = vec3(0, 0, 0);
-	
+
+	ma_engine walkingEngine;
+	ma_engine collectionEngine;
+
+	shared_ptr<Animation> idle;
+	shared_ptr<Animation> walking;
+	shared_ptr<Animation> jumping;
+	shared_ptr<Animation> gliding;
+	shared_ptr<Animation> waving;
+	shared_ptr<Animation> floating;
+	Animator animator = Animator();
+	Animator animator1 = Animator();
+		
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -155,6 +189,7 @@ public:
 						player = ent.second;
 					}
 				}
+				applyCollider();
 			}
 		}
 
@@ -186,7 +221,7 @@ public:
 						levelEditor->saveToFile(WORLD_FILE_NAME);
 						break;
 					case GLFW_KEY_F:
-						if (cur_entity != NULL) {
+						if (cur_entity) {
 							freeCam.cameraPos = cur_entity->position + vec3(0,2,2);
 							freeCam.pitch = atan((freeCam.cameraPos.z - cur_entity->position.z) /
 								(freeCam.cameraPos.y - cur_entity->position.y));
@@ -215,7 +250,7 @@ public:
 		}
 		else {
 			if (key == GLFW_KEY_W && (action == GLFW_PRESS)) {
-				ih.inputStates[0] = 1;
+				ih.inputStates[0] = 1;			
 			}
 
 			if (key == GLFW_KEY_A && (action == GLFW_PRESS)) {
@@ -231,7 +266,17 @@ public:
 			}
 
 			if (key == GLFW_KEY_SPACE && (action == GLFW_PRESS)){
-				ih.inputStates[4] = 1;
+				ih.inputStates[4] = 1;	
+
+				if (player->grounded){
+					if (animator.getCurrentAnimation() == jumping && animator.m_AnimationCompletedOnce) {
+						animator.PlayAnimation(jumping);
+					}
+					else {
+						animator.PlayAnimation(jumping);
+					}
+				}
+				
 			}
 
 			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_PRESS)){
@@ -242,7 +287,7 @@ public:
 				player->sliding = true;
 			}
 	
-			if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
+			if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
 
@@ -271,13 +316,18 @@ public:
 			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_RELEASE)){
 				ih.inputStates[5] = 0;
 			}
-
 			if (key == GLFW_KEY_C && (action == GLFW_RELEASE)) {
 				player->sliding = false;
 			}
 			
-			if (key == GLFW_KEY_F1 && action == GLFW_RELEASE) {
+			if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			}
+
+			if (key == GLFW_KEY_1 && (action == GLFW_PRESS)) {
+				if (animator.getCurrentAnimation() != waving) {
+					animator.PlayAnimation(waving);
+				}
 			}
 
 			// Entity *catptr = &catEnt;
@@ -287,6 +337,7 @@ public:
 
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
 		cam.angle -= 10 * (deltaX / 57.296);
+		player->rotY -= 10 * (deltaX / 57.296);
 	}
 
 
@@ -339,6 +390,7 @@ public:
 		}
 		else {
 			cam.angle -= 0.001*(x-cursor_x);
+			player->rotY -= 0.001*(x-cursor_x);
 			cursor_x = x;
 			cursor_y = y;
 		}
@@ -358,12 +410,21 @@ public:
 		cout << "r: " << +data[0] << "   g: " << +data[1] << "   b: " << +data[2] << endl;
 
 		// convert color to entity id
-		int pickedID = 
-			data[0]/10 + 
-			data[1]/10 * 256 +
-			data[2]/10 * 256*256;
+		int pickedID = -1;
 
-		cout << "pickedId = " << pickedID << endl;
+		// Iterate through all possible IDs to find the one that matches the color
+		for (int testID = 0; testID < Entity::NEXT_ID; ++testID) {
+			int r = (testID * 137) % 256;
+			int g = (testID * 149) % 256;
+			int b = (testID * 163) % 256;
+
+			if (r == data[0] && g == data[1] && b == data[2]) {
+				pickedID = testID;
+				break;
+			}
+		}
+
+		//cout << "pickedId = " << pickedID << endl;
 		
 		// find the entity with that id (if an entity was clicked) and set as active
 		map<string, shared_ptr<Entity>>::iterator i;
@@ -419,13 +480,34 @@ public:
 		DepthProg->init();
 		DepthProg->addUniform("LP");
 		DepthProg->addUniform("LV");
-		DepthProg->addUniform("P");
-		DepthProg->addUniform("V");
 		DepthProg->addUniform("M");
 		DepthProg->addUniform("Texture0");
 		DepthProg->addAttribute("vertPos");
 		DepthProg->addAttribute("vertNor");
 		DepthProg->addAttribute("vertTex");
+
+		DepthProgDebug = make_shared<Program>();
+		DepthProgDebug->setVerbose(true);
+		DepthProgDebug->setShaderNames(resourceDirectory + "/depth_vertDebug.glsl", resourceDirectory + "/depth_fragDebug.glsl");
+		DepthProgDebug->init();
+
+		DepthProgDebug->addUniform("LP");
+		DepthProgDebug->addUniform("LV");
+		DepthProgDebug->addUniform("M");
+		DepthProgDebug->addAttribute("vertPos");
+		//un-needed, better solution to modifying shape
+		DepthProgDebug->addAttribute("vertNor");
+		DepthProgDebug->addAttribute("vertTex");
+
+
+		DebugProg = make_shared<Program>();
+		DebugProg->setVerbose(true);
+		DebugProg->setShaderNames(resourceDirectory + "/pass_vert.glsl", resourceDirectory + "/pass_texfrag.glsl");
+		DebugProg->init();
+
+		DebugProg->addUniform("texBuf");
+  		DebugProg->addAttribute("vertPos");
+
 
 		hmap = make_shared<Texture>();
 		hmap->setFilename(resourceDirectory + "/hmap.png");
@@ -436,40 +518,50 @@ public:
 			if (ent.second->tag == "player") {
 				player = ent.second;
 			}
+			if (ent.second->tag == "glider") {
+				glider = ent.second;
+			}
 		}
 
 		//eManager->events.insert_or_assign("walking", walking);
 
 	}
 
-	int initSoundEngines(){
+	void initSoundEngines(){
 		
 		ma_result result = ma_engine_init(NULL, &engine);
 		if (result != MA_SUCCESS) {
-			printf("Failed to initialize audio engine.");
-			return -1;
+			printf("Failed to initialize BACKGROUND MUSIC audio engine.");
+			//return -1;
 		}
 
 		result = ma_engine_init(NULL, &walkingEngine);
 		if (result != MA_SUCCESS) {
-			printf("Failed to initialize audio engine.");
-			return -1;
+			printf("Failed to initialize WALKING audio engine.");
+			//return -1;
 		}
-		return 0;
+
+		result = ma_engine_init(NULL, &collectionEngine);
+		if (result != MA_SUCCESS) {
+			printf("Failed to initialize WALKING audio engine.");
+			//return -1;
+		}
+
+		Event *walkingEv = new Event("../resources/walking-grass.mp3", &walkingEngine, true, "walking");
+		eManager->events.insert_or_assign("walking", walkingEv);
+
+		Event *collectionEv = new Event("../resources/marimba-y.mp3", &collectionEngine, false, "collection");
+		eManager->events.insert_or_assign("collection", collectionEv);
+
+		//return 0;
 	}
 
 	void uninitSoundEngines(){
 		ma_engine_uninit(&engine);
 		ma_engine_uninit(&walkingEngine);
+		ma_engine_uninit(&collectionEngine);
 	}
 
-	bool walkingEvent(shared_ptr<Entity> penguin){
-		if(penguin->m.curSpeed != 0.0){
-			return true;
-		}
-		return false;
-	}
-	
 	void initGeom(const std::string& resourceDirectory)
 	{   
 		if (player) {
@@ -481,30 +573,45 @@ public:
 
 		//code to load in the ground plane (CPU defined data passed to GPU)
 		initHMapGround();
+		//initQuad();
+	}
+
+	void initAnimation() {
+		idle = make_shared<Animation>(player->model, 1);
+		jumping = make_shared<Animation>(player->model, 2);
+		walking = make_shared<Animation>(player->model, 3);
+		waving = make_shared<Animation>(player->model, 4);
+		gliding = make_shared<Animation>(player->model, 0);
+		floating = make_shared<Animation>(glider->model, 0);
+		animator.PlayAnimation(idle);
+		animator1.PlayAnimation(floating);
 	}
 
 	void applyCollider() {
 		for (auto ent : collidables) {
-			ent->collider = new Collider(ent.get());
-			ent->collider->SetEntityID(ent->id);
-			if (ent == player) {
-				ent->collider->entityName = 'p';
-			}
-			else {
-				ent->collider->entityName = 'c';
-			}
-			if (ent->tag == "food") {
-				ent->collider->collectible = true;
-			}			
+			if (!ent->collider) {
+				ent->collider = new Collider(ent.get());
+				ent->collider->SetEntityID(ent->id);
+				if (ent == player) {
+					ent->collider->entityName = 'p';
+				}
+				else {
+					ent->collider->entityName = 'c';
+				}
+				if (ent->tag == "food") {
+					cout << "SET COLLECTIBLE TAG TO TRUE" << endl;
+					ent->collider->collectible = true;
+				}
+			}	
 		}
-		cam.collider = new Collider(&cam);
+		if (!cam.collider) {
+			cam.collider = new Collider(&cam);
+		}
+		
 	}
 
 	//directly pass quad for the ground to the GPU
 	void initHMapGround() {
-		const float Y_MAX = 75;
-		const float Y_MIN = -Y_MAX;
-
 		vector<float> vertices;
 		vector<float> regions;
 		auto hmap_dim = hmap->getDim();
@@ -512,21 +619,31 @@ public:
 		for (unsigned int i = 0; i < hmap_dim.second; i++) {
 			for (unsigned int j = 0; j < hmap_dim.first; j++) {
 				bool pit;
-				float hvalr = (float)*(hmap_data + 3 * (i * hmap_dim.first + j));
-				float hvalg = (float)*(hmap_data + 3 * (i * hmap_dim.first + j) + 1);
-				float hvalb = (float)*(hmap_data + 3 * (i * hmap_dim.first + j) + 2);
+				int hvalr = *(hmap_data + 3 * (i * hmap_dim.first + j));
+				int hvalg = *(hmap_data + 3 * (i * hmap_dim.first + j) + 1);
+				int hvalb = *(hmap_data + 3 * (i * hmap_dim.first + j) + 2);
+				int hvalmax = std::max(hvalr, std::max(hvalg, hvalb));
 				float hval = (hvalr + hvalg + hvalb) / (3 * 255.0f);
 				//float hval = (std::max)(hvalr, (std::max)(hvalg, hvalb)) / 255.0f;
 				
 				pit = hval < .01;
 
-				vertices.push_back(j - hmap_dim.first / 2.0f);
-				vertices.push_back(hval * (Y_MAX - Y_MIN) + Y_MIN);
-				vertices.push_back(i - hmap_dim.second / 2.0f);
+				vertices.push_back(worldSize * (j - hmap_dim.first / 2.0f));
+				vertices.push_back(worldSize * (hval * (Y_MAX - Y_MIN) + Y_MIN));
+				vertices.push_back(worldSize * (i - hmap_dim.second / 2.0f));
 
-				regions.push_back((pit ? 72 : hvalr) / 255.0f);
-				regions.push_back(hvalg / 255.0f);
-				regions.push_back((pit ? 100 : hvalb) / 255.0f);
+				if (pit) {
+					regions.push_back(0);
+				}
+				else if (hvalmax == hvalr) {
+					regions.push_back(1);
+				}
+				else if (hvalmax == hvalg) {
+					regions.push_back(2);
+				}
+				else if (hvalmax == hvalb) {
+					regions.push_back(3);
+				}
 			}
 		}
 		// hmap->freeData();
@@ -579,10 +696,10 @@ public:
 		g_GiboLen = indices.size();
 
 		if (player) {
-			player->collider->SetGround(groundPos, vec3(1, Y_MAX - Y_MIN, 1));
+			player->collider->SetGround(groundPos, worldSize * vec3(1, Y_MAX - Y_MIN, 1));
 		}
 		
-		cam.collider->SetGround(groundPos, vec3(1,Y_MAX-Y_MIN,1));
+		cam.collider->SetGround(groundPos, worldSize * vec3(1,Y_MAX-Y_MIN,1));
 
       }
 	
@@ -592,6 +709,132 @@ public:
 
 		//draw the ground plane 
   		curS->setModel(groundPos, 0, 0, 0, 1);
+
+		printf("hmin %.3f\thmax %.3f\tplayerh %.3f\n", Y_MIN, Y_MAX, player->position.y);
+		glUniform1f(curS->prog->getUniform("h_min"), worldSize * Y_MIN);
+		glUniform1f(curS->prog->getUniform("h_max"), worldSize * Y_MAX);
+
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["rock"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain0"), 2);
+		
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["sand"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain1"), 3);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glActiveTexture(GL_TEXTURE4);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["rock"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain2"), 4);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glActiveTexture(GL_TEXTURE5);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["grass"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain3"), 5);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glActiveTexture(GL_TEXTURE6);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["rock"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain4"), 6);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glActiveTexture(GL_TEXTURE7);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["snow"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain5"), 7);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glActiveTexture(GL_TEXTURE8);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["water"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain6"), 8);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glActiveTexture(GL_TEXTURE9);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["dudvwater"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain7"), 9);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+  		glEnableVertexAttribArray(0);
+  		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
+  		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		
+		glEnableVertexAttribArray(1);
+  		glBindBuffer(GL_ARRAY_BUFFER, GrndNorBuffObj);
+  		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		
+		glEnableVertexAttribArray(2);
+  		glBindBuffer(GL_ARRAY_BUFFER, GrndRegionBuffObj);
+  		glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		
+
+   		// draw!
+  		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
+  		glDrawElements(GL_TRIANGLES, g_GiboLen, GL_UNSIGNED_INT, 0);
+
+  		glDisableVertexAttribArray(0);
+  		glDisableVertexAttribArray(1);
+  		glDisableVertexAttribArray(2);
+		printf("unbind ground\n");
+  		curS->prog->unbind();
+     }
+
+
+
+	mat4 SetOrthoMatrix(shared_ptr<Program> curShade) {
+		mat4 ortho = glm::ortho(-150.0, 150.0, -150.0, 150.0, 10.0, 100.0);
+
+		glUniformMatrix4fv(curShade->getUniform("LP"), 1, GL_FALSE, value_ptr(ortho));
+		return ortho;
+	}
+
+
+	mat4 SetLightView(shared_ptr<Program> curShade, vec3 pos, vec3 LA, vec3 up) {
+		mat4 Cam = glm::lookAt(pos, LA, up);
+
+		glUniformMatrix4fv(curShade->getUniform("LV"), 1, GL_FALSE, value_ptr(Cam));
+		return Cam;
+	}
+
+
+	void drawShadowMap(mat4 LSpace) {
+		auto Model = make_shared<MatrixStack>();
+
+		map<string, shared_ptr<Entity>>::iterator i;
+
+		for (i = worldentities.begin(); i != worldentities.end(); i++) {
+			shared_ptr<Entity> entity = i->second;
+			entity->generateModel();
+		}
+    
+		for (i = worldentities.begin(); i != worldentities.end(); i++) {
+			shared_ptr<Entity> entity = i->second;
+			if (entity != worldentities["skybox"]) {
+				glUniformMatrix4fv(DepthProg->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
+		
+				entity->model->Draw(DepthProg);
+			}
+		}
+		
+     	glBindVertexArray(GroundVertexArrayID);
+
+		//draw the ground plane 
+  		mat4 ctm = glm::mat4(1.0f);
+  		glUniformMatrix4fv(DepthProg->getUniform("M"), 1, GL_FALSE, value_ptr(ctm));
   		glEnableVertexAttribArray(0);
   		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
   		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -612,62 +855,6 @@ public:
   		glDisableVertexAttribArray(0);
   		glDisableVertexAttribArray(1);
   		glDisableVertexAttribArray(2);
-  		curS->prog->unbind();
-     }
-
-
-
-	mat4 SetOrthoMatrix(shared_ptr<Program> curShade) {
-		mat4 ortho = glm::ortho(-15.0, 15.0, -15.0, 15.0, 0.1, 20.0);
-
-		glUniformMatrix4fv(curShade->getUniform("LP"), 1, GL_FALSE, value_ptr(ortho));
-		return ortho;
-	}
-
-
-	mat4 SetLightView(shared_ptr<Program> curShade, vec3 pos, vec3 LA, vec3 up) {
-		mat4 Cam = glm::lookAt(pos, LA, up);
-
-		glUniformMatrix4fv(curShade->getUniform("LV"), 1, GL_FALSE, value_ptr(Cam));
-		return Cam;
-	}
-
-
-	void drawShadowMap() {
-		float butterfly_height[3] = {1.1, 1.7, 1.5};
-
-		vec3 butterfly_loc[3];
-		butterfly_loc[0] = vec3(-2.3, -1, 3);
-		butterfly_loc[1] = vec3(-2, -1.2, -3);
-		butterfly_loc[2] = vec3(4, -1, 4);
-
-		// BRDFmaterial imported from save file
-		shaders["skybox"]->prog->setVerbose(false);
-		map<string, shared_ptr<Entity>>::iterator i;
-
-		for (i = worldentities.begin(); i != worldentities.end(); i++) {
-			shared_ptr<Entity> entity = i->second;
-			entity->generateModel();
-		}
-
-		for (i = worldentities.begin(); i != worldentities.end(); i++) {
-			shared_ptr<Entity> entity = i->second;
-			entity->model->Draw(DepthProg);
-
-			
-			//for (int i = 0; i < entity->objs.size(); i++) {	
-			//	entity->objs[i]->draw(DepthProg);
-			//}
-		}
-		
-		DepthProg->unbind();
-
-		bounds = std::sqrt(   //update cat's distance from skybox
-			cam.player_pos[0] * cam.player_pos[0]
-			+ cam.player_pos[2] * cam.player_pos[2]
-		);
-
-		// Pop matrix stacks.
 	}
 
 
@@ -680,26 +867,22 @@ public:
 
 		// Apply perspective projection.
 		Projection->pushMatrix();
-		Projection->perspective(45.0f, aspect, 0.01f, 1000.0f);
+		Projection->perspective(45.0f, aspect, 0.01f, 350.0f);
 		
 		//material shader first
 		shared_ptr<Shader> curS = shaders["reg"];
 		curS->prog->bind();
+
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog, hmap);
 
 		// directional light
+  		glActiveTexture(GL_TEXTURE1);
+  		glBindTexture(GL_TEXTURE_2D, depthMap);
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 
-
-		float butterfly_height[3] = {1.1, 1.7, 1.5};
-
-		vec3 butterfly_loc[3];
-		butterfly_loc[0] = vec3(-2.3, -1, 3);
-		butterfly_loc[1] = vec3(-2, -1.2, -3);
-		butterfly_loc[2] = vec3(4, -1, 4);
 
 		// BRDFmaterial imported from save file
 		shaders["skybox"]->prog->setVerbose(false);
@@ -713,12 +896,39 @@ public:
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 			if (shaders[entity->defaultShaderName] != curS) {
+				printf("unbind entity %s\n", entity->model->filePath.c_str());
 				curS->prog->unbind();
 				curS = shaders[entity->defaultShaderName];
 				curS->prog->bind();
 				glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 				activeCam->SetView(curS->prog, hmap);
 			}	
+
+			if (shaders["animate"] == curS) {
+				animator.UpdateAnimation(deltaTime);
+				auto transforms = animator.GetFinalBoneMatrices();
+				GLuint baseLocation = curS->prog->getUniform("finalBonesMatrices");
+				for (int i = 0; i < transforms.size(); ++i) {
+					glUniformMatrix4fv(baseLocation + i, 1, GL_FALSE, value_ptr(transforms[i]));
+				}
+			}
+			else if (shaders["animate1"] == curS) {
+				if (player->gliding) {
+					entity->position = player->position;
+					entity->position.y += 0.85;
+					entity->rotY = player->rotY;
+				}
+				else {
+					glider->position = vec3(0, 100, 0);
+				}				
+				animator1.UpdateAnimation(deltaTime);
+				auto transforms = animator1.GetFinalBoneMatrices();
+				GLuint baseLocation = curS->prog->getUniform("finalBonesMatrices");
+				for (int i = 0; i < transforms.size(); ++i) {
+					glUniformMatrix4fv(baseLocation + i, 1, GL_FALSE, value_ptr(transforms[i]));
+				}
+			}
+
 			if (shaders["skybox"] == curS) {
 				entity->position = activeCam->cameraPos;
 				// skybox is always the furthest surface away
@@ -727,7 +937,11 @@ public:
 
 			if (entity->collider) {
 				if (entity->id == player->id) {
-					entity->updateMotion(deltaTime, hmap, collidables);
+					entity->updateMotion(deltaTime, hmap, collidables, collisionSounds);
+				}
+				if (entity->collider->collectible){
+					entity->updateBoids(deltaTime, hmap, boids, player);
+					// cout << "BOIDED: " << entity->collider->boided << endl;
 				}
 			}
 	
@@ -735,9 +949,12 @@ public:
 			glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
 			glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
-      
+
+			//cout << i->first << endl;
 			for (auto& meshPair : entity->model->meshes) {
-				curS->setMaterial(meshPair.second.mat);
+				if (curS == shaders["reg"] || curS == shaders["platform"]) {
+					curS->setMaterial(meshPair.second.mat);
+				}			
 				meshPair.second.Draw(curS->prog);
 			}
 			
@@ -747,7 +964,7 @@ public:
 			}
 		}
 		
-
+		printf("unbind\n");
 		curS->prog->unbind();
 
 		curS = shaders["hmap"];
@@ -755,15 +972,18 @@ public:
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog, hmap);
+  		glActiveTexture(GL_TEXTURE1);
+  		glBindTexture(GL_TEXTURE_2D, depthMap);
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
+		glUniform1f(curS->prog->getUniform("fTime"), glfwGetTime());
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 		drawGround(curS);  //draw ground here
 
-		bounds = std::sqrt(   //update cat's distance from skybox
+		/*bounds = std::sqrt(   //update cat's distance from skybox
 			cam.player_pos[0] * cam.player_pos[0]
 			+ cam.player_pos[2] * cam.player_pos[2]
-		);
+		);*/
 
 		// Pop matrix stacks.
 		Projection->popMatrix();
@@ -785,16 +1005,6 @@ public:
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog, hmap);
-
-		float butterfly_height[3] = {1.1, 1.7, 1.5};
-
-		vec3 butterfly_loc[3];
-		butterfly_loc[0] = vec3(-2.3, -1, 3);
-		butterfly_loc[1] = vec3(-2, -1.2, -3);
-		butterfly_loc[2] = vec3(4, -1, 4);
-
-	
-		//vector<shared_ptr<Entity>> tempCollisionList = {worldentities["cube1"], player};
 
 		// BRDFmaterial imported from save file
 		map<string, shared_ptr<Entity>>::iterator i;
@@ -827,34 +1037,84 @@ public:
 			//}
 		}
 	
-
+		printf("unbind\n");
 		curS->prog->unbind();
 		curS = shaders["hmap"];
 
 		curS->prog->bind();
 		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
 		activeCam->SetView(curS->prog, hmap);
+  		glActiveTexture(GL_TEXTURE1);
+  		glBindTexture(GL_TEXTURE_2D, depthMap);
 		glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 		drawGround(curS);  //draw ground here
 
-		bounds = std::sqrt(   //update cat's distance from skybox
+		/*bounds = std::sqrt(   //update cat's distance from skybox
 			cam.player_pos[0] * cam.player_pos[0]
 			+ cam.player_pos[2] * cam.player_pos[2]
-		);
+		);*/
 
 		// Pop matrix stacks.
 		Projection->popMatrix();
 
 		// editor mode 
-		if (editMode) {
-			leGUI->NewFrame();
-			leGUI->Update();
-			leGUI->Render();
-		}
+		leGUI->NewFrame();
+		leGUI->Update();
+		leGUI->Render();
+	}
+
+	
+	bool walkingEvent(){
+		return ((player->m.curSpeed > 0 || player->m.curSpeed < 0) && (player->grounded));
 	}
 	
+	bool collectionEvent(){
+		return (collisionSounds[0] == 1 && eManager->eventHistory->at("collection") == false);
+	}
+	
+	
+	void checkSounds(){
+		if (walkingEvent()) {eManager->triggerSound("walking");}
+		else {eManager->stoppingSound("walking");}
+
+		if (collectionEvent()) {
+			//cout <<  "collection event triggered, starting sound: " << collisionSounds[0] <<eManager->eventHistory->at("collection") << endl;
+			eManager->triggerSound("collection");
+		
+			// eManager->eventHistory->at("collection") == true;
+			
+		}
+		else {
+			eManager->stoppingSound("collection");
+			collisionSounds[0] = 0;
+		}
+
+
+	}
+
+	void updateAnimation() {
+		if (player->grounded) {
+			if (player->m.curSpeed != 0) {
+				if (animator.getCurrentAnimation() != walking) {
+					animator.PlayAnimation(walking);			
+				}
+			}
+			else {
+				if (animator.getCurrentAnimation() != idle && animator.getCurrentAnimation() != waving) {
+					animator.PlayAnimation(idle);
+				}			
+			}
+		}
+		else {
+			if (player->gliding) {
+				if (animator.getCurrentAnimation() != gliding) {
+					animator.PlayAnimation(gliding);
+				}
+			}
+		}
+	}
 
 	void render(float frametime) {
 		// Get current frame buffer size.
@@ -864,55 +1124,49 @@ public:
 		vec3 lightLA = vec3(0.0);
     	vec3 lightUp = vec3(0, 1, 0);
 		mat4 LO, LV, LSpace;
-		// cout << "before" << endl;
+
 		glViewport(0, 0, S_WIDTH, S_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glCullFace(GL_FRONT);
 
 		DepthProg->bind();
-		  //TODO you will need to fix these
+		//TODO you will need to fix these
 		LO = SetOrthoMatrix(DepthProg);
-		LV = SetLightView(DepthProg, light_vec, lightLA, lightUp);
-		drawShadowMap();
+		LV = SetLightView(DepthProg, player->position + vec3(50) * light_vec, player->position, lightUp);
+		LSpace = LO*LV;
+		drawShadowMap(LSpace);
+		printf("unbind depth buf\n");
 		DepthProg->unbind();
 		glCullFace(GL_BACK);
 		// cout << "1 pass" << endl;
 
-      //this sets the output back to the screen
-  	 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//this sets the output back to the screen
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		// cout << "before" << endl;
+		
 
 		glViewport(0, 0, width, height);
 		// Clear framebuffer.
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glActiveTexture(GL_TEXTURE1);
-  		glBindTexture(GL_TEXTURE_2D, depthMap);
-		
-		//player->updateMotion(frametime, hmap);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
 		if (player) {
 			cam.player_pos = player->position;
 		}
 	
-      	LSpace = LO*LV;
 		float aspect = width/(float)height;
 		if(editMode){
 			drawEditorObjects(aspect, LSpace, frametime);
 		}
 		else{
+			updateAnimation();
 			drawObjects(aspect, LSpace, frametime);
 		}
 
-		// if(walkingEvent(player)){
-		// 	// cout << "starting sound" << endl;
-		// 	eManager->updateSound("walking");
-		// }
-		// else{
-		// 	eManager->stopSoundM("walking");
-		// }
-
-		// cout << "2 passes" << endl;
 		
+		checkSounds();
 	}
 
 };
@@ -920,6 +1174,8 @@ public:
 int main(int argc, char *argv[]) {
 	// Where the resources are loaded from
 	std::string resourceDir = "../resources";
+	int frameCount = 0;
+	float fps = 0.0f;
 
 	if (argc >= 2) {
 		resourceDir = argv[1];
@@ -943,20 +1199,31 @@ int main(int argc, char *argv[]) {
 	// This is the code that will likely change program to program as you
 	// may need to initialize or set up different data and state
 
+	
 	application->levelEditor->loadFromFile(WORLD_FILE_NAME);
-
 	application->init(resourceDir);
 	application->initGeom(resourceDir);
 	application->initSoundEngines();
+	application->initAnimation();
 
+	application->gameManager->init(application->player, worldentities);
 
-	Event *ev = new Event("../resources/cute-world.mp3", &engine);
+	application->gameManager->init(application->player, worldentities);
+
+	for (int i = 0; i < boids.size(); i++){
+		cout << "boids in population" << endl;
+		cout << (boids[i]->id) << " BOID " << (boids[i]->collider->collectible) << endl;
+	}
+
+	Event *ev = new Event("../resources/french-mood.mp3", &engine, true, "background");
 	ev->startSound();
 
 	float dt = 1 / 60.0;
 	auto lastTime = chrono::high_resolution_clock::now();
+	auto start = lastTime;
 
 	application->leGUI->Init(windowManager->getHandle());
+	float totalTime = 0.0;
 
 	// Loop until the user closes the window.
 	while (!glfwWindowShouldClose(windowManager->getHandle()))
@@ -965,12 +1232,21 @@ int main(int argc, char *argv[]) {
 		auto nextLastTime = chrono::high_resolution_clock::now();
 
 		// get time since last frame
+		frameCount++;
 		deltaTime = 
 			chrono::duration_cast<std::chrono::microseconds>(
-				chrono::high_resolution_clock::now() - lastTime)
+				nextLastTime - lastTime)
 				.count();
+		totalTime += deltaTime;
 		// convert microseconds (weird) to seconds (less weird)
+		if (totalTime > 1000000) {
+			fps = frameCount / (totalTime / 1000000);
+			frameCount = 0;
+			totalTime = 0.0;
+			std::cout << "FPS: " << static_cast<int>(fps) << std::endl;
+		}
 		deltaTime *= 0.000001;
+		
 
 		//deltaTime = glm::min(deltaTime, dt);
 
@@ -979,6 +1255,7 @@ int main(int argc, char *argv[]) {
 		lastTime = nextLastTime;
 
 		activeCam->updateCamera(deltaTime);
+		application->gameManager->update();
 		// Render scene.
 		application->render(deltaTime);
 
