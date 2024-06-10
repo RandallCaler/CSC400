@@ -7,20 +7,24 @@ uniform sampler2D terrain2;
 uniform sampler2D terrain3;
 uniform sampler2D terrain4;
 uniform sampler2D terrain5;
+uniform sampler2D terrain6;
+uniform float h_min;
+uniform float h_max;
+uniform float fTime;
 
 out vec4 color;
 in vec3 fRegion;
 in vec3 fragNor;
-in float h_vert;
-in float h_min;
-in float h_max;
+in vec2 normDistortion;
 
 in OUT_struct {
-   vec3 fPos;
-   vec3 fragNor;
-   vec4 fPosLS;
-   vec3 vColor;
-   vec3 lightDir;
+  vec3 fPos;
+  vec3 ePos;
+  vec3 fragNor;
+  vec4 fPosLS;
+  vec3 vColor;
+  vec3 lightDir;
+  vec4 clipSpace;
 } in_struct;
 
 uniform float offset[10] = float[]( 0.025, 0.05, 0.075, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4 );
@@ -43,6 +47,16 @@ vec3 getTerrainTexture() {
     totalTex += fRegion.z * texture(terrain4, texCoord).xyz * slopeFactor;
     totalTex += fRegion.z * texture(terrain5, texCoord).xyz * (1-slopeFactor);
   }
+
+  if (totalTex == vec3(0)) {
+    if (in_struct.fPos.y < h_min + 0.1) {
+      totalTex = texture(terrain6, in_struct.fPos.xz/10 + vec2(fTime/25, 0)).xyz;
+    }
+    else {
+      totalTex = texture(terrain0, texCoord).xyz;
+    }
+  }
+
   return totalTex;
 }
 
@@ -90,16 +104,20 @@ void main() {
 
   vec3 terrainTex = getTerrainTexture();
 
-  vec4 BaseColor = vec4(in_struct.vColor * terrainTex, 1);
-
   Shade = TestShadow(in_struct.fPosLS);
 
-  // color = amb*(vec4(vec3(h_vert), 1)) + (1.0-Shade)*vec4(vec3(h_vert), 1);
-  //vec3 testLightDir = normalize(vec3(1, -1, 0.5));
-  
-  float intensity = max(dot(in_struct.lightDir, normalize(in_struct.fragNor)), 0);
-  
-  color = amb*(BaseColor) + (1.0-Shade) * BaseColor;
-  //color = vec4(fRegion * intensity, 1.0);
+  // normal unit vector to vertex geometry
+	vec3 normal = normalize(in_struct.fragNor + vec3(normDistortion.x, 0.0, normDistortion.y));
+	// unit vector toward light source
+	vec3 light = normalize(in_struct.lightDir);
+	// unit vector angularly halfway between light and camera
+	vec3 halfway = normalize(light - normalize(in_struct.ePos));
+
+	// diffusion coefficient
+	float diffuse = max(0, dot(normal, light));
+	// specular coefficient
+	float specular = pow(max(0, dot(normal, halfway)), 10);
+	
+	color = vec4(vec3((specular + diffuse) * (1 - Shade)) * terrainTex, 1.0);
 }
 
