@@ -821,9 +821,15 @@ public:
     
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
-			if (entity.get() != worldentities["skybox"].get()) {
-				glUniformMatrix4fv(DepthProg->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
-		
+			if (entity != worldentities["skybox"]) {
+				mat4 M = entity->modelMatrix;
+				if (entity == player) {
+					// penguin animation does not center penguin on its model matrix
+					// when drawing shadows, fake penguin position so that the penguin is in front
+					// of surfaces it walks on
+					M = translate(M, vec3(2) * light_vec);
+				}
+				glUniformMatrix4fv(DepthProg->getUniform("M"), 1, GL_FALSE, value_ptr(M));
 				entity->model->Draw(DepthProg);
 			}
 		}
