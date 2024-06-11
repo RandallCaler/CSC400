@@ -282,14 +282,14 @@ public:
 			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_PRESS)){
 				//ih.inputStates[5] = 1;
 				
-				if (!penguin->gliding) {
-					if (!(penguin->grounded)) {
-						penguin->m.upwardSpeed = 1.0;
-						penguin->gliding = true;
+				if (!(player->gliding)) {
+					if (!(player->grounded)) {
+						player->m.upwardSpeed = 1.0;
+						player->gliding = true;
 					}
 				}
 				else {
-					penguin->gliding = false;
+					player->gliding = false;
 				}
 			}
 
