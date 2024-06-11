@@ -49,9 +49,6 @@ void particleSys::gpuSetup() {
 	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(pointColors), &pointColors[0], GL_STREAM_DRAW);
 
-	assert(glGetError() == GL_NO_ERROR);
-
-
 }
 
 void particleSys::reSet() {
@@ -69,7 +66,6 @@ void particleSys::drawMe(std::shared_ptr<Program> prog) {
 	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 	//std::cout << "Any Gl errors2: " << glGetError() << std::endl;
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
-	assert(glGetError() == GL_NO_ERROR);
 	// GLSL::disableVertexAttribArray(color);
 
 	int h_pos = prog->getAttribute("vertPos");

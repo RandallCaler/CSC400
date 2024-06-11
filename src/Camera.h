@@ -25,6 +25,7 @@ class Camera : public Entity
         glm::vec3 player_pos;
         glm::vec3 g_eye;
         glm::vec3 vel;
+        glm::mat4 v_mat;
         float player_rot;
         float pitch;
         float dist;

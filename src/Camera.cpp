@@ -33,7 +33,6 @@ void Camera::updateCamera(float deltaTime) {
 }
 
 void Camera::SetView(shared_ptr<Program> shader, shared_ptr<Texture> hMap) {
-    mat4 v_mat;
     if (freeCam) {
         vec3 v_dir = -vec3(sin(-angle) * cos(pitch), sin(pitch), cos(angle) * cos(pitch)) + cameraPos;
         v_mat = lookAt(cameraPos, v_dir, vec3(0,1,0));

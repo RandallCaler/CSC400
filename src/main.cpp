@@ -96,7 +96,9 @@ public:
 	shared_ptr<Program> DepthProgDebug;
 	shared_ptr<Program> DebugProg;
 
-	//std::shared_ptr<Program> partProg;
+	shared_ptr<Program> PartProg;
+
+	//std::shared_ptr<Program> PartProg;
 
 	bool DEBUG_LIGHT = false;
 	bool GEOM_DEBUG = true;
@@ -127,7 +129,8 @@ public:
 
 	std::vector<Entity> flowers;
 
-	particleSys* thePartSystem;
+	map<shared_ptr<Entity>,shared_ptr<particleSys>> particles;
+	shared_ptr<Texture> texture;
 
 	EventManager *eManager = new EventManager();
 	// Event *walking = new Event("../resources/music.mp3", &walkingEngine);
@@ -507,27 +510,25 @@ public:
 		DebugProg->addUniform("texBuf");
   		DebugProg->addAttribute("vertPos");
 
-		//partProg = make_shared<Program>();
-		//partProg->setVerbose(true);
-		//partProg->setShaderNames(
-		//	resourceDirectory + "/particle_vert.glsl",
-		//	resourceDirectory + "/particle_frag.glsl");
-		//if (!partProg->init())
-		//{
-		//	std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
-		//	exit(1);
-		//}
-		//partProg->addUniform("P");
-		//partProg->addUniform("M");
-		//partProg->addUniform("V");
-		////partProg->addUniform("pColor");
-		//partProg->addUniform("alphaTexture");
-		//partProg->addAttribute("vertPos");
-		//partProg->addAttribute("color");
+		PartProg = make_shared<Program>();
+		PartProg->setVerbose(true);
+		PartProg->setShaderNames(
+			resourceDirectory + "/particle_vert.glsl",
+			resourceDirectory + "/particle_frag.glsl");
+		PartProg->addUniform("P");
+		PartProg->addUniform("M");
+		PartProg->addUniform("V");
+		PartProg->addUniform("alphaTexture");
+		PartProg->addAttribute("vertPos");
+		PartProg->addAttribute("color");
 
-		thePartSystem = new particleSys(vec3(0, 0, 0));
-		thePartSystem->gpuSetup();
+		texture = make_shared<Texture>();
+		texture->setFilename(resourceDirectory + "/alpha.bmp");
+		texture->init(false);
+		texture->setUnit(0);
+		texture->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
+		initParticles();
 
 		hmap = make_shared<Texture>();
 		hmap->setFilename(resourceDirectory + "/hmap.png");
@@ -835,6 +836,42 @@ public:
   		glDisableVertexAttribArray(2);
 	}
 
+	void initParticles() {
+		for (auto ent : worldentities) {
+			if (ent.second->tag == "food") {
+				cout << "init particle: " << ent.first << endl;
+				shared_ptr<particleSys> particle = make_shared<particleSys>(ent.second->position);
+				particle->gpuSetup();
+				particles[ent.second] = particle;
+				//if (ent.second->collider->collectible) {
+				//	
+				//}
+			}
+		}
+	}
+
+	void drawParticles(float aspect) {
+		auto Projection = make_shared<MatrixStack>();
+
+		// Apply perspective projection.
+		Projection->pushMatrix();
+		Projection->perspective(45.0f, aspect, 0.01f, 350.0f);
+
+		PartProg->bind();
+
+		activeCam->SetView(PartProg, hmap);
+		glUniformMatrix4fv(PartProg->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
+
+		texture->bind(PartProg->getUniform("alphaTexture"));
+		
+		for (auto particle : particles) {
+			particle.second->setCamera(activeCam->v_mat);
+			glUniformMatrix4fv(PartProg->getUniform("M"), 1, GL_FALSE, value_ptr(particle.first->modelMatrix));
+			particle.second->drawMe(PartProg);
+			particle.second->update();
+		}
+		PartProg->unbind();
+	}
 
 	void drawObjects(float aspect, mat4 LSpace, float deltaTime) {
 	
@@ -902,6 +939,7 @@ public:
 				}
 				if (entity->collider->collectible){
 					entity->updateBoids(deltaTime, hmap, boids, player);
+
 					// cout << "BOIDED: " << entity->collider->boided << endl;
 				}
 			}
@@ -1129,19 +1167,8 @@ public:
 		else{
 			updateAnimation();
 			drawObjects(aspect, LSpace, frametime);
+			drawParticles(aspect);
 		}
-
-		//partProg->bind();
-		//SetView(partProg);
-		//firePart->bind(partProg->getUniform("alphaTexture"));
-		//CHECKED_GL_CALL(glUniformMatrix4fv(partProg->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix())));
-		////CHECKED_GL_CALL(glUniformMatrix4fv(partProg->getUniform("V"), 1, GL_FALSE, value_ptr(View->topMatrix())));
-		//CHECKED_GL_CALL(glUniformMatrix4fv(partProg->getUniform("M"), 1, GL_FALSE, value_ptr(Model->topMatrix())));
-
-		//thePartSystem->drawMe(partProg);
-		//thePartSystem->update();
-
-		//partProg->unbind();
 
 		
 		checkSounds();

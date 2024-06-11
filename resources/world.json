@@ -1,6 +1,57 @@
 {
   "entities": [
     {
+      "collider": 0,
+      "file": "/cheese.obj",
+      "meshes": [
+        {
+          "material": {
+            "albedo": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "emissivity": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lightColor": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reflectance": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "roughness": 0.0
+          },
+          "mesh": "Cheese"
+        }
+      ],
+      "name": "cheese",
+      "position": [
+        83.2524185180664,
+        -29.738203048706055,
+        -11.921853065490723
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "shader": "reg",
+      "tag": "food",
+      "texture": ""
+    },
+    {
       "collider": 1,
       "file": "/penguin.fbx",
       "meshes": [
@@ -319,13 +370,13 @@
       ],
       "name": "penguin",
       "position": [
-        79.20999908447266,
-        -31.068958282470703,
-        -17.68000030517578
+        80.29879760742188,
+        -31.1669979095459,
+        -15.774052619934082
       ],
       "rotation": [
         0.0,
-        -0.5684688687324524,
+        -2.2439990043640137,
         0.0
       ],
       "scale": [
@@ -853,21 +904,6 @@
     },
     {
       "attributes": [
-        "color",
-        "vertPos"
-      ],
-      "fragShader": "/particle_frag.glsl",
-      "shaderName": "particle",
-      "uniforms": [
-        "alphaTexture",
-        "P",
-        "M",
-        "V"
-      ],
-      "vertShader": "/particle_vert.glsl"
-    },
-    {
-      "attributes": [
         "vertPos"
       ],
       "fragShader": "/edit_frag.glsl",
@@ -964,10 +1000,6 @@
     {
       "filePath": "/cheese_Base_color.png",
       "name": "cheeseTex"
-    },
-    {
-      "filePath": "/alpha/bmp",
-      "name": "firePart"
     },
     {
       "filePath": "/rock.png",
