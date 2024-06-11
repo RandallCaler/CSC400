@@ -932,6 +932,11 @@ public:
 			}
 
 			if (entity->collider) {
+				for (int i = 0; i < collidables.size(); i++) {
+					if (collidables[i]->collider->boided) {
+						collidables.erase(collidables.begin() + i);
+					}
+				}
 				if (entity->id == player->id) {
 					entity->updateMotion(deltaTime, hmap, collidables, collisionSounds);
 				}
@@ -1209,7 +1214,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	Event *ev = new Event("../resources/french-mood.mp3", &engine, true, "background");
-	ev->startSound();
+	//ev->startSound();
 
 	float dt = 1 / 60.0;
 	auto lastTime = chrono::high_resolution_clock::now();
