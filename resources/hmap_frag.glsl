@@ -49,6 +49,7 @@ vec3 getTerrainTexture() {
   }
 
   if (totalTex == vec3(0)) {
+    // water texturing
     if (in_struct.fPos.y < h_min + 0.1) {
       totalTex = texture(terrain6, in_struct.fPos.xz/10 + vec2(fTime/25, 0)).xyz;
     }
@@ -112,7 +113,7 @@ void main() {
   vec3 normal;
   if (in_struct.fPos.y < h_min + 0.1) {
     Shine = 200;
-	  normal = normalize(vec3(normDistortion.x, 0.2, normDistortion.y));
+	  normal = normalize(vec3(normDistortion.x, 0.5, normDistortion.y));
   }
   else {
     Shine = 10;
@@ -128,6 +129,6 @@ void main() {
 	// specular coefficient
 	float specular = pow(max(0, dot(normal, halfway)), Shine);
 	
-	color = vec4(vec3(0.1) + vec3((specular + diffuse) * (1 - Shade)) * terrainTex, 1.0);
+	color = vec4(vec3(0.15 + min(specular + diffuse, 1 - Shade)) * terrainTex, 1.0);
 }
 
