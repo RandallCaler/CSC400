@@ -100,7 +100,7 @@ void Entity::updateBoids(float deltaTime, shared_ptr<Texture> hmap, vector<share
         vec3 leader = (player->position - this->position);
         vec3 tangentialVec = glm::cross(leader, vec3(0, 1, 0));
         // vec3 accel = (1.5f)*separation + (0.3f)*alignment + 0.2f*(leader);
-        vec3 accel = 0.2f*(normalize(leader)) + 0.7f*(separation) + (length(leader) < 1 ? 0.3f : 0.0f) * normalize(tangentialVec);
+        vec3 accel = (length(leader) < 3 ? 0.15f : 0.9f)*(normalize(leader)) + 0.3f*(separation) + 0.1f * normalize(tangentialVec); //
 
         m.velocity += accel; 
         if (glm::length(m.velocity) > 5){
@@ -111,10 +111,9 @@ void Entity::updateBoids(float deltaTime, shared_ptr<Texture> hmap, vector<share
         float groundHeight = getHeightFromPlane(groundPlane, vec2(position.x, position.z));
         // check position within penguin radius, modify velocity
         position += (m.velocity * deltaTime);
-        // if(position.y < (groundHeight + 2)){
-        //     position.y = groundHeight + 2;
-
-        // }
+        if(position.y < (player->position.y + 0.5)){
+             position.y = player->position.y + 0.5;
+        }
         
         if (glm::distance(position, player->position) < 1){
             vec4 tempV = vec4(m.velocity, 1.0);
