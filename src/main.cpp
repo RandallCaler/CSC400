@@ -955,6 +955,9 @@ public:
 				}
 			}
 	
+			if (entity == player) {
+				player->updateMotion(deltaTime, hmap, collidables, collisionSounds);
+			}
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
 
 			//cout << i->first << endl;
@@ -1022,26 +1025,10 @@ public:
 		}
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
-			// glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-			// activeCam->SetView(curS->prog);
-
-
-			//if (entity->collider) {
-			//	vec4 colNorm =entity->collider->CheckCollision(deltaTime, tempCollisionList);
-			//	if (entity->id == player->id) {
-			//		entity->updateMotion(deltaTime, hmap, colNorm);
-			//	}
-			//}
 	
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
 			glUniform3fv(curS->prog->getUniform("PickingColor"), 1, value_ptr(glm::vec3(entity->editorColor.r, entity->editorColor.g, entity->editorColor.b)));
 			entity->model->Draw(curS->prog);
-	
-			//for (int i = 0; i < entity->objs.size(); i++) {
-			//	glUniform3fv(curS->prog->getUniform("PickingColor"), 1, value_ptr(glm::vec3(entity->editorColor.r, entity->editorColor.g, entity->editorColor.b)));
-			//	entity->objs[i]->draw(curS->prog);
-
-			//}
 		}
 	
 		curS->prog->unbind();
@@ -1056,11 +1043,6 @@ public:
 		glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 		drawGround(curS);  //draw ground here
-
-		/*bounds = std::sqrt(   //update cat's distance from skybox
-			cam.player_pos[0] * cam.player_pos[0]
-			+ cam.player_pos[2] * cam.player_pos[2]
-		);*/
 
 		// Pop matrix stacks.
 		Projection->popMatrix();
@@ -1167,7 +1149,6 @@ public:
 		}
 		else{
 			updateAnimation();
-			player->updateMotion(frametime, hmap, collidables, collisionSounds);
 			drawObjects(aspect, LSpace, frametime);
 		}
 
@@ -1253,9 +1234,6 @@ int main(int argc, char *argv[]) {
 			std::cout << "FPS: " << static_cast<int>(fps) << std::endl;
 		}
 		deltaTime *= 0.000001;
-		
-
-		//deltaTime = glm::min(deltaTime, dt);
 
 		// reset lastTime so that we can calculate the deltaTime
 		// on the next frame
