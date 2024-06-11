@@ -48,7 +48,7 @@
         2.0
       ],
       "shader": "tex",
-      "tag": "",
+      "tag": "food",
       "texture": ""
     },
     {
@@ -340,9 +340,9 @@
       ],
       "name": "cheese(2)",
       "position": [
-        -75.8499984741211,
-        -15.550000190734863,
-        -68.22000122070313
+        -72.05999755859375,
+        -14.65999984741211,
+        -70.51000213623047
       ],
       "rotation": [
         0.0,
@@ -355,7 +355,7 @@
         1.0
       ],
       "shader": "tex",
-      "tag": "",
+      "tag": "food",
       "texture": ""
     },
     {
@@ -4384,7 +4384,7 @@
         1.0
       ],
       "shader": "tex",
-      "tag": "",
+      "tag": "food",
       "texture": ""
     },
     {
@@ -4693,7 +4693,7 @@
         3.0
       ],
       "shader": "tex",
-      "tag": "",
+      "tag": "food",
       "texture": ""
     },
     {
@@ -4744,7 +4744,7 @@
         1.0
       ],
       "shader": "tex",
-      "tag": "",
+      "tag": "food",
       "texture": ""
     },
     {
@@ -4786,7 +4786,7 @@
       ],
       "rotation": [
         0.0,
-        -1.001993179321289,
+        2.5400032997131348,
         0.0
       ],
       "scale": [
@@ -4846,7 +4846,7 @@
         1.0
       ],
       "shader": "tex",
-      "tag": "",
+      "tag": "food",
       "texture": ""
     },
     {
@@ -5168,13 +5168,13 @@
       ],
       "name": "penguin",
       "position": [
-        -54.47999954223633,
-        -9.1899995803833,
-        54.119998931884766
+        -46.35434341430664,
+        -35.32042694091797,
+        -13.21847152709961
       ],
       "rotation": [
         0.0,
-        0.5420064926147461,
+        2.4900033473968506,
         0.0
       ],
       "scale": [
@@ -5394,57 +5394,6 @@
     },
     {
       "collider": 0,
-      "file": "/picnicBlanket.obj",
-      "meshes": [
-        {
-          "material": {
-            "albedo": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "emissivity": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "lightColor": [
-              1.0,
-              1.0,
-              1.0
-            ],
-            "reflectance": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "roughness": 0.0
-          },
-          "mesh": "picnicBlanket_low"
-        }
-      ],
-      "name": "picnicBlanket",
-      "position": [
-        -20.260000228881836,
-        -34.06999969482422,
-        101.22000122070313
-      ],
-      "rotation": [
-        0.0,
-        0.0,
-        0.0
-      ],
-      "scale": [
-        1.0,
-        1.0,
-        1.0
-      ],
-      "shader": "tex",
-      "tag": "",
-      "texture": ""
-    },
-    {
-      "collider": 0,
       "file": "/picnicBlanket.fbx",
       "meshes": [
         {
@@ -5491,7 +5440,7 @@
         2.0
       ],
       "shader": "tex",
-      "tag": "",
+      "tag": "food",
       "texture": ""
     },
     {
@@ -5731,9 +5680,9 @@
       ],
       "name": "skybox",
       "position": [
-        0.0,
-        0.0,
-        4.0
+        -46.35434341430664,
+        -35.32042694091797,
+        -13.21847152709961
       ],
       "rotation": [
         0.0,
@@ -6185,7 +6134,7 @@
         1.0
       ],
       "shader": "tex",
-      "tag": "",
+      "tag": "food",
       "texture": ""
     }
   ],
@@ -6290,6 +6239,7 @@
         "LS",
         "M",
         "P",
+        "Texture0",
         "V",
         "albedo",
         "emissivity",
@@ -6297,7 +6247,6 @@
         "lightDir",
         "reflectance",
         "roughness",
-        "Texture0",
         "shadowDepth"
       ],
       "vertShader": "/simple_vert.glsl"

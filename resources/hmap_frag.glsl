@@ -53,10 +53,11 @@ vec3 getTerrainTexture() {
       totalTex = texture(terrain6, in_struct.fPos.xz/10 + vec2(fTime/25, 0)).xyz;
     }
     else {
-      totalTex = texture(terrain0, texCoord).xyz;
+        totalTex = texture(terrain0, texCoord).xyz;
+        totalTex += vec3(0.125 * sin(3 * fTime) + 0.125, 0, 0);
+        totalTex.r = clamp(totalTex.r, 0, 1);
     }
   }
-
   return totalTex;
 }
 
