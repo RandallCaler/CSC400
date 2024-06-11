@@ -51,7 +51,7 @@ std::string resourceDir = "../resources";
 std::string WORLD_FILE_NAME = "/world.json";
 bool editMode = false;
 float editSpeed = 7.0f;
-float worldSize = 1.0f;
+float worldSize = 0.5f;
 
 map<string, shared_ptr<Shader>> shaders;
 map<string, shared_ptr<Texture>> textureLibrary = { {"", nullptr} };
@@ -87,6 +87,7 @@ public:
 	// shared_ptr<Shader> tex;
 
 	shared_ptr<Entity> player;
+	shared_ptr<Entity> glider;
 
 	ImporterExporter *levelEditor = new ImporterExporter(&shaders, &textureLibrary, &worldentities, &tagList, &collidables, &boids);
 	GameManager *gameManager = new GameManager();
@@ -106,7 +107,7 @@ public:
 	GLuint quad_vertexbuffer;
 	 GLuint quad_VertexArrayID;
 
-	vec3 light_vec = normalize(vec3(3, 5, 5));
+	vec3 light_vec = normalize(vec3(3, 100, 5));
   
 	LevelEditor* leGUI = new LevelEditor();
 
@@ -144,6 +145,9 @@ public:
 	double cursor_x = 0;
 	double cursor_y = 0;
 
+	const float Y_MAX = 75;
+	const float Y_MIN = -Y_MAX;
+
 	//bounds for world
 	double bounds;
 
@@ -161,7 +165,9 @@ public:
 	shared_ptr<Animation> jumping;
 	shared_ptr<Animation> gliding;
 	shared_ptr<Animation> waving;
+	shared_ptr<Animation> floating;
 	Animator animator = Animator();
+	Animator animator1 = Animator();
 		
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -183,6 +189,7 @@ public:
 						player = ent.second;
 					}
 				}
+				applyCollider();
 			}
 		}
 
@@ -290,7 +297,7 @@ public:
 				player->sliding = true;
 			}
 	
-			if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
+			if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
 
@@ -340,6 +347,7 @@ public:
 
 	void scrollCallback(GLFWwindow* window, double deltaX, double deltaY) {
 		cam.angle -= 10 * (deltaX / 57.296);
+		player->rotY -= 10 * (deltaX / 57.296);
 	}
 
 
@@ -392,6 +400,7 @@ public:
 		}
 		else {
 			cam.angle -= 0.001*(x-cursor_x);
+			player->rotY -= 0.001*(x-cursor_x);
 			cursor_x = x;
 			cursor_y = y;
 		}
@@ -519,6 +528,9 @@ public:
 			if (ent.second->tag == "player") {
 				player = ent.second;
 			}
+			if (ent.second->tag == "glider") {
+				glider = ent.second;
+			}
 		}
 
 		//eManager->events.insert_or_assign("walking", walking);
@@ -575,37 +587,41 @@ public:
 	}
 
 	void initAnimation() {
-		idle = make_shared<Animation>(player->model, 2);
-		jumping = make_shared<Animation>(player->model, 3);
-		walking = make_shared<Animation>(player->model, 4);
-		waving = make_shared<Animation>(player->model, 5);
-		gliding = make_shared<Animation>(player->model, 1);
+		idle = make_shared<Animation>(player->model, 1);
+		jumping = make_shared<Animation>(player->model, 2);
+		walking = make_shared<Animation>(player->model, 3);
+		waving = make_shared<Animation>(player->model, 4);
+		gliding = make_shared<Animation>(player->model, 0);
+		floating = make_shared<Animation>(glider->model, 0);
 		animator.PlayAnimation(idle);
+		animator1.PlayAnimation(floating);
 	}
 
 	void applyCollider() {
 		for (auto ent : collidables) {
-			ent->collider = new Collider(ent.get());
-			ent->collider->SetEntityID(ent->id);
-			if (ent == player) {
-				ent->collider->entityName = 'p';
-			}
-			else {
-				ent->collider->entityName = 'c';
-			}
-			if (ent->tag == "food") {
-				cout << "SET COLLECTIBLE TAG TO TRUE" << endl;
-				ent->collider->collectible = true;
-			}			
+			if (!ent->collider) {
+				ent->collider = new Collider(ent.get());
+				ent->collider->SetEntityID(ent->id);
+				if (ent == player) {
+					ent->collider->entityName = 'p';
+				}
+				else {
+					ent->collider->entityName = 'c';
+				}
+				if (ent->tag == "food") {
+					cout << "SET COLLECTIBLE TAG TO TRUE" << endl;
+					ent->collider->collectible = true;
+				}
+			}	
 		}
-		cam.collider = new Collider(&cam);
+		if (!cam.collider) {
+			cam.collider = new Collider(&cam);
+		}
+		
 	}
 
 	//directly pass quad for the ground to the GPU
 	void initHMapGround() {
-		const float Y_MAX = 75;
-		const float Y_MIN = -Y_MAX;
-
 		vector<float> vertices;
 		vector<float> regions;
 		auto hmap_dim = hmap->getDim();
@@ -704,20 +720,63 @@ public:
 		//draw the ground plane 
   		curS->setModel(groundPos, 0, 0, 0, 1);
 
+		glUniform1f(curS->prog->getUniform("h_min"), worldSize * Y_MIN);
+		glUniform1f(curS->prog->getUniform("h_max"), worldSize * Y_MAX);
+
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, textureLibrary["rock"]->getID());
-		glUniform1i(curS->prog->getUniform("terrain1"), 2);
+		glUniform1i(curS->prog->getUniform("terrain0"), 2);
 		
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, textureLibrary["snow"]->getID());
-		glUniform1i(curS->prog->getUniform("terrain0"), 3);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["sand"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain1"), 3);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+		glActiveTexture(GL_TEXTURE4);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["rock"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain2"), 4);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glActiveTexture(GL_TEXTURE5);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["grass"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain3"), 5);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glActiveTexture(GL_TEXTURE6);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["rock"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain4"), 6);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glActiveTexture(GL_TEXTURE7);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["snow"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain5"), 7);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glActiveTexture(GL_TEXTURE8);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["water"]->getID());
+		glUniform1i(curS->prog->getUniform("terrain6"), 8);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glActiveTexture(GL_TEXTURE9);
+		glBindTexture(GL_TEXTURE_2D, textureLibrary["dudvwater"]->getID());
+		glUniform1i(curS->prog->getUniform("DuDvMap"), 9);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
   		glEnableVertexAttribArray(0);
   		glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
@@ -745,7 +804,7 @@ public:
 
 
 	mat4 SetOrthoMatrix(shared_ptr<Program> curShade) {
-		mat4 ortho = glm::ortho(-150.0, 150.0, -150.0, 150.0, 10.0, 500.0);
+		mat4 ortho = glm::ortho(-150.0, 150.0, -150.0, 150.0, 10.0, 100.0);
 
 		glUniformMatrix4fv(curShade->getUniform("LP"), 1, GL_FALSE, value_ptr(ortho));
 		return ortho;
@@ -808,7 +867,6 @@ public:
 
 
 	void drawObjects(float aspect, mat4 LSpace, float deltaTime) {
-	
 		// Create the matrix stacks - please leave these alone for now
 		auto Projection = make_shared<MatrixStack>();
 		auto Model = make_shared<MatrixStack>();
@@ -860,6 +918,22 @@ public:
 					glUniformMatrix4fv(baseLocation + i, 1, GL_FALSE, value_ptr(transforms[i]));
 				}
 			}
+			else if (shaders["animate1"] == curS) {
+				if (player->gliding) {
+					entity->position = player->position;
+					entity->position.y += 0.85;
+					entity->rotY = player->rotY;
+				}
+				else {
+					glider->position = vec3(0, 100, 0);
+				}				
+				animator1.UpdateAnimation(deltaTime);
+				auto transforms = animator1.GetFinalBoneMatrices();
+				GLuint baseLocation = curS->prog->getUniform("finalBonesMatrices");
+				for (int i = 0; i < transforms.size(); ++i) {
+					glUniformMatrix4fv(baseLocation + i, 1, GL_FALSE, value_ptr(transforms[i]));
+				}
+			}
 
 			if (shaders["skybox"] == curS) {
 				entity->position = activeCam->cameraPos;
@@ -884,7 +958,7 @@ public:
 
 			//cout << i->first << endl;
 			for (auto& meshPair : entity->model->meshes) {
-				if (curS == shaders["reg"]) {
+				if (curS == shaders["reg"] || curS == shaders["platform"]) {
 					curS->setMaterial(meshPair.second.mat);
 				}
 				printf("shader: %s\tmodel: %s\n", entity->defaultShaderName.c_str(), entity->model->filePath.c_str());
@@ -898,7 +972,6 @@ public:
 			}
 		}
 		
-
 		curS->prog->unbind();
 
 		curS = shaders["hmap"];
@@ -972,7 +1045,6 @@ public:
 			//}
 		}
 	
-
 		curS->prog->unbind();
 		curS = shaders["hmap"];
 
@@ -1033,13 +1105,7 @@ public:
 		if (player->grounded) {
 			if (player->m.curSpeed != 0) {
 				if (animator.getCurrentAnimation() != walking) {
-					if (animator.getCurrentAnimation() == idle) {
-						animator.PlayAnimation(walking);
-					}
-					else if (animator.m_AnimationCompletedOnce) {
-						animator.PlayAnimation(walking);
-					}
-					
+					animator.PlayAnimation(walking);			
 				}
 			}
 			else {
@@ -1054,7 +1120,6 @@ public:
 					animator.PlayAnimation(gliding);
 				}
 			}
-
 		}
 	}
 
@@ -1075,7 +1140,7 @@ public:
 		DepthProg->bind();
 		//TODO you will need to fix these
 		LO = SetOrthoMatrix(DepthProg);
-		LV = SetLightView(DepthProg, player->position + vec3(100) * light_vec, player->position, lightUp);
+		LV = SetLightView(DepthProg, player->position + vec3(50) * light_vec, player->position, lightUp);
 		LSpace = LO*LV;
 		drawShadowMap(LSpace);
 		DepthProg->unbind();
@@ -1166,6 +1231,7 @@ int main(int argc, char *argv[]) {
 	application->leGUI->Init(windowManager->getHandle());
 	float totalTime = 0.0;
 
+	glEnable(GL_CULL_FACE);
 	// Loop until the user closes the window.
 	while (!glfwWindowShouldClose(windowManager->getHandle()))
 	{

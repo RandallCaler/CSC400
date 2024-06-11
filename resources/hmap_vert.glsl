@@ -7,20 +7,23 @@ uniform mat4 V;
 uniform mat4 M;
 uniform mat4 LS;
 uniform float fTime;
+uniform sampler2D DuDvMap;
 
 uniform vec3 lightDir;
 
 out OUT_struct {
-	vec3 fPos;
-	vec3 fragNor;
-	vec4 fPosLS;
-	vec3 vColor;
+    vec3 fPos;
+    vec3 ePos;
+    vec3 fragNor;
+    vec4 fPosLS;
+    vec3 vColor;
     vec3 lightDir;
+    vec4 clipSpace;
 } out_struct;
 
-out float h_vert;
 out vec3 fRegion;
 out vec3 fragNor;
+out vec2 normDistortion;
 
 void main() {
     float mirageAmp;
@@ -47,31 +50,34 @@ void main() {
     }
 
     fragNor = vertNor;
-    h_vert = vertPos.y;
 
     // complete vertex shading
     vec3 vPos = vec3(V * M * vec4(vertPos, 1));
+    out_struct.ePos = vPos;
     vec3 flatViewVec = normalize(vec3(vPos.x, 0.0, vPos.z));
     float lPos = dot(vPos, flatViewVec);
+
     gl_Position = P * V * M * vec4(vertPos, 1);
+    out_struct.clipSpace = gl_Position;
     // float centerPosX = round(gl_Position.x / gl_Position.w * bands) / bands * gl_Position.w;
     float centerPosX = gl_Position.x;
+
     if (lPos > 100) {
-        float mixValue = (h_vert + 37.5)/75;
+        float mixValue = (vertPos.y + 37.5)/75;
 	    // gl_Position.x = centerPosX + max(1*(1 - mixValue * mixValue) - 0.25, 0) * (centerPosX - gl_Position.x) * (lPos - 43)/64 * sin((0.5 - mixValue) * 10 * fTime);
-	    gl_Position.x = centerPosX + mirageAmp*(1 - mixValue * mixValue) * (lPos - 95)/200 * sin((1 - mixValue) * 10 * fTime);
+	    gl_Position.x = centerPosX + 3*mirageAmp*(1 - mixValue * mixValue) * (lPos - 95)/200 * sin((1 - mixValue) * 10 * fTime);
     }
     
 
 	/* the position in world coordinates */
     out_struct.fPos = (M*vec4(vertPos, 1.0)).xyz;
+    normDistortion = texture(DuDvMap, out_struct.fPos.xz/20 + vec2(fTime/100, 0)).rg * 2 - 1;
         /* the normal */
     out_struct.fragNor = normalize((M*vec4(vertNor, 0.0)).xyz);
     /* The vertex in light space TODO: fill in appropriately */
-    out_struct.fPosLS = LS*M*vec4(vertPos.xyz, 1.0);
+    out_struct.fPosLS = LS * M * vec4(vertPos.xyz, 1.0);
     /* a color that could be blended - or be shading */
     out_struct.vColor = vec3(max(dot(out_struct.fragNor, normalize(lightDir)), 0));
     out_struct.lightDir = normalize(lightDir);
-
 }
  

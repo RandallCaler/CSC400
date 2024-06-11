@@ -46,7 +46,7 @@ void LevelEditor::FindMesh() {
 
         if (fs::exists(resourcePath) && fs::is_directory(resourcePath)) {
             for (const auto& entry : fs::directory_iterator(resourcePath)) {
-                if (entry.is_regular_file() && (entry.path().extension() == ".obj" || entry.path().extension() == ".dae" || entry.path().extension() == ".fbx")) {
+                if (entry.is_regular_file() && (entry.path().extension() == ".obj" || entry.path().extension() == ".dae" || entry.path().extension() == ".fbx" || entry.path().extension() == ".glb")) {
                     meshFiles.push_back(entry.path().filename().string());
                 }
             }

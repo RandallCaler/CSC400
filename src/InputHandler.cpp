@@ -75,18 +75,8 @@ void InputHandler::handleInput(Entity* penguin, Camera* cam, float deltaTime) {
                 penguin->m.upwardSpeed = JUMP_HEIGHT;
                 penguin->grounded = false;
             }
-            // else{
-            //     if (!penguin->gliding) {
-            //         penguin->m.upwardSpeed = 1.0;
-            //     }
-            //     penguin->gliding = true;
-            // }
             break;
         case 5:
-            // if (penguin->grounded) {
-            //     penguin->m.curSpeed = WALK_SPEED + 5;
-            // }
-
             if (!(penguin->grounded)) {
                 if (!penguin->gliding) {
                     penguin->m.upwardSpeed = 1.0;
@@ -98,27 +88,23 @@ void InputHandler::handleInput(Entity* penguin, Camera* cam, float deltaTime) {
 
     float sum = 0;
 
-    // cout << "start" << endl;
     for (int i = 0; i < angles.size(); i++) {
         sum += angles[i];
-        // cout << angles[i] << endl;
         penguin->m.curSpeed = WALK_SPEED;
     }
-    // cout << "end" << endl;
 
-
-
-    if (angles.size() > 0) {
-        penguin->rotY = sum / angles.size();
-        // cout << sum / angles.size() << endl;
-    }
-    else {
-        penguin->rotY = 0;
-    }
     if (backwards) {
         penguin->m.curSpeed = -WALK_SPEED;
         sum = -1 * sum;
     }
+
+    if (angles.size() > 0) {
+        penguin->rotY = sum / angles.size();
+    }
+    else {
+        penguin->rotY = 0;
+    }
+
     if (penguin->gliding && !penguin->grounded) {
         penguin->m.curSpeed /= 2;
     }
