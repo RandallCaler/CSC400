@@ -632,6 +632,7 @@ public:
 		glBindVertexArray(0);
 	}
 
+
 	/*initiatlization of the free type types in order to include text */
 	int initFont() {
 
@@ -1330,10 +1331,10 @@ public:
 		checkSounds();
 
 		float textX = width - width * 0.95f;
-		float textY = height - height * 0.95f;
+		float textY = height * 0.9f;
 		RenderText(textProg, "Food Collected: " + gameManager->numCollected + '/' + gameManager->collectibles.size(),
-			300, 300, 3.0f, 
-			glm::vec3(0.9, 0.5f, 0.9f));
+			textX, textY, 3.0f, 
+			glm::vec3(1.0f, 1.0f, 0));
 	}
 
 };
