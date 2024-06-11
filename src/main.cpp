@@ -153,6 +153,8 @@ public:
 
 	int editSRT = 0; // 0 - translation, 1 - rotation, 2 - scale
 
+	vec4 VFCplanes[6];
+
 	// hmap for terrain
 	shared_ptr<Texture> hmap;
 	vec3 groundPos = vec3(0, 0, 0);
@@ -808,6 +810,82 @@ public:
 		return Cam;
 	}
 
+	void ExtractVFPlanes(mat4 P, mat4 V) {
+		vec4 Left, Right, Bottom, Top, Near, Far;
+		/* composite matrix */
+		mat4 comp = P*V;
+		vec3 n; //use to pull out normal
+		float l; //length of normal for plane normalization
+
+		Left.x = comp[0][3] + comp[0][0]; 
+		Left.y = comp[1][3] + comp[1][0]; 
+		Left.z = comp[2][3] + comp[2][0];
+		Left.w = comp[3][3] + comp[3][0];
+		n = vec3(Left.x, Left.y, Left.z);
+		l = length(n);
+		Left = Left/l;
+		VFCplanes[0] = Left;
+
+		Right.x = comp[0][3] - comp[0][0]; // see handout to fill in with values from comp
+		Right.y = comp[1][3] - comp[1][0]; // see handout to fill in with values from comp
+		Right.z = comp[2][3] - comp[2][0]; // see handout to fill in with values from comp
+		Right.w = comp[3][3] - comp[3][0]; // see handout to fill in with values from comp
+		n = vec3(Right.x, Right.y, Right.z);
+		l = length(n);
+		Right = Right/l;
+		VFCplanes[1] = Right;
+
+		Bottom.x = comp[0][3] + comp[0][1]; // see handout to fill in with values from comp
+		Bottom.y = comp[1][3] + comp[1][1]; // see handout to fill in with values from comp
+		Bottom.z = comp[2][3] + comp[2][1]; // see handout to fill in with values from comp
+		Bottom.w = comp[3][3] + comp[3][1]; // see handout to fill in with values from comp
+		n = vec3(Bottom.x, Bottom.y, Bottom.z);
+		l = length(n);
+		Bottom = Bottom/l;
+		VFCplanes[2] = Bottom;
+
+		Top.x = comp[0][3] - comp[0][1]; // see handout to fill in with values from comp
+		Top.y = comp[1][3] - comp[1][1]; // see handout to fill in with values from comp
+		Top.z = comp[2][3] - comp[2][1]; // see handout to fill in with values from comp
+		Top.w = comp[3][3] - comp[3][1]; // see handout to fill in with values from comp
+		n = vec3(Top.x, Top.y, Top.z);
+		l = length(n);
+		Top = Top/l;
+		VFCplanes[3] = Top;
+
+		Near.x = comp[0][3] + comp[0][2]; // see handout to fill in with values from comp
+		Near.y = comp[1][3] + comp[1][2]; // see handout to fill in with values from comp
+		Near.z = comp[2][3] + comp[2][2]; // see handout to fill in with values from comp
+		Near.w = comp[3][3] + comp[3][2]; // see handout to fill in with values from comp
+		n = vec3(Near.x, Near.y, Near.z);
+		l = length(n);
+		Near = Near/l;
+		VFCplanes[4] = Near;
+
+		Far.x = comp[0][3] - comp[0][2]; // see handout to fill in with values from comp
+		Far.y = comp[1][3] - comp[1][2]; // see handout to fill in with values from comp
+		Far.z = comp[2][3] - comp[2][2]; // see handout to fill in with values from comp
+		Far.w = comp[3][3] - comp[3][2]; // see handout to fill in with values from comp
+		n = vec3(Far.x, Far.y, Far.z);
+		l = length(n);
+		Far = Far/l;
+		VFCplanes[5] = Far;
+	}
+	
+	/* returns whether to cull an entity */
+	int ViewFrustCull(shared_ptr<Entity> entity) {
+		float dist;
+
+		for (int i = 0; i < 6; i++) {
+			dist = dot(VFCplanes[i], vec4(entity->position, 1.0));
+			//test against each plane
+			float radius = std::max(entity->scaleVec.x, std::max(entity->scaleVec.y, entity->scaleVec.z));
+			if (dist < radius * -1.0f) {
+				return 1;
+			}
+		}
+		return 0;
+	}
 
 	void drawShadowMap(mat4 LSpace) {
 		auto Model = make_shared<MatrixStack>();
@@ -871,13 +949,16 @@ public:
 		// Apply perspective projection.
 		Projection->pushMatrix();
 		Projection->perspective(45.0f, aspect, 0.01f, 350.0f);
+		mat4 P = Projection->topMatrix();
 		
 		//material shader first
 		shared_ptr<Shader> curS = shaders["reg"];
 		curS->prog->bind();
 
-		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(Projection->topMatrix()));
-		activeCam->SetView(curS->prog, hmap);
+		glUniformMatrix4fv(curS->prog->getUniform("P"), 1, GL_FALSE, value_ptr(P));
+		mat4 V = activeCam->SetView(curS->prog, hmap);
+    	//only extract the planes for the game camaera
+    	ExtractVFPlanes(P, V);
 
 		// directional light
   		glActiveTexture(GL_TEXTURE1);
@@ -898,6 +979,12 @@ public:
     
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
+
+			// do not render objects not in frame
+			if (entity->defaultShaderName != "skybox" && ViewFrustCull(entity)) {
+				continue;
+			}
+
 			if (shaders[entity->defaultShaderName] != curS) {
 				curS->prog->unbind();
 				curS = shaders[entity->defaultShaderName];
@@ -960,7 +1047,6 @@ public:
 			}
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
 
-			//cout << i->first << endl;
 			for (auto& meshPair : entity->model->meshes) {
 				if (curS == shaders["reg"] || curS == shaders["platform"]) {
 					curS->setMaterial(meshPair.second.mat);
