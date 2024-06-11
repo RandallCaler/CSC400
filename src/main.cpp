@@ -96,11 +96,6 @@ public:
 	shared_ptr<Program> DepthProgDebug;
 	shared_ptr<Program> DebugProg;
 
-	bool DEBUG_LIGHT = false;
-	bool GEOM_DEBUG = true;
-	bool SHADOW = true;
-
-
 	GLuint depthMapFBO;
 	const GLuint S_WIDTH = 8192, S_HEIGHT = 8192;
 	GLuint depthMap;
@@ -114,24 +109,8 @@ public:
 	InputHandler ih;
 	int collisionSounds[1];
 
-	Entity bf1 = Entity();
-	Entity bf2 = Entity();
-	Entity bf3 = Entity();
-	// Entity *catEnt = new Manchot();
-	
-  	std::vector<Entity> bf;
-	
-	std::vector<Entity> trees;
-
-	std::vector<Entity> flowers;
-
 	EventManager *eManager = new EventManager();
 	// Event *walking = new Event("../resources/music.mp3", &walkingEngine);
-
-
-	int bf_flags[3] = {0, 0, 0};
-
-	int nextID = 0;
 
 	// added region buffer to hold regional data (1, 2, 3 = r, g, b)
 	//global data for ground plane - direct load constant defined CPU data to GPU (not obj)
@@ -139,17 +118,12 @@ public:
 	int g_GiboLen;
 	//ground VAO
 	GLuint GroundVertexArrayID;
-  
-	vec3 strafe = vec3(1, 0, 0);
 
 	double cursor_x = 0;
 	double cursor_y = 0;
 
 	const float Y_MAX = 75;
 	const float Y_MIN = -Y_MAX;
-
-	//bounds for world
-	double bounds;
 
 	int editSRT = 0; // 0 - translation, 1 - rotation, 2 - scale
 
@@ -173,8 +147,7 @@ public:
 		
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
-		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		{
+		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 			glfwSetWindowShouldClose(window, GL_TRUE);
 		}
 
@@ -198,8 +171,7 @@ public:
 		// KEY PRESSED
 
 		if (editMode) {
-			if (!leGUI->diableInput) {
-				if (action == GLFW_PRESS) {
+			if (action == GLFW_PRESS && !leGUI->diableInput) {
 				switch (key) {
 					case GLFW_KEY_W:
 						freeCam.vel.z = editSpeed;
@@ -230,7 +202,6 @@ public:
 							freeCam.angle = 0;
 						}
 						break;
-					}
 				}
 			}			
 			if (action == GLFW_RELEASE) {
@@ -250,85 +221,76 @@ public:
 				}
 			}
 		}
+		// in-game mode
 		else {
-			if (key == GLFW_KEY_W && (action == GLFW_PRESS)) {
-				ih.inputStates[0] = 1;			
-			}
-
-			if (key == GLFW_KEY_A && (action == GLFW_PRESS)) {
-				ih.inputStates[1] = 1;
-			}
-
-			if (key == GLFW_KEY_S && (action == GLFW_PRESS)) {	
-				ih.inputStates[2] = 1;
-			}
-
-			if (key == GLFW_KEY_D && (action == GLFW_PRESS)) {
-				ih.inputStates[3] = 1;
-			}
-
-			if (key == GLFW_KEY_SPACE && (action == GLFW_PRESS)){
-				ih.inputStates[4] = 1;	
-
-				if (player->grounded){
-					if (animator.getCurrentAnimation() == jumping && animator.m_AnimationCompletedOnce) {
-						animator.PlayAnimation(jumping);
-					}
-					else {
-						animator.PlayAnimation(jumping);
-					}
+			if (action == GLFW_PRESS) {
+				switch (key) {
+					case GLFW_KEY_W:
+						ih.inputStates[0] = 1;
+						break;
+					case GLFW_KEY_A:
+						ih.inputStates[1] = 1;
+						break;
+					case GLFW_KEY_S:
+						ih.inputStates[2] = 1;
+						break;
+					case GLFW_KEY_D:
+						ih.inputStates[3] = 1;
+						break;
+					case GLFW_KEY_SPACE:
+						ih.inputStates[4] = 1;
+						if (player->grounded){
+							if (animator.getCurrentAnimation() == jumping && animator.m_AnimationCompletedOnce) {
+								animator.PlayAnimation(jumping);
+							}
+							else {
+								animator.PlayAnimation(jumping);
+							}
+						}
+						break;
+					case GLFW_KEY_LEFT_SHIFT:
+						ih.inputStates[5] = 1;
+						break;
+					case GLFW_KEY_C:
+						player->sliding = true;
+						break;
+					case GLFW_KEY_P:
+						glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+						break;
+					case GLFW_KEY_1:
+						if (animator.getCurrentAnimation() != waving) {
+							animator.PlayAnimation(waving);
+						}
+						break;
 				}
-				
 			}
-
-			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_PRESS)){
-				ih.inputStates[5] = 1;
-			}
-
-			if (key == GLFW_KEY_C && (action == GLFW_PRESS)) {
-				player->sliding = true;
-			}
-	
-			if (key == GLFW_KEY_P && action == GLFW_PRESS) {
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			}
-
 			// KEY RELEASED
-
-			if (key == GLFW_KEY_W && (action == GLFW_RELEASE)){
-				ih.inputStates[0] = 0;
-			}
-
-			if (key == GLFW_KEY_A && (action == GLFW_RELEASE)){
-				ih.inputStates[1] = 0;
-			}
-
-			if (key == GLFW_KEY_S && (action == GLFW_RELEASE)){
-				ih.inputStates[2] = 0;
-			}
-
-			if (key == GLFW_KEY_D && (action == GLFW_RELEASE)){
-				ih.inputStates[3] = 0;
-			}
-
-			if (key == GLFW_KEY_SPACE && (action == GLFW_RELEASE)){
-				ih.inputStates[4] = 0;
-			}
-
-			if (key == GLFW_KEY_LEFT_SHIFT && (action == GLFW_RELEASE)){
-				ih.inputStates[5] = 0;
-			}
-			if (key == GLFW_KEY_C && (action == GLFW_RELEASE)) {
-				player->sliding = false;
-			}
-			
-			if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			}
-
-			if (key == GLFW_KEY_1 && (action == GLFW_PRESS)) {
-				if (animator.getCurrentAnimation() != waving) {
-					animator.PlayAnimation(waving);
+			if (action == GLFW_RELEASE) {
+				switch (key) {
+					case GLFW_KEY_W:
+						ih.inputStates[0] = 0;
+						break;
+					case GLFW_KEY_A:
+						ih.inputStates[1] = 0;
+						break;
+					case GLFW_KEY_S:
+						ih.inputStates[2] = 0;
+						break;
+					case GLFW_KEY_D:
+						ih.inputStates[3] = 0;
+						break;
+					case GLFW_KEY_SPACE:
+						ih.inputStates[4] = 0;
+						break;
+					case GLFW_KEY_LEFT_SHIFT:
+						ih.inputStates[5] = 0;
+						break;
+					case GLFW_KEY_C:
+						player->sliding = false;
+						break;
+					case GLFW_KEY_P:
+						glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+						break;
 				}
 			}
 
@@ -980,9 +942,20 @@ public:
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
 
-			// do not render objects not in frame
-			if (entity->defaultShaderName != "skybox" && ViewFrustCull(entity)) {
-				continue;
+			if (entity->collider) {
+				for (int i = 0; i < collidables.size(); i++) {
+					if (collidables[i]->collider->boided) {
+						collidables.erase(collidables.begin() + i);
+					}
+				}
+				if (entity->collider->collectible){
+					entity->updateBoids(deltaTime, hmap, boids, player);
+					// cout << "BOIDED: " << entity->collider->boided << endl;
+				}
+			}
+	
+			if (entity == player) {
+				player->updateMotion(deltaTime, hmap, collidables, collisionSounds);
 			}
 
 			if (shaders[entity->defaultShaderName] != curS) {
@@ -1009,13 +982,18 @@ public:
 				}
 				else {
 					glider->position = vec3(0, 100, 0);
-				}				
+				}			
 				animator1.UpdateAnimation(deltaTime);
 				auto transforms = animator1.GetFinalBoneMatrices();
 				GLuint baseLocation = curS->prog->getUniform("finalBonesMatrices");
 				for (int i = 0; i < transforms.size(); ++i) {
 					glUniformMatrix4fv(baseLocation + i, 1, GL_FALSE, value_ptr(transforms[i]));
 				}
+			}
+
+			// do not render objects not in frame
+			if (entity->defaultShaderName != "skybox" && ViewFrustCull(entity)) {
+				continue;
 			}
 
 			if (shaders["skybox"] == curS) {
@@ -1030,21 +1008,6 @@ public:
 				glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 			}
 
-			if (entity->collider) {
-				for (int i = 0; i < collidables.size(); i++) {
-					if (collidables[i]->collider->boided) {
-						collidables.erase(collidables.begin() + i);
-					}
-				}
-				if (entity->collider->collectible){
-					entity->updateBoids(deltaTime, hmap, boids, player);
-					// cout << "BOIDED: " << entity->collider->boided << endl;
-				}
-			}
-	
-			if (entity == player) {
-				player->updateMotion(deltaTime, hmap, collidables, collisionSounds);
-			}
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
 
 			for (auto& meshPair : entity->model->meshes) {
@@ -1075,11 +1038,6 @@ public:
 		glUniform1f(curS->prog->getUniform("fTime"), glfwGetTime());
       	glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 		drawGround(curS);  //draw ground here
-
-		/*bounds = std::sqrt(   //update cat's distance from skybox
-			cam.player_pos[0] * cam.player_pos[0]
-			+ cam.player_pos[2] * cam.player_pos[2]
-		);*/
 
 		// Pop matrix stacks.
 		Projection->popMatrix();

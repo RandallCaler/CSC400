@@ -19,14 +19,6 @@ class Collider
 
 
 public:
-
-    enum entityType {
-        FLOWER,
-        TREE,
-        BUTTERFLY,
-        CAT
-    };
-    
     char entityName;
     bool collectible;
     bool boided = false;
@@ -47,9 +39,6 @@ public:
     glm::vec4 orientedCollision(float deltaTime, std::shared_ptr<Entity> other);
     void ExitCollision();
     float GetRadial();
-
-    // AABB
-    void CalculateBoundingBox(glm::mat4 modelMatrix);
 
     glm::vec3 worldMin;
     glm::vec3 worldMax;
