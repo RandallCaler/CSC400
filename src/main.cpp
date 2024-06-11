@@ -541,10 +541,10 @@ public:
 		textProg->addUniform("projection");
 		textProg->addUniform("textTex");
 		textProg->addUniform("textColor");
+		initTextQuad();
 
 		int fError = initFont();
-
-		initTextQuad();
+		cout << "Font error?: " << fError << endl;
 
 		for (auto ent : worldentities) {
 			if (ent.second->tag == "player") {
@@ -641,12 +641,13 @@ public:
 		}
 
 		FT_Face face;
-		/*TODO you may need to change where this points - where is the arial file for you? */
-		if (FT_New_Face(ft, "../resources/frenchFont.ttf", 0, &face)) {
+		/* make sure path to font file is correct */
+		if (FT_New_Face(ft, "C:/Windows/Fonts/Arial.ttf", 0, &face)) {
 			std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
 			return -1;
 		}
 		else {
+			cout << "font file successfully loaded" << endl;
 			// set size to load glyphs as
 			FT_Set_Pixel_Sizes(face, 0, 18);
 
@@ -906,6 +907,15 @@ public:
 		return Cam;
 	}
 
+	/* set up the projection matrix for the font render */
+	mat4 setTextProj(shared_ptr<Program> curShade) {
+		int windowHeight, windowLength;
+		glfwGetWindowSize(windowManager->getHandle(), &windowLength, &windowHeight);
+		glm::mat4 proj = glm::ortho(0.0f, static_cast<float>(windowLength), 0.0f, static_cast<float>(windowHeight));
+		glUniformMatrix4fv(curShade->getUniform("projection"), 1, GL_FALSE, value_ptr(proj));
+
+		return proj;
+	}
 
 	void drawShadowMap(mat4 LSpace) {
 		auto Model = make_shared<MatrixStack>();
@@ -1159,17 +1169,7 @@ public:
 		leGUI->Render();
 	}
 
-	/* set up the projection matrix for the font render */
-	mat4 setTextProj(shared_ptr<Program> curShade) {
-		int windowHeight, windowLength;
-		glfwGetWindowSize(window, &windowLength, &windowHeight);
-		glm::mat4 proj = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH), 0.0f, static_cast<float>(SCR_HEIGHT));
-		glUniformMatrix4fv(curShade->getUniform("projection"), 1, GL_FALSE, value_ptr(proj));
 
-		return proj;
-	}
-
-	/* helper function modified from learnOpenGL to fit with our programs */
 	void RenderText(shared_ptr<Program> textProg, std::string text, float x, float y, float scale, glm::vec3 color) {
 		// activate corresponding render state	
 		textProg->bind();
@@ -1328,6 +1328,12 @@ public:
 
 		
 		checkSounds();
+
+		float textX = width - width * 0.95f;
+		float textY = height - height * 0.95f;
+		RenderText(textProg, "Food Collected: " + gameManager->numCollected + '/' + gameManager->collectibles.size(),
+			300, 300, 3.0f, 
+			glm::vec3(0.9, 0.5f, 0.9f));
 	}
 
 };

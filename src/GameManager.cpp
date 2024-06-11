@@ -51,7 +51,7 @@ void GameManager::init(shared_ptr<Entity> playerIn, map<string, shared_ptr<Entit
 		}
 
 		// add collectibles to list of collectibles
-		if (entity->tag == "collectible") {
+		if (entity->tag == "food") {
 			collectibles.push_back(entity);
 			cout << "collectible added to game manager collectible list." << endl;
 		}
