@@ -59,12 +59,10 @@ void main() {
 
     gl_Position = P * V * M * vec4(vertPos, 1);
     out_struct.clipSpace = gl_Position;
-    // float centerPosX = round(gl_Position.x / gl_Position.w * bands) / bands * gl_Position.w;
     float centerPosX = gl_Position.x;
 
     if (lPos > 100) {
         float mixValue = (vertPos.y + 37.5)/75;
-	    // gl_Position.x = centerPosX + max(1*(1 - mixValue * mixValue) - 0.25, 0) * (centerPosX - gl_Position.x) * (lPos - 43)/64 * sin((0.5 - mixValue) * 10 * fTime);
 	    gl_Position.x = centerPosX + 3*mirageAmp*(1 - mixValue * mixValue) * (lPos - 95)/200 * sin((1 - mixValue) * 10 * fTime);
     }
     
