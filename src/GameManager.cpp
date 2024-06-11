@@ -1,4 +1,5 @@
 #include "GameManager.h"
+#include <algorithm>
 
 GameManager::GameManager(){}
 
@@ -22,14 +23,18 @@ void GameManager::checkCollected() {
 	}
 }
 
+void GameManager::updateRespawnPoint() {
+	for (shared_ptr<Entity> rp : respawnPoints) {
+		if (glm::distance(player->position, rp->position) <= CHKPT_THRESHOLD) {
+			cur_rp = rp;
+			return;
+		}
+	}
+}
+
 // change player location to nearest respawn location
 void GameManager::respawn() {
-	shared_ptr<Entity> nearest = respawnPoints[0];
-	for (shared_ptr<Entity> rp : respawnPoints) {
-		if(glm::distance(player->position, rp->position) < glm::distance(player->position, nearest->position))
-			nearest = rp;
-	}
-	player->position = nearest->position;
+	player->position = cur_rp->position;
 }
 
 void GameManager::init(shared_ptr<Entity> playerIn, map<string, shared_ptr<Entity>> worldentities) {
@@ -45,13 +50,16 @@ void GameManager::init(shared_ptr<Entity> playerIn, map<string, shared_ptr<Entit
 		shared_ptr<Entity> entity = i->second;
 		
 		// check if the current entity key is a respawn
-		if (i->first.find("respawn") != std::string::npos) {
+		if (entity->tag == "respawn") {
 			respawnPoints.push_back(entity);
 			cout << "respawn added to game manager respawn list." << endl;
+			if (i->first == "respawn_init") {
+				cur_rp = i->second;
+			}
 		}
 
 		// add collectibles to list of collectibles
-		if (entity->tag == "collectible") {
+		else if (entity->tag == "collectible") {
 			collectibles.push_back(entity);
 			cout << "collectible added to game manager collectible list." << endl;
 		}
@@ -61,4 +69,5 @@ void GameManager::init(shared_ptr<Entity> playerIn, map<string, shared_ptr<Entit
 void GameManager::update() {
 	checkDeath();
 	checkCollected();
+	updateRespawnPoint();
 }
