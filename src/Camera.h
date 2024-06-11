@@ -16,7 +16,7 @@ class Camera : public Entity
         Camera(glm::vec3 v, float p, float d, float a, glm::vec3 pp, float pr, glm::vec3 g, bool free = false);
         ~Camera();
         void updateCamera(float deltaTime);
-        void SetView(std::shared_ptr<Program> shader, std::shared_ptr<Texture> hMap);
+        glm::mat4 SetView(std::shared_ptr<Program> shader, std::shared_ptr<Texture> hMap);
         // void updateCamera();
         glm::vec3 cameraPos;
         glm::vec3 lookAtPt;

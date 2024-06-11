@@ -32,7 +32,7 @@ void Camera::updateCamera(float deltaTime) {
     cameraPos += (vec3(vel.z) * normalize(v_dir) + vec3(0,-vel.y,0) + vec3(vel.x) * normalize(cross(v_dir,vec3(0,1,0)))) * vec3(deltaTime);
 }
 
-void Camera::SetView(shared_ptr<Program> shader, shared_ptr<Texture> hMap) {
+mat4 Camera::SetView(shared_ptr<Program> shader, shared_ptr<Texture> hMap) {
     mat4 v_mat;
     if (freeCam) {
         vec3 v_dir = -vec3(sin(-angle) * cos(pitch), sin(pitch), cos(angle) * cos(pitch)) + cameraPos;
@@ -53,4 +53,5 @@ void Camera::SetView(shared_ptr<Program> shader, shared_ptr<Texture> hMap) {
     }
 
     glUniformMatrix4fv(shader->getUniform("V"), 1, GL_FALSE, value_ptr(v_mat));
+    return v_mat;
 }
