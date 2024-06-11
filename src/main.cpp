@@ -821,7 +821,7 @@ public:
     
 		for (i = worldentities.begin(); i != worldentities.end(); i++) {
 			shared_ptr<Entity> entity = i->second;
-			if (entity != worldentities["skybox"]) {
+			if (entity.get() != worldentities["skybox"].get()) {
 				glUniformMatrix4fv(DepthProg->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
 		
 				entity->model->Draw(DepthProg);
@@ -926,9 +926,15 @@ public:
 			}
 
 			if (shaders["skybox"] == curS) {
-				entity->position = activeCam->cameraPos;
+				glDisable(GL_CULL_FACE);
+				entity->position = player->position;
 				// skybox is always the furthest surface away
 				glDepthFunc(GL_LEQUAL);
+			}
+			else {	
+				glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
+				glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
+				glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 			}
 
 			if (entity->collider) {
@@ -937,30 +943,25 @@ public:
 						collidables.erase(collidables.begin() + i);
 					}
 				}
-				if (entity->id == player->id) {
-					entity->updateMotion(deltaTime, hmap, collidables, collisionSounds);
-				}
 				if (entity->collider->collectible){
 					entity->updateBoids(deltaTime, hmap, boids, player);
 					// cout << "BOIDED: " << entity->collider->boided << endl;
 				}
 			}
 	
-			glUniform3f(curS->prog->getUniform("lightDir"), light_vec.x, light_vec.y, light_vec.z);
-			glUniform1i(curS->prog->getUniform("shadowDepth"), 1);
-			glUniformMatrix4fv(curS->prog->getUniform("LS"), 1, GL_FALSE, value_ptr(LSpace));
 			glUniformMatrix4fv(curS->prog->getUniform("M"), 1, GL_FALSE, value_ptr(entity->modelMatrix));
 
 			//cout << i->first << endl;
 			for (auto& meshPair : entity->model->meshes) {
 				if (curS == shaders["reg"] || curS == shaders["platform"]) {
 					curS->setMaterial(meshPair.second.mat);
-				}			
+				}
 				meshPair.second.Draw(curS->prog);
 			}
 			
 			if (shaders["skybox"] == curS) {
 				// deactivate skybox backfill
+				glEnable(GL_CULL_FACE);
 				glDepthFunc(GL_LESS);
 			}
 		}
@@ -998,7 +999,7 @@ public:
 
 		// Apply perspective projection.
 		Projection->pushMatrix();
-		Projection->perspective(45.0f, aspect, 0.01f, 1000.0f);
+		Projection->perspective(45.0f, aspect, 0.01f, 350.0f);
 
 		//material shader first
 		shared_ptr<Shader> curS = shaders["edit"];
@@ -1160,6 +1161,7 @@ public:
 		}
 		else{
 			updateAnimation();
+			player->updateMotion(frametime, hmap, collidables, collisionSounds);
 			drawObjects(aspect, LSpace, frametime);
 		}
 
@@ -1214,7 +1216,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	Event *ev = new Event("../resources/french-mood.mp3", &engine, true, "background");
-	//ev->startSound();
+	ev->startSound();
 
 	float dt = 1 / 60.0;
 	auto lastTime = chrono::high_resolution_clock::now();

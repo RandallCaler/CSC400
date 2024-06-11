@@ -14,6 +14,7 @@ uniform vec3 albedo;
 uniform vec3 emissivity;
 uniform vec3 reflectance;
 uniform float roughness;
+uniform sampler2D Texture0;
 
 in OUT_struct {
    vec3 fPos;

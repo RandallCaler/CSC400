@@ -4865,6 +4865,7 @@
         "lightDir",
         "reflectance",
         "roughness",
+        "Texture0",
         "shadowDepth"
       ],
       "vertShader": "/simple_vert.glsl"

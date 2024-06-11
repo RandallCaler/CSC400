@@ -138,16 +138,21 @@ void Entity::updateMotion(float deltaTime, shared_ptr<Texture> hmap, vector<shar
     vec3 oldPosition = position;
     vec3 newPosition = position + vec3(deltaX, 0, deltaZ);
 
+    vec3 entityScale = scaleVec * 
+        vec3(2.0 / std::max(std::max(model->max.x - model->min.x,
+            model->max.y - model->min.y),
+            model->max.z - model->min.z));
+
     // get ground samples
     vec4 groundPlane0 = collider->CheckGroundCollision(hmap);
     float groundHeight0 = getHeightFromPlane(groundPlane0, vec2(oldPosition.x, oldPosition.z));
 
-    vec3 newPositionForward = newPosition + vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
+    vec3 newPositionForward = newPosition + vec3((entityScale.z/2) * sin(rotY), 0, (entityScale.z/2) * cos(rotY));
     position = newPositionForward;
     vec4 groundPlane = collider->CheckGroundCollision(hmap);
     float groundHeight = getHeightFromPlane(groundPlane, vec2(newPositionForward.x, newPositionForward.z));
 
-    vec3 newPositionBack = newPosition - vec3((scaleVec.z/2) * sin(rotY), 0, (scaleVec.z/2) * cos(rotY));
+    vec3 newPositionBack = newPosition - vec3((entityScale.z/2) * sin(rotY), 0, (entityScale.z/2) * cos(rotY));
     position = newPositionBack;
     vec4 groundPlaneB = collider->CheckGroundCollision(hmap);
     float groundHeightB = getHeightFromPlane(groundPlaneB, vec2(newPositionBack.x, newPositionBack.z));
