@@ -24,20 +24,20 @@ void ImporterExporter::loadShader(const json& shaderData) {
 	shared_ptr<Shader> shader = make_shared<Shader>(resourceDir + vertexSFile, resourceDir + fragSFile);
 	shader->name = id;
 
-	cout << "Loading Shader: " << id << " (" << vertexSFile << ", " << fragSFile << ")" << endl;
+	//cout << "Loading Shader: " << id << " (" << vertexSFile << ", " << fragSFile << ")" << endl;
 
 	// Add uniforms to shader definition
 	for (const string& uniform : shaderData["uniforms"]) {
 		shader->setUniform(uniform);
-		cout << uniform << " ";
+		//cout << uniform << " ";
 	}
 
-	cout << shaderData["attributes"].size() << " ";
+	//cout << shaderData["attributes"].size() << " ";
 
 	// Add attributes to shader definition
 	for (const string& attribute : shaderData["attributes"]) {
 		shader->setAttribute(attribute);
-		cout << attribute << " ";
+		//cout << attribute << " ";
 	}
 
 	// Add or update the shader in the main shader list
@@ -50,7 +50,7 @@ void ImporterExporter::loadTexture(const json& texData) {
 	string id = texData["name"];
 	string textFile = texData["filePath"];
 
-	cout << "Loading Texture: " << id << " (" << textFile << ")" << endl;
+	//cout << "Loading Texture: " << id << " (" << textFile << ")" << endl;
 
 	// Initialize the texture
 	shared_ptr<Texture> texture = make_shared<Texture>();
@@ -66,15 +66,15 @@ void ImporterExporter::loadTexture(const json& texData) {
 
 void ImporterExporter::loadEntity(const json& entData) {
 	string id = entData["name"];
-	cout << "Loading Entity: " << id << endl;
+	//cout << "Loading Entity: " << id << endl;
 	string file = entData["file"];
-	cout << "  Model: " << file << endl;
+	//cout << "  Model: " << file << endl;
 	string tag = entData["tag"];
-	cout << "  Tag: " << tag << endl;
+	//cout << "  Tag: " << tag << endl;
 	int collision = entData["collider"];
-	cout << "  Collider: " << (collision ? "true" : "false") << endl;
+	//cout << "  Collider: " << (collision ? "true" : "false") << endl;
 	string shader = entData["shader"];
-	cout << "  Shader: " << shader << endl;
+	//cout << "  Shader: " << shader << endl;
 	
 	// Initialize new entity with lists of shapes and materials
 	shared_ptr<Entity> newEntity = make_shared<Entity>();
@@ -84,7 +84,7 @@ void ImporterExporter::loadEntity(const json& entData) {
 
 	// Extract textures from the texture library
 	string textureID = entData["texture"];
-	cout << "  Texture: " << textureID << endl;
+	//cout << "  Texture: " << textureID << endl;
 	if (!textureID.empty()) {
 		newEntity->model->loadExtTexture((*textureLibrary)[textureID]);
 	}
@@ -119,9 +119,9 @@ void ImporterExporter::loadEntity(const json& entData) {
 	newEntity->scaleVec.y = entData["scale"][1];
 	newEntity->scaleVec.z = entData["scale"][2];
 
-	cout << "  Position: (" << newEntity->position.x << ", " << newEntity->position.y << ", " << newEntity->position.z << ")" << endl;
-	cout << "  Rotation: (" << newEntity->rotX << ", " << newEntity->rotY << ", " << newEntity->rotZ << ")" << endl;
-	cout << "  Scale: (" << newEntity->scaleVec.x << ", " << newEntity->scaleVec.y << ", " << newEntity->scaleVec.z << ")" << endl;
+	//cout << "  Position: (" << newEntity->position.x << ", " << newEntity->position.y << ", " << newEntity->position.z << ")" << endl;
+	//cout << "  Rotation: (" << newEntity->rotX << ", " << newEntity->rotY << ", " << newEntity->rotZ << ")" << endl;
+	//cout << "  Scale: (" << newEntity->scaleVec.x << ", " << newEntity->scaleVec.y << ", " << newEntity->scaleVec.z << ")" << endl;
 
 	for (const auto& meshData : entData["meshes"]) {
 		string meshID = meshData["mesh"];
@@ -146,7 +146,7 @@ void ImporterExporter::loadEntity(const json& entData) {
 			meshData["material"]["reflectance"][2]
 		};
 		newEntity->model->meshes[meshID].mat.roughness = meshData["material"]["roughness"];
-		cout << "  Mesh: " << meshID << " with material properties loaded." << endl;
+		//cout << "  Mesh: " << meshID << " with material properties loaded." << endl;
 	}
 	// Commit new entity to main
 	(*worldentities)[id] = newEntity;
@@ -223,7 +223,7 @@ json ImporterExporter::texturesToJson() {
 	for (const auto& texturePair : *textureLibrary) {
 		if (texturePair.second) {
 			const auto& texture = texturePair.second;
-			cout << "save" << endl;
+			//cout << "save" << endl;
 			json textureJson;
 			textureJson["name"] = texturePair.first;
 			textureJson["filePath"] = findFilename(texture->getFilename());
