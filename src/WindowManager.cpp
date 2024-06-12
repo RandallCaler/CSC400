@@ -46,8 +46,8 @@ bool WindowManager::init(int const width, int const height) {
 		return false;
 	}
 
-	std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
-	std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+	//std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
+	//std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
 	// Set vsync
 	glfwSwapInterval(1);

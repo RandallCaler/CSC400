@@ -75,7 +75,7 @@ void LevelEditor::ModelList() {
             bool is_selected = (file == selectedModel);
             if (ImGui::Selectable(file.c_str(), is_selected)) {
                 selectedModel = file;
-                cout << "Model selected: " << selectedModel << endl;                  
+                //cout << "Model selected: " << selectedModel << endl;                  
             }
             if (is_selected) {
                 ImGui::SetItemDefaultFocus();
@@ -148,7 +148,7 @@ void LevelEditor::EntityList()
                     selected_mesh_name = "";
                     selected_mesh = nullptr;
                     isInspectorOpen = true;
-                    cout << "Entity selected: " << name << endl;
+                    //cout << "Entity selected: " << name << endl;
 
                     ImGui::SetScrollHereY();
                 }
@@ -165,7 +165,7 @@ void LevelEditor::EntityList()
                             selected_mesh_name = meshName;
                             selected_mesh = &(meshPair.second);
                             isMeshInspectorOpen = true;
-                            cout << "Mesh selected: " << meshName << endl;
+                            //cout << "Mesh selected: " << meshName << endl;
                         }
                     }
                 }
@@ -177,7 +177,7 @@ void LevelEditor::EntityList()
 
             // Handle entity deletion
             if (is_selected && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Delete))) {
-                cout << "Entity deleted: " << name << endl;
+                //cout << "Entity deleted: " << name << endl;
                 worldentities.erase(cur_name);
                 cur_name = "";
                 selected_mesh_name = "";
@@ -251,11 +251,11 @@ shared_ptr<Entity> LevelEditor::Inspector(shared_ptr<Entity> entity, bool* flag)
                     worldentities.erase(selectedEntity);  // Remove the old entry
                     worldentities[newNameStr] = entity;   // Insert the entity with the new cur_name
                     cur_name = newNameStr;
-                    cout << "Entity cur_name changed to: " << cur_name << endl;
+                    //cout << "Entity cur_name changed to: " << cur_name << endl;
                 }
             }
             else {
-                cout << "cur_name already exists. Choose a different cur_name." << endl;
+                //cout << "cur_name already exists. Choose a different cur_name." << endl;
             }
         }
     }
@@ -382,7 +382,7 @@ void LevelEditor::EditTag(bool* flag) {
         string newTagStr(new_tag);
         if (newTagStr.find(' ') == string::npos && find(tagList.begin(), tagList.end(), newTagStr) == tagList.end()) {
             tagList.push_back(newTagStr);
-            cout << "New tag added: " << newTagStr << endl;
+            //cout << "New tag added: " << newTagStr << endl;
         }
         selectedTag = " ";
         *flag = false;

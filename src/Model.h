@@ -91,7 +91,7 @@ private:
         // check for errors
         if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
         {
-            cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
+            //cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
             return;
         }
         // retrieve the directory path of the filepath
@@ -272,7 +272,7 @@ private:
 
                 }
                 else {
-                    cout << "uncompressed data" << endl;
+                    //cout << "uncompressed data" << endl;
                     GLenum format = GL_RGBA; // Example format
                     // Other formats include GL_RGB, GL_RGBA, GL_LUMINANCE based on your data
                     GLuint id;

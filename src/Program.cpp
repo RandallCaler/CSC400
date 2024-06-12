@@ -58,7 +58,7 @@ bool Program::init()
 		if (isVerbose())
 		{
 			GLSL::printShaderInfoLog(VS);
-			std::cout << "Error compiling vertex shader " << vShaderName << std::endl;
+			//std::cout << "Error compiling vertex shader " << vShaderName << std::endl;
 		}
 		return false;
 	}
@@ -71,7 +71,7 @@ bool Program::init()
 		if (isVerbose())
 		{
 			GLSL::printShaderInfoLog(FS);
-			std::cout << "Error compiling fragment shader " << fShaderName << std::endl;
+			//std::cout << "Error compiling fragment shader " << fShaderName << std::endl;
 		}
 		return false;
 	}
@@ -88,7 +88,7 @@ bool Program::init()
 		if (isVerbose())
 		{
 			GLSL::printProgramInfoLog(pid);
-			std::cout << "Error linking shaders " << vShaderName << " and " << fShaderName << std::endl;
+			//std::cout << "Error linking shaders " << vShaderName << " and " << fShaderName << std::endl;
 		}
 		return false;
 	}
@@ -125,7 +125,7 @@ GLint Program::getAttribute(const std::string &name) const
 	{
 		if (isVerbose())
 		{
-			std::cout << name << " is not an attribute variable" << std::endl;
+			//std::cout << name << " is not an attribute variable" << std::endl;
 		}
 		return -1;
 	}
@@ -139,7 +139,7 @@ GLint Program::getUniform(const std::string &name) const
 	{
 		if (isVerbose())
 		{
-			std::cout << name << " is not a uniform variable" << std::endl;
+			//std::cout << name << " is not a uniform variable" << std::endl;
 		}
 		return -1;
 	}

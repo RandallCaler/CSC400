@@ -312,7 +312,7 @@ public:
 		if (action == GLFW_PRESS) {
 			if (button == GLFW_MOUSE_BUTTON_LEFT) {
 				glfwGetCursorPos(window, &posX, &posY);
-				cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
+				//cout << "Pos X " << posX <<  " Pos Y " << posY << endl;
 
 				//editor mode selection
 				if(editMode && !leGUI->diableInput){
@@ -371,7 +371,7 @@ public:
 		int glY = windowHeight - y;
 		unsigned char data[3];
 		glReadPixels(x, glY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, data);
-		cout << "r: " << +data[0] << "   g: " << +data[1] << "   b: " << +data[2] << endl;
+		//cout << "r: " << +data[0] << "   g: " << +data[1] << "   b: " << +data[2] << endl;
 
 		// convert color to entity id
 		int pickedID = -1;
@@ -396,7 +396,7 @@ public:
 			shared_ptr<Entity> entity = i->second;
 			if(entity->id == pickedID){
 				leGUI->setCurName(i->first);
-				cout << "active entity is now " << pickedID << endl;
+				//cout << "active entity is now " << pickedID << endl;
 				break;
 			}
 		}
@@ -563,7 +563,7 @@ public:
 					ent->collider->entityName = 'c';
 				}
 				if (ent->tag == "food") {
-					cout << "SET COLLECTIBLE TAG TO TRUE" << endl;
+					//cout << "SET COLLECTIBLE TAG TO TRUE" << endl;
 					ent->collider->collectible = true;
 				}
 			}	
@@ -635,7 +635,7 @@ public:
 		terrain.generateNormals();
 		std::vector<float> normals = terrain.getNormals();
 
-		std::cout << "vert size : " << vertices.size() << " ind size: " << indices.size() << std::endl;
+		//std::cout << "vert size : " << vertices.size() << " ind size: " << indices.size() << std::endl;
 
 		//generate the ground VAO
       	glGenVertexArrays(1, &GroundVertexArrayID);
@@ -1242,8 +1242,8 @@ int main(int argc, char *argv[]) {
 	application->gameManager->init(application->player, worldentities);
 
 	for (int i = 0; i < boids.size(); i++){
-		cout << "boids in population" << endl;
-		cout << (boids[i]->id) << " BOID " << (boids[i]->collider->collectible) << endl;
+		//cout << "boids in population" << endl;
+		//cout << (boids[i]->id) << " BOID " << (boids[i]->collider->collectible) << endl;
 	}
 
 	Event *ev = new Event("../resources/french-mood.mp3", &engine, true, "background");
@@ -1275,7 +1275,7 @@ int main(int argc, char *argv[]) {
 			fps = frameCount / (totalTime / 1000000);
 			frameCount = 0;
 			totalTime = 0.0;
-			std::cout << "FPS: " << static_cast<int>(fps) << std::endl;
+			//std::cout << "FPS: " << static_cast<int>(fps) << std::endl;
 		}
 		deltaTime *= 0.000001;
 

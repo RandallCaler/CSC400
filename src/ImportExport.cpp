@@ -308,7 +308,7 @@ int ImporterExporter::saveToFile(string outFileName) {
 
 	saveFile << setw(2) << saveJson << endl;  // Pretty print with 2-space indentation
 	saveFile.close();
-	cout << "World saved to file " << outFileName << endl;
+	// cout << "World saved to file " << outFileName << endl;
 	return 1;
 }
 
