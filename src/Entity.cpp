@@ -100,7 +100,7 @@ void Entity::updateBoids(float deltaTime, shared_ptr<Texture> hmap, vector<share
         vec3 leader = (player->position - this->position);
         vec3 tangentialVec = glm::cross(leader, vec3(0, 1, 0));
         // vec3 accel = (1.5f)*separation + (0.3f)*alignment + 0.2f*(leader);
-        vec3 accel = (length(leader) < 3 ? 0.15f : 0.9f)*(normalize(leader)) + 0.3f*(separation) + 0.1f * normalize(tangentialVec); //
+        vec3 accel = (length(leader) < 3 ? 0.08f : 0.9f)*(normalize(leader)) + 0.3f*(separation) + 0.1f * normalize(tangentialVec); //
 
         m.velocity += accel; 
         if (glm::length(m.velocity) > 5){
