@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="penguin.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manchot: 3D Penguin Platformer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="bubble">
+            <h1>Manchot</h1>
+            <p>3D Penguin Platformer</p>
+        </div>
+    </header>
+
+    <nav style="padding: 10px;">
+        <a href="#section0" onclick="flashSection('section0')">Section 0</a>
+        <a href="#section1" onclick="flashSection('section1')">Section 1</a>
+        <a href="#section2" onclick="flashSection('section2')">Section 2</a>
+        <a href="#section3" onclick="flashSection('section3')">Section 3</a>
+        <a href="#section4" onclick="flashSection('section4')">Graphics Technologies</a>
+        <a href="#section5" onclick="flashSection('section5')">Team Members</a>
+        <a href="#section6" onclick="flashSection('section6')">References</a>
+    </nav>
+
+    <section id="section0">
+        <h2>Section 0</h2>
+        <p></p>
+    </section>
+
+    <section id="section1">
+        <h2>Section 1</h2>
+        <p></p>
+    </section>
+
+    <section id="section2">
+        <h2>Section 2</h2>
+        <p></p>
+    </section>
+
+    <section id="section3">
+        <h2>Section 3</h2>
+        <p></p>
+    </section>
+    
+    <section id="section4" height="100">
+        <h2>Graphics Technologies</h2>
+        <button onclick="scrollToCell(0)">Tech 1</button>
+        <button onclick="scrollToCell(1)">Tech 2</button>
+        <button onclick="scrollToCell(2)">Tech 3</button>
+        <button onclick="scrollToCell(3)">Tech 4</button>
+        <button onclick="scrollToCell(4)">Texture Blending</button>
+        <button onclick="scrollToCell(5)">DuDv Mapping</button>
+        
+        <div id="container" class="container">
+            <div id="smartCell0" class="smartCell active">
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer consectetur sapien ut lectus accumsan dictum. Quisque ut arcu sapien. Curabitur vel quam justo. Quisque sit amet dolor et sem interdum vulputate varius ac mauris. Pellentesque laoreet posuere interdum. Aliquam nec imperdiet ligula, ac tincidunt leo. In nec eleifend nisi, sit amet egestas arcu. Donec ut justo ut nunc tempor maximus. Curabitur congue massa in nisi lacinia, a lobortis enim sollicitudin. Suspendisse malesuada gravida diam, a bibendum libero faucibus at. Fusce eget justo blandit, malesuada quam eu, lacinia metus.
+
+                    Aenean viverra enim at est maximus, ac viverra mi auctor. Nulla eu elit id sapien pretium viverra. In non mollis sapien. Nam et elit pulvinar, tristique dui quis, ullamcorper eros. In et tortor cursus, imperdiet urna a, ornare turpis. Suspendisse egestas lacus neque. Phasellus ultricies leo eget eros consequat, vel tincidunt ligula malesuada. Aliquam sed mollis urna. Vivamus diam risus, faucibus eu sem et, pretium efficitur justo. Praesent aliquet bibendum eleifend. Sed in dictum leo. Sed ac neque ut dui accumsan rhoncus quis quis ligula.
+
+                    Aliquam egestas libero mauris, eget posuere leo porta tristique. Phasellus vitae ipsum quis sem iaculis dignissim. Cras ultrices, odio ullamcorper auctor ultrices, sem lectus venenatis odio, vel scelerisque dolor nunc eget magna. Aliquam erat volutpat. Sed vehicula odio malesuada enim laoreet, molestie mattis eros interdum. Sed non accumsan lectus, ac convallis eros. Phasellus nec sapien metus. Phasellus facilisis sapien gravida metus maximus, vitae finibus enim egestas. Duis a arcu dolor. Phasellus porta egestas euismod.
+                </p>
+            </div>
+            <div id="smartCell1" class="smartCell">
+                <p>
+                    Donec eu magna mi. Maecenas nec lectus et tellus laoreet vulputate. Praesent dapibus nisi id velit convallis, vel posuere neque dictum. Donec eu nibh in risus faucibus ultrices. Phasellus metus nisl, euismod non ante vitae, placerat pretium libero. Suspendisse eleifend urna ut neque tempus, a vulputate risus laoreet. Ut varius, velit id rhoncus egestas, quam mauris luctus justo, id malesuada purus ex id mauris. Ut quam velit, volutpat in luctus quis, faucibus ut nisi. Phasellus sit amet nibh at turpis rutrum sodales. Donec eget nulla in nibh aliquam laoreet. Quisque in orci et sapien imperdiet egestas. Ut magna mauris, scelerisque in lorem ac, gravida pulvinar leo. Vestibulum in neque venenatis, lobortis erat in, imperdiet arcu. Suspendisse ullamcorper fermentum sodales. Pellentesque ut tellus diam.
+
+                    Fusce ultricies, leo non dignissim finibus, eros purus blandit nisi, ac rutrum est ligula sit amet risus. Duis a rutrum enim. Nulla facilisi. Nullam a suscipit neque. Vivamus vulputate porttitor dui volutpat fringilla. Nunc porttitor lacus sed ultrices vulputate. Aliquam erat volutpat. Vivamus sit amet turpis ac eros vehicula ornare. Aenean tellus lectus, venenatis sed mauris non, sollicitudin bibendum sem. Sed auctor tristique sapien in pretium. Nullam eleifend tellus lectus, ac fermentum dolor imperdiet ultrices. Vestibulum eget semper tellus. Morbi tellus lorem, fermentum et ligula a, dapibus efficitur mi. Mauris pharetra, metus sit amet egestas fringilla, erat diam tempus nulla, non eleifend massa eros aliquet lectus.
+                </p>
+            </div>
+            <div id="smartCell2" class="smartCell">
+                <p>
+                </p>
+            </div>
+            <div id="smartCell3" class="smartCell">
+                <p>
+                    This is section 4.
+                </p>
+            </div>
+            <div id="smartCell4" class="smartCell">
+                <h3>Texture Blending</h3>
+                <p>
+                    Our underlying world mesh, once deformed according to a heightmap, then receives texturing according to several factors:
+                    <ul>
+                        <li>Height: The low basin of the heightmap represents water, so fragments near the y-axis minimum of the heightmap are shaded with a water texture and undergo further graphics effects to sell the impression of moving water.</li>
+                        <li>Slope: The heightmap's fragment shader takes weighted samples of two different textures for each fragment above the basin. As the slope of a ground fragment increases, the "flat ground" texture is sampled less and the "cliff" texture is sampled more.</li>
+                        <li>Region: Color on the heightmap is interpreted as a region indicator. These are stored in a VAO and are used during shading to determine which textures to sample from. Our implementation has snowy, sandy, and grassy regions.</li>
+                    </ul>
+                </p>
+            </div>
+            <div id="smartCell5" class="smartCell">
+                <h3>DuDv Mapping</h3>
+                <p>
+                    DuDv maps are a kind of normal map that specifies distortions to apply to surface normals. We scroll-sample a DuDv map when shading the water to alter surface normals for the fragment shader and achieve a rippling effect without distorting the mesh's geometry.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="section5">
+        <h2>Team Members</h2>
+        <p></p>
+    </section>
+
+    <section id="section6">
+        <h2>References</h2>
+        <p id="cite1">[1] J. Huynh, "Separating Axis Theorem for Oriented Bounding Boxes." Available: <a href="https://www.jkh.me/files/tutorials/Separating%20Axis%20Theorem%20for%20Oriented%20Bounding%20Boxes.pdf">https://www.jkh.me/files/tutorials/Separating%20Axis%20Theorem%20for%20Oriented%20Bounding%20Boxes.pdf</a>.</p>
+    </section>
+    <script src="scripts.js"></script>
+</body>
+</html>

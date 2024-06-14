@@ -1,0 +1,190 @@
+body {
+    font-family: Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 90px;
+    color: #0D3B66;
+    background-color: #CBE7F6;
+    transition: padding-left 0.5s; /* Smooth transition for padding change */
+}
+
+h1 {
+    font-family: 'CroissantOne', serif;
+    margin-bottom: -20px;
+}
+
+header {
+    font-family: Garamond, serif;
+    padding: 60px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: #FBFBF7;
+    border-bottom: 2px solid #000;
+    background-image: url('banner.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+a:hover {
+    color: #A5CDF3;
+}
+
+.bubble {
+    display: inline-block;
+    padding: 20px 40px;
+    background-color: #AA0000; /* Bubble background color */
+    border-radius: 35%; /* Make the container circular */
+    border: 2px solid #000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+}
+
+nav {
+    text-align: center;
+    font-weight: bold;
+    background-color: #006994;
+}
+
+nav a {
+    margin: 0 10px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    color: #FBFBF7;
+}
+
+section {
+    padding: 20px;
+    margin: 20px;
+    background-color: #FBFBF7;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+section:hover {
+    color: #000;
+}
+
+footer {
+    padding: 20px;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    font-weight: bold;
+    color: #FBFBF7;
+    background-color: #006994;
+    border-top: 2px solid #000;
+}
+
+
+.container {
+    position: relative; /* Ensure the container is relative */
+    display: flex;
+    transition: height 0.5s ease;
+}
+
+.smartCell {
+    padding: 20px;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: opacity 1s ease; /* Smooth transition for opacity */
+    flex: 0 0 100%;
+    display: none;
+}
+
+.smartCell.active {
+    display: block;
+    opacity: 1;
+}
+
+
+.left-scroll-enter {
+    animation: slideInLeft 1s forwards;
+}
+.right-scroll-enter {
+    animation: slideInRight 1s forwards;
+}
+.left-scroll-exit {
+    animation: slideOutRight 1s forwards;
+}
+.right-scroll-exit {
+    animation: slideOutLeft 1s forwards;
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-100%);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutLeft {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(-100%);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@font-face {
+    font-family: 'CroissantOne';
+    src: url('frenchFont.ttf');
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Define flashing animation */
+@keyframes flash {
+    0% { background-color: #FBFBF7; }
+    50% { color: #FBFBF7; background-color: #0D3B66; }
+    100% { background-color: #FBFBF7; }
+}
+
+.flash {
+    animation: flash 2.5s infinite;
+}
+
+.center-container {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+}
