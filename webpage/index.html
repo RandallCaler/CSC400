@@ -18,7 +18,7 @@
     <nav style="padding: 10px;">
         <a href="#section0" onclick="flashSection('section0')">Level Editor</a>
         <a href="#section1" onclick="flashSection('section1')">Animation</a>
-        <a href="#section2" onclick="flashSection('section2')">Section 2</a>
+        <a href="#section2" onclick="flashSection('section2')">Sound Manager</a>
         <a href="#section3" onclick="flashSection('section3')">Section 3</a>
         <a href="#section4" onclick="flashSection('section4')">Graphics Technologies</a>
         <a href="#section5" onclick="flashSection('section5')">Team Members</a>
@@ -54,24 +54,30 @@
     </section>
 
     <section id="section2">
-        <h2>Section 2</h2>
-        <p></p>
+        <h2>Sound Manager</h2>
+        <p>
+            For our project, we built a sound management system to track all in-game sound effects. To help implement this sound manager, we used the
+            Mini Audio sound library, an audio playback and capture library for C and C++. With Mini Audio we were able to better configure and manage 
+            multiple sound effects at once. This library also allowed us to better adapt our code for different operating systems. Our EventManager class works by polling for events and tracking the event history to ensure a seamless auditory
+            experience. This sound manager is responsible for the background music, collectible sound effects, and walking sounds that you 
+            hear throughout Manchot's First Flight.
+        </p>
     </section>
 
     <section id="section3">
         <h2>Section 3</h2>
         <p></p>
     </section>
-    
+
     <section id="section4" height="100">
         <h2>Graphics Technologies</h2>
         <button onclick="scrollToCell(0)">Tech 1</button>
         <button onclick="scrollToCell(1)">Tech 2</button>
         <button onclick="scrollToCell(2)">Tech 3</button>
-        <button onclick="scrollToCell(3)">Tech 4</button>
+        <button onclick="scrollToCell(3)">Boids</button>
         <button onclick="scrollToCell(4)">Texture Blending</button>
         <button onclick="scrollToCell(5)">DuDv Mapping</button>
-        
+
         <div id="container" class="container">
             <div id="smartCell0" class="smartCell active">
             </div>
@@ -84,6 +90,16 @@
                 </p>
             </div>
             <div id="smartCell3" class="smartCell">
+                <h3>Boids</h3>
+                <p>
+                    When our player collects an item, the item is then added to a flock of boids that follow the player around. To implement
+                    this naive flocking behavior we used a variety of forces [2]:
+                    <ul>
+                        <li>Separation force: In order to simulate collisions between boids (collectibles) we implemented a repulsive force that, if within a certain radius of another boid, propells the current boid backwards.</li>
+                        <li>Following the Leader: In place of the traditional cohesive force that follows the group's center of mass, we implemented a force that points the boids in the general direction of the player's position.</li>
+                        <li>Tangential force: To prevent odd behavior of gathering around the player, we integrated a tangential force to create orbital behavior for our boids.</li>
+                    </ul>
+                </p>
             </div>
             <div id="smartCell4" class="smartCell">
                 <h3>Texture Blending</h3>
@@ -115,6 +131,7 @@
     <section id="section6">
         <h2>References</h2>
         <p id="cite1">[1] J. Huynh, "Separating Axis Theorem for Oriented Bounding Boxes." Available: <a href="https://www.jkh.me/files/tutorials/Separating%20Axis%20Theorem%20for%20Oriented%20Bounding%20Boxes.pdf">https://www.jkh.me/files/tutorials/Separating%20Axis%20Theorem%20for%20Oriented%20Bounding%20Boxes.pdf</a>.</p>
+        <p id="cite1">[2] C. Parker, "Boids Pseudocode" Available: <a href="http://www.kfish.org/boids/pseudocode.html">http://www.kfish.org/boids/pseudocode.html</a>.</p>
     </section>
     <script src="scripts.js"></script>
 </body>
