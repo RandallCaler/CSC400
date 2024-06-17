@@ -56,19 +56,19 @@
         
         <div id="container" class="container">
             <div id="smartCell0" class="smartCell active">
+                <h3>Level Editor</h3>
                 <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer consectetur sapien ut lectus accumsan dictum. Quisque ut arcu sapien. Curabitur vel quam justo. Quisque sit amet dolor et sem interdum vulputate varius ac mauris. Pellentesque laoreet posuere interdum. Aliquam nec imperdiet ligula, ac tincidunt leo. In nec eleifend nisi, sit amet egestas arcu. Donec ut justo ut nunc tempor maximus. Curabitur congue massa in nisi lacinia, a lobortis enim sollicitudin. Suspendisse malesuada gravida diam, a bibendum libero faucibus at. Fusce eget justo blandit, malesuada quam eu, lacinia metus.
-
-                    Aenean viverra enim at est maximus, ac viverra mi auctor. Nulla eu elit id sapien pretium viverra. In non mollis sapien. Nam et elit pulvinar, tristique dui quis, ullamcorper eros. In et tortor cursus, imperdiet urna a, ornare turpis. Suspendisse egestas lacus neque. Phasellus ultricies leo eget eros consequat, vel tincidunt ligula malesuada. Aliquam sed mollis urna. Vivamus diam risus, faucibus eu sem et, pretium efficitur justo. Praesent aliquet bibendum eleifend. Sed in dictum leo. Sed ac neque ut dui accumsan rhoncus quis quis ligula.
-
-                    Aliquam egestas libero mauris, eget posuere leo porta tristique. Phasellus vitae ipsum quis sem iaculis dignissim. Cras ultrices, odio ullamcorper auctor ultrices, sem lectus venenatis odio, vel scelerisque dolor nunc eget magna. Aliquam erat volutpat. Sed vehicula odio malesuada enim laoreet, molestie mattis eros interdum. Sed non accumsan lectus, ac convallis eros. Phasellus nec sapien metus. Phasellus facilisis sapien gravida metus maximus, vitae finibus enim egestas. Duis a arcu dolor. Phasellus porta egestas euismod.
+                    The Level Editor for this project utilizes several key technologies to create a robust and interactive tool for 3D modeling and scene management. 
+                    Central to the interface is Dear ImGui, a popular immediate mode graphical user interface library, which is integrated with GLFW for window management and OpenGL for rendering. 
+                    This combination allows for a responsive and efficient GUI that supports both keyboard and gamepad inputs. 
+                    The Level Editor also leverages the C++17 filesystem library to dynamically search and load various mesh file formats, 
+                    including OBJ, DAE, FBX, and GLB, enhancing flexibility in asset management.
+                    Additionally, the editor implements ImGui's advanced features such as tree nodes, input text, combo boxes, 
+                    and sliders to facilitate detailed entity and mesh manipulation, offering a comprehensive toolset for developers to build and customize 3D environments effectively.
                 </p>
             </div>
             <div id="smartCell1" class="smartCell">
                 <p>
-                    Donec eu magna mi. Maecenas nec lectus et tellus laoreet vulputate. Praesent dapibus nisi id velit convallis, vel posuere neque dictum. Donec eu nibh in risus faucibus ultrices. Phasellus metus nisl, euismod non ante vitae, placerat pretium libero. Suspendisse eleifend urna ut neque tempus, a vulputate risus laoreet. Ut varius, velit id rhoncus egestas, quam mauris luctus justo, id malesuada purus ex id mauris. Ut quam velit, volutpat in luctus quis, faucibus ut nisi. Phasellus sit amet nibh at turpis rutrum sodales. Donec eget nulla in nibh aliquam laoreet. Quisque in orci et sapien imperdiet egestas. Ut magna mauris, scelerisque in lorem ac, gravida pulvinar leo. Vestibulum in neque venenatis, lobortis erat in, imperdiet arcu. Suspendisse ullamcorper fermentum sodales. Pellentesque ut tellus diam.
-
-                    Fusce ultricies, leo non dignissim finibus, eros purus blandit nisi, ac rutrum est ligula sit amet risus. Duis a rutrum enim. Nulla facilisi. Nullam a suscipit neque. Vivamus vulputate porttitor dui volutpat fringilla. Nunc porttitor lacus sed ultrices vulputate. Aliquam erat volutpat. Vivamus sit amet turpis ac eros vehicula ornare. Aenean tellus lectus, venenatis sed mauris non, sollicitudin bibendum sem. Sed auctor tristique sapien in pretium. Nullam eleifend tellus lectus, ac fermentum dolor imperdiet ultrices. Vestibulum eget semper tellus. Morbi tellus lorem, fermentum et ligula a, dapibus efficitur mi. Mauris pharetra, metus sit amet egestas fringilla, erat diam tempus nulla, non eleifend massa eros aliquet lectus.
                 </p>
             </div>
             <div id="smartCell2" class="smartCell">
@@ -76,8 +76,17 @@
                 </p>
             </div>
             <div id="smartCell3" class="smartCell">
+                <h3>Animation</h3>
+                <h4>Creating</h4>
+                <h4>Importing</h4>
                 <p>
-                    This is section 4.
+                    Assimp simplifies the process of loading complex animated models by handling the intricacies of file parsing and scene graph construction. 
+                    To render these animated models, the project utilizes custom vertex shaders tailored to handle skeletal animations. 
+                    These shaders perform bone transformations directly on the GPU, efficiently calculating the vertex positions based on the bone matrices and weights provided by Assimp. 
+                    This approach leverages parallel processing capabilities of modern GPUs, ensuring smooth and performant animation playback even for complex models. 
+                    The decision to calculate vertex positions within the vertex shader not only optimizes performance but also maintains flexibility in rendering, 
+                    as the vertex shader can be easily adjusted or extended to support additional effects or animation techniques. 
+                    This integration of Assimp and custom shaders underscores the project's commitment to high-quality, real-time 3D graphics.
                 </p>
             </div>
             <div id="smartCell4" class="smartCell">
@@ -102,7 +111,9 @@
 
     <section id="section5">
         <h2>Team Members</h2>
-        <p></p>
+        <p>
+            Randall Caler, Srinivas Sundararaman, Hugh Garmany, Will Kang, Josh Levin, Claire Ogawa, Nidhi Raviprasad, Billy Woodward
+        </p>
     </section>
 
     <section id="section6">
