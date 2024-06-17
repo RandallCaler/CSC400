@@ -26,13 +26,31 @@
     </nav>
 
     <section id="section0">
-        <h2>Section 0</h2>
-        <p></p>
+        <h2>Level Editor</h2>
+        <p>
+            The Level Editor for this project utilizes several key technologies to create a robust and interactive tool for 3D modeling and scene management.
+            Central to the interface is Dear ImGui, a popular immediate mode graphical user interface library, which is integrated with GLFW for window management and OpenGL for rendering.
+            This combination allows for a responsive and efficient GUI that supports both keyboard and gamepad inputs.
+            The Level Editor also leverages the C++17 filesystem library to dynamically search and load various mesh file formats,
+            including OBJ, DAE, FBX, and GLB, enhancing flexibility in asset management.
+            Additionally, the editor implements ImGui's advanced features such as tree nodes, input text, combo boxes,
+            and sliders to facilitate detailed entity and mesh manipulation, offering a comprehensive toolset for developers to build and customize 3D environments effectively.
+        </p>
     </section>
 
     <section id="section1">
-        <h2>Section 1</h2>
-        <p></p>
+        <h2>Animation</h2>
+        <h3>Creating</h3>
+        <h3>Importing</h3>
+        <p>
+            Assimp simplifies the process of loading complex animated models by handling the intricacies of file parsing and scene graph construction.
+            To render these animated models, the project utilizes custom vertex shaders tailored to handle skeletal animations.
+            These shaders perform bone transformations directly on the GPU, efficiently calculating the vertex positions based on the bone matrices and weights provided by Assimp.
+            This approach leverages parallel processing capabilities of modern GPUs, ensuring smooth and performant animation playback even for complex models.
+            The decision to calculate vertex positions within the vertex shader not only optimizes performance but also maintains flexibility in rendering,
+            as the vertex shader can be easily adjusted or extended to support additional effects or animation techniques.
+            This integration of Assimp and custom shaders underscores the project's commitment to high-quality, real-time 3D graphics.
+        </p>
     </section>
 
     <section id="section2">
@@ -56,16 +74,6 @@
         
         <div id="container" class="container">
             <div id="smartCell0" class="smartCell active">
-                <h3>Level Editor</h3>
-                <p>
-                    The Level Editor for this project utilizes several key technologies to create a robust and interactive tool for 3D modeling and scene management. 
-                    Central to the interface is Dear ImGui, a popular immediate mode graphical user interface library, which is integrated with GLFW for window management and OpenGL for rendering. 
-                    This combination allows for a responsive and efficient GUI that supports both keyboard and gamepad inputs. 
-                    The Level Editor also leverages the C++17 filesystem library to dynamically search and load various mesh file formats, 
-                    including OBJ, DAE, FBX, and GLB, enhancing flexibility in asset management.
-                    Additionally, the editor implements ImGui's advanced features such as tree nodes, input text, combo boxes, 
-                    and sliders to facilitate detailed entity and mesh manipulation, offering a comprehensive toolset for developers to build and customize 3D environments effectively.
-                </p>
             </div>
             <div id="smartCell1" class="smartCell">
                 <p>
@@ -76,18 +84,6 @@
                 </p>
             </div>
             <div id="smartCell3" class="smartCell">
-                <h3>Animation</h3>
-                <h4>Creating</h4>
-                <h4>Importing</h4>
-                <p>
-                    Assimp simplifies the process of loading complex animated models by handling the intricacies of file parsing and scene graph construction. 
-                    To render these animated models, the project utilizes custom vertex shaders tailored to handle skeletal animations. 
-                    These shaders perform bone transformations directly on the GPU, efficiently calculating the vertex positions based on the bone matrices and weights provided by Assimp. 
-                    This approach leverages parallel processing capabilities of modern GPUs, ensuring smooth and performant animation playback even for complex models. 
-                    The decision to calculate vertex positions within the vertex shader not only optimizes performance but also maintains flexibility in rendering, 
-                    as the vertex shader can be easily adjusted or extended to support additional effects or animation techniques. 
-                    This integration of Assimp and custom shaders underscores the project's commitment to high-quality, real-time 3D graphics.
-                </p>
             </div>
             <div id="smartCell4" class="smartCell">
                 <h3>Texture Blending</h3>
