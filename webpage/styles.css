@@ -84,6 +84,7 @@ footer {
     position: relative; /* Ensure the container is relative */
     display: flex;
     transition: height 0.5s ease;
+    overflow-x: hidden;
 }
 
 .smartCell {
