@@ -80,7 +80,7 @@
         <p>
             When brainstorming the project, we wanted to make an interactive product that was fun and enjoyable while utilizing various technologies and graphics components
             As such, making a small video game seemed appropriate and gave us the oppurtunity to be creative in its development. We began with starting the level editor and player controller
-            as the basis componetnts for our game. The team settled on a 3D platofrmer as we felt that could merge various technologies easily while allowing us to use simple but effective game design.
+            as the basis components for our game. The team settled on a 3D platformer as we felt that could merge various technologies easily while allowing us to use simple but effective game design.
             We envisioned 3D movement in a fully modeled world plane and thus, it was critical to have the player controls feel intuitive. Further into development, we began the bigger tasks
             of collision, animation and sound, all while working on graphics technologies as well. Ultimately the product came out remarkably well, with everything living up to what we had envisioned.
         </p>
@@ -88,22 +88,30 @@
 
     <section id="section4" height="100">
         <h2>Graphics Technologies</h2>
-        <button onclick="scrollToCell(0)">Tech 1</button>
-        <button onclick="scrollToCell(1)">Tech 2</button>
-        <button onclick="scrollToCell(2)">Tech 3</button>
+        <button onclick="scrollToCell(0)">Cook Torrance BRDF/PBR</button>
+        <button onclick="scrollToCell(1)">Shadow Mapping</button>
+        <button onclick="scrollToCell(2)">Mirage Shader</button>
         <button onclick="scrollToCell(3)">Boids</button>
         <button onclick="scrollToCell(4)">Texture Blending</button>
         <button onclick="scrollToCell(5)">DuDv Mapping</button>
 
         <div id="container" class="container">
             <div id="smartCell0" class="smartCell active">
+                <h3>Cook Torrance BRDF/PBR </h3>
+                <p>
+                    A BRDF Model, or Bidirectional Reflective Distribution Function Model, is a manner in which to perform lighting computations such that the lighting looks more realistic than the standard Blinn-Phong model. It does so by performing more complex lighting calculations, based off of the Fresnel reflectance model, Lambert diffuse light model, as well as the Trowbridge Reitz normal distribution function. This model is considered an example PBR (physically based rendering), as the computations done are more realistic and similar to real life. This model is used as the shader for the tree on the main island.
+                </p>
             </div>
             <div id="smartCell1" class="smartCell">
+                <h3> Shadow Mapping </h3>
                 <p>
+                    We used two render passes in order to create and render shadows. The first render pass was used to create a depth map from the light's perspective, and the second render pass sampled from the texture created from the first render pass, using it to determine whether the current pixel being shaded would be in shade or not.
                 </p>
             </div>
             <div id="smartCell2" class="smartCell">
+                <h3> Mirage Shader </h3>
                 <p>
+                    Our mirage shader modifies values in the vertex shader in order to give the appearance that islands further away are moving, in the same manner that far away objects appear on especially hot days. This creates a mirage effect, adding additional visual interest to the scene. 
                 </p>
             </div>
             <div id="smartCell3" class="smartCell">
@@ -149,6 +157,9 @@
         <h2>References</h2>
         <p id="cite1">[1] J. Huynh, "Separating Axis Theorem for Oriented Bounding Boxes." Available: <a href="https://www.jkh.me/files/tutorials/Separating%20Axis%20Theorem%20for%20Oriented%20Bounding%20Boxes.pdf">https://www.jkh.me/files/tutorials/Separating%20Axis%20Theorem%20for%20Oriented%20Bounding%20Boxes.pdf</a>.</p>
         <p id="cite1">[2] C. Parker, "Boids Pseudocode" Available: <a href="http://www.kfish.org/boids/pseudocode.html">http://www.kfish.org/boids/pseudocode.html</a>.</p>
+        <p id="cite1">[3] Graphics Compendium, "Chapter 71: Cook-Torrance" Available: <a href="https://graphicscompendium.com/references/cook-torrance">https://graphicscompendium.com/references/cook-torrance</a>.</p>
+        <p id="cite1">[4] V. Gordan, "Computer Graphics Tutorial - PBR (Physically Based Rendering)" Available: <a href="https://www.youtube.com/watch?v=RRE-F57fbXw&pp=ygUacGh5c2ljYWxseSBiYXNlZCByZW5kZXJpbmc%3D">https://www.youtube.com/watch?v=RRE-F57fbXw&pp=ygUacGh5c2ljYWxseSBiYXNlZCByZW5kZXJpbmc%3D</a>.</p>
+
     </section>
     <script src="scripts.js"></script>
 </body>
