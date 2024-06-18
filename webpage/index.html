@@ -171,8 +171,9 @@
             <div id="smartCell5" class="smartCell">
                 <h3>DuDv Mapping</h3>
                 <p>
-                    DuDv maps are a kind of normal map that specifies distortions to apply to surface normals. We scroll-sample a DuDv map when shading 
-                    the water to alter surface normals for the fragment shader and achieve a rippling effect without distorting the mesh's geometry.
+                    DuDv maps are a kind of normal map that specifies distortions to apply to surface normals. We give our water a rippling effect by taking 
+                    scrolling samples of a DuDv map in the fragment shader and using it to calculate new normals for Blinn-Phong reflection without actually 
+                    distorting the mesh's geometry.
                 </p>
             </div>
             <div id="smartCell6" class="smartCell">
