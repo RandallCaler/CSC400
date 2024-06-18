@@ -79,11 +79,6 @@ footer {
     border-top: 2px solid #000;
 }
 
-#game-preview video {
-    margin: 0px; /* Add desired margin between videos */
-}
-
-
 .container {
     position: relative; /* Ensure the container is relative */
     display: flex;
