@@ -82,7 +82,7 @@
             We implement two forms of collision: heightmap collision and oriented bounding box collision. Having generated the world mesh from a heightmap, 
             we can also detect collisions with it by sampling that heightmap. We recreate the polygon for a given player position and find the y-axis position 
             corresponding to the xz-coordinate position of the player on that polygon. This value is used to simulate smooth movement over the heightmap.
-            <br>
+            <br></br>
             Our team initially explored axis-aligned bounding boxes (AABB) for collision with objects in the world. As our design resolved toward a world with 
             many climbable surfaces created in the level editor, we determined that AABB did not meet all our needs. On the foundations of Johnny Huynh's 
             tutorial-oriented "Separating Axis Theorem for Oriented Bounding Boxes", we learned how to detect whether two bounding boxes of any size or 
