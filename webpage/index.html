@@ -111,6 +111,8 @@
         <button onclick="scrollToCell(3)">Boids</button>
         <button onclick="scrollToCell(4)">Texture Blending</button>
         <button onclick="scrollToCell(5)">DuDv Mapping</button>
+        <button onclick="scrollToCell(6)">Virtual Camera</button>
+        <button onclick="scrollToCell(7)">View Frustum Culling</button>
 
         <div id="container" class="container">
             <div id="smartCell0" class="smartCell active">
@@ -157,7 +159,26 @@
             <div id="smartCell5" class="smartCell">
                 <h3>DuDv Mapping</h3>
                 <p>
-                    DuDv maps are a kind of normal map that specifies distortions to apply to surface normals. We scroll-sample a DuDv map when shading the water to alter surface normals for the fragment shader and achieve a rippling effect without distorting the mesh's geometry.
+                    DuDv maps are a kind of normal map that specifies distortions to apply to surface normals. We scroll-sample a DuDv map when shading 
+                    the water to alter surface normals for the fragment shader and achieve a rippling effect without distorting the mesh's geometry.
+                </p>
+            </div>
+            <div id="smartCell6" class="smartCell">
+                <h3>Virtual Camera</h3>
+                <p>
+                    Our virtual camera has two primary modes of operation: one for gameplay and one for navigating the level editor. The former gives the 
+                    player no direct control over the virtual camera's movement. Rather, Pen the Penguin's position and orientation determine where the 
+                    camera is placed. Typically the camera takes a position behind and slightly above Pen. If this would place it below the ground mesh, 
+                    it is moved further up and rotates down to keep Pen in sight.
+                    <br></br>
+                    The level editor uses a freecam which follows the movement of the cursor for orientation and takes WASD+Space+Ctrl inputs for movement.
+                </p>
+            </div>
+            <div id="smartCell7" class="smartCell">
+                <h3>DuDv Mapping</h3>
+                <p>
+                    When in game mode, the view frustum for each frame is calculated near the beginning of the rendering process and objects entirely 
+                    outside the frustum are culled individually, reducing the number of draw calls made to the GPU.
                 </p>
             </div>
         </div>
