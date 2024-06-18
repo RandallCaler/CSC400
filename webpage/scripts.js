@@ -1,11 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     let currentSection = 0; // Track the current section
+    let isScrolling = 0;
 
     // Display the first section by default
     showSection(currentSection);
 
     window.scrollToCell = function(targetSection) {
-        if (targetSection === currentSection) return; // Prevent unnecessary animations
+        if (targetSection === currentSection || isScrolling == 1) return; // Prevent unnecessary animations
+
+        isScrolling = 1;
 
         const currentSectionEl = document.getElementById(`smartCell${currentSection}`);
         const targetSectionEl = document.getElementById(`smartCell${targetSection}`);
@@ -25,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentSectionEl.classList.remove('active', `${direction}-scroll-exit`);
             targetSectionEl.classList.remove(`${direction}-scroll-enter`);
             currentSection = targetSection; // Update current section
+            isScrolling = 0;
         }, 1000); // Match the animation duration
     };
 
