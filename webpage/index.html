@@ -16,9 +16,10 @@
     </header>
 
     <nav style="padding: 10px;">
-        <a href="#section8" onclick="flashSection('section8')">Intro</a>
+        <a href="#section8" onclick="flashSection('section8')">Introduction</a>
         <a href="#section4" onclick="flashSection('section4')">Development</a>
         <a href="#game-preview" onclick="flashSection('game-preview')">Overview</a>
+        <a href="#game-controls" onclick="flashSection('game-controls')">Controls</a>
         <a href="#section0" onclick="flashSection('section0')">Level Editor</a>
         <a href="#section1" onclick="flashSection('section1')">Animation</a>
         <a href="#section2" onclick="flashSection('section2')">Sound Manager</a>
@@ -43,7 +44,7 @@
             As such, making a small video game seemed appropriate and gave us the opportunity to be creative in its development. We began with starting the level editor, spearheaded by Hugh, Will, and Josh, and player controller
             which was overlooked by Nidhi, Claire, and Randall, as the basis components for our game. The team settled on a 3D platformer as we felt that could merge various technologies easily while allowing us to use simple but effective game design.
             We envisioned 3D movement in a fully modeled world plane and thus, it was critical to have the player controls feel intuitive. Further into development, we began the bigger tasks
-            of collision, animation and sound, all while working on graphics technologies as well. Randall and Hugh focused, and fought with, the collisions, using bounding boxes for the geometry and interactions with the height map. 
+            of collision, animation and sound, all while working on graphics technologies as well. Randall and Hugh focused, and fought with, the collisions, using bounding boxes for the geometry and interactions with the height map.
             Will and Billy oversaw the modeling and animations for the titular penguin and for the collectables. Srini, Nidhi, Randall worked on the deisgn of the map, including the layout of the map and general platforming sections.
             Claire and Josh worked on other technologies for the game. Claire overseeing audio and Josh working on the game manager that added a HUD and collectables counter to the game.
             Ultimately the product came out remarkably well, with everything living up to what we had envisioned.
@@ -76,6 +77,45 @@
 
     </section>
 
+    <section id="game-controls">
+        <h2>Controls</h2>
+        <p>
+            <h3>BASIC MOTION:</h3>
+            <ul>
+                <li>W: holding down this key moves the player forward</li>
+                <li>A: holding down this key moves the player to the left</li>
+                <li>S: holding down this key moves the player backward</li>
+                <li>D: holding down this key moves the player to the right</li>
+            </ul>
+
+            <h3>IN-AIR MOTION:</h3>
+            <ul>
+                <li>SPACE: makes the player jump</li>
+                <li>LEFT SHIFT: hold down left shift while in the air to glide</li>
+            </ul>
+
+            <h3>MOUSE CONTROLS:</h3>
+            <ul>
+                <li>
+                    Using the touchpad or a mouse, move left and right to change the direction
+                    that the player is moving
+                </li>
+                <li>
+                    RIGHT CLICK: enables/disables the cursor
+                </li>
+            </ul>
+
+            <h3>SPECIAL:</h3>
+            <ul>
+                <li>P: enables/disables the geometry view of the level (special view of the moving geometry for our mirage effect!)</li>
+                <li>L: enables the level editor</li>
+                <li>V: if you press V while in the level editor, you can save any changes you've made to the world</li>
+            </ul>
+
+
+        </p>
+    </section>
+
     <section id="section0">
         <h2>Level Editor</h2>
         <p>
@@ -102,7 +142,7 @@
 
         <p>
             For this project, the models were both created and animated in the open-source software Blender 3D. To keep the models both simple and
-            performance optimized, high-poly to low-poly baking was done in Substance Painter, where the models were also textured. The goal with 
+            performance optimized, high-poly to low-poly baking was done in Substance Painter, where the models were also textured. The goal with
             both the models and the animations was to add a playful tone to our game's world, and to make the player have fun with just the simple
             act of making the character move around on the screen. With just a simple set of animations we were able to bring Manchot to life just as we had
             originally envisioned.
@@ -124,9 +164,9 @@
         <h2>Sound Manager</h2>
         <p>
             For our project, we built a sound management system to track all in-game sound effects. To help implement this sound manager, we used the
-            Mini Audio sound library, an audio playback and capture library for C and C++. With Mini Audio we were able to better configure and manage 
+            Mini Audio sound library, an audio playback and capture library for C and C++. With Mini Audio we were able to better configure and manage
             multiple sound effects at once. This library also allowed us to better adapt our code for different operating systems. Our EventManager class works by polling for events and tracking the event history to ensure a seamless auditory
-            experience. This sound manager is responsible for the background music, collectible sound effects, and walking sounds that you 
+            experience. This sound manager is responsible for the background music, collectible sound effects, and walking sounds that you
             hear throughout Manchot's First Flight.
         </p>
     </section>
@@ -134,15 +174,15 @@
     <section id="section3">
         <h2>Collisions</h2>
         <p>
-            We implement two forms of collision: heightmap collision and oriented bounding box collision. Having generated the world mesh from a heightmap, 
-            we can also detect collisions with it by sampling that heightmap. We recreate the polygon for a given player position and find the y-axis position 
+            We implement two forms of collision: heightmap collision and oriented bounding box collision. Having generated the world mesh from a heightmap,
+            we can also detect collisions with it by sampling that heightmap. We recreate the polygon for a given player position and find the y-axis position
             corresponding to the xz-coordinate position of the player on that polygon. This value is used to simulate smooth movement over the heightmap.
             <br></br>
-            Our team initially explored axis-aligned bounding boxes (AABB) for collision with objects in the world. As our design resolved toward a world with 
-            many climbable surfaces created in the level editor, we determined that AABB did not meet all our needs. On the foundations of Johnny Huynh's 
-            tutorial-oriented "Separating Axis Theorem for Oriented Bounding Boxes", we learned how to detect whether two bounding boxes of any size or 
-            orientation are intersecting each other<sup><a href="#cite1" onclick="flashSection('cite1')">[1]</a></sup>. We expanded on this by developing code 
-            to identify which plane of a bounding box experienced a collision, logic flags to prompt different behavior when colliding with collectibles versus 
+            Our team initially explored axis-aligned bounding boxes (AABB) for collision with objects in the world. As our design resolved toward a world with
+            many climbable surfaces created in the level editor, we determined that AABB did not meet all our needs. On the foundations of Johnny Huynh's
+            tutorial-oriented "Separating Axis Theorem for Oriented Bounding Boxes", we learned how to detect whether two bounding boxes of any size or
+            orientation are intersecting each other<sup><a href="#cite1" onclick="flashSection('cite1')">[1]</a></sup>. We expanded on this by developing code
+            to identify which plane of a bounding box experienced a collision, logic flags to prompt different behavior when colliding with collectibles versus
             obstacles, and physics to redirect the player's motion in response to obstacle collisions.
         </p>
     </section>
@@ -174,7 +214,7 @@
             <div id="smartCell2" class="smartCell">
                 <h3> Mirage Shader </h3>
                 <p>
-                    Our mirage shader modifies values in the vertex shader in order to give the appearance that islands further away are moving, in the same manner that far away objects appear on especially hot days. This creates a mirage effect, adding additional visual interest to the scene. 
+                    Our mirage shader modifies values in the vertex shader in order to give the appearance that islands further away are moving, in the same manner that far away objects appear on especially hot days. This creates a mirage effect, adding additional visual interest to the scene.
                 </p>
             </div>
             <div id="smartCell3" class="smartCell">
@@ -203,17 +243,17 @@
             <div id="smartCell5" class="smartCell">
                 <h3>DuDv Mapping</h3>
                 <p>
-                    DuDv maps are a kind of normal map that specifies distortions to apply to surface normals. We give our water a rippling effect by taking 
-                    scrolling samples of a DuDv map in the fragment shader and using it to calculate new normals for Blinn-Phong reflection without actually 
+                    DuDv maps are a kind of normal map that specifies distortions to apply to surface normals. We give our water a rippling effect by taking
+                    scrolling samples of a DuDv map in the fragment shader and using it to calculate new normals for Blinn-Phong reflection without actually
                     distorting the mesh's geometry.
                 </p>
             </div>
             <div id="smartCell6" class="smartCell">
                 <h3>Virtual Camera</h3>
                 <p>
-                    Our virtual camera has two primary modes of operation: one for gameplay and one for navigating the level editor. The former gives the 
-                    player no direct control over the virtual camera's movement. Rather, Pen the Penguin's position and orientation determine where the 
-                    camera is placed. Typically the camera takes a position behind and slightly above Pen. If this would place it below the ground mesh, 
+                    Our virtual camera has two primary modes of operation: one for gameplay and one for navigating the level editor. The former gives the
+                    player no direct control over the virtual camera's movement. Rather, Pen the Penguin's position and orientation determine where the
+                    camera is placed. Typically the camera takes a position behind and slightly above Pen. If this would place it below the ground mesh,
                     it is moved further up and rotates down to keep Pen in sight.
                     <br></br>
                     The level editor uses a freecam which follows the movement of the cursor for orientation and takes WASD+Space+Ctrl inputs for movement.
@@ -222,7 +262,7 @@
             <div id="smartCell7" class="smartCell">
                 <h3>View Frustum Culling</h3>
                 <p>
-                    When in game mode, the view frustum for each frame is calculated near the beginning of the rendering process and objects entirely 
+                    When in game mode, the view frustum for each frame is calculated near the beginning of the rendering process and objects entirely
                     outside the frustum are culled individually, reducing the number of draw calls made to the GPU.
                 </p>
             </div>
