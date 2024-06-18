@@ -19,10 +19,11 @@
         <a href="#section0" onclick="flashSection('section0')">Level Editor</a>
         <a href="#section1" onclick="flashSection('section1')">Animation</a>
         <a href="#section2" onclick="flashSection('section2')">Sound Manager</a>
-        <a href="#section3" onclick="flashSection('section3')">Development</a>
-        <a href="#section4" onclick="flashSection('section4')">Graphics Technologies</a>
-        <a href="#section5" onclick="flashSection('section5')">Team Members</a>
-        <a href="#section6" onclick="flashSection('section6')">References</a>
+        <a href="#section2" onclick="flashSection('section3')">Collisions</a>
+        <a href="#section3" onclick="flashSection('section4')">Development</a>
+        <a href="#section4" onclick="flashSection('section5')">Graphics Technologies</a>
+        <a href="#section5" onclick="flashSection('section6')">Team Members</a>
+        <a href="#section6" onclick="flashSection('section7')">References</a>
     </nav>
 
     <section id="section0">
@@ -76,6 +77,15 @@
     </section>
 
     <section id="section3">
+        <h2>Collisions</h2>
+        <p>
+            We implement two forms of collision: heightmap collision and oriented bounding box collision. Having generated the world mesh from a heightmap, we can also detect collisions with it by sampling that heightmap. We recreate the polygon for a given player position and find the y-axis position corresponding to the xz-coordinate position of the player on that polygon. This value is used to simulate smooth movement over the heightmap.
+            
+            Our team initially explored axis-aligned bounding boxes (AABB) for collision with objects in the world. As our design resolved toward a world with many climbable surfaces created in the level editor, we determined that AABB did not meet all our needs. On the foundations of Johnny Huynh's tutorial-oriented "Separating Axis Theorem for Oriented Bounding Boxes", we learned how to detect whether two bounding boxes of any size or orientation are intersecting each other<sup><a href="#cite1" onclick="flashSection('cite1')">[1]</a></sup>. We expanded on this by developing code to identify which plane of a bounding box experienced a collision, logic flags to prompt different behavior when colliding with collectibles versus obstacles, and physics to redirect the player's motion in response to obstacle collisions.
+        </p>
+    </section>
+
+    <section id="section4">
         <h2>Development</h2>
         <p>
             When brainstorming the project, we wanted to make an interactive product that was fun and enjoyable while utilizing various technologies and graphics components
@@ -86,7 +96,7 @@
         </p>
     </section>
 
-    <section id="section4" height="100">
+    <section id="section5" height="100">
         <h2>Graphics Technologies</h2>
         <button onclick="scrollToCell(0)">Cook Torrance BRDF/PBR</button>
         <button onclick="scrollToCell(1)">Shadow Mapping</button>
@@ -146,19 +156,19 @@
         </div>
     </section>
 
-    <section id="section5">
+    <section id="section6">
         <h2>Team Members</h2>
         <p>
             Randall Caler, Srinivas Sundararaman, Hugh Garmany, Will Kang, Josh Levin, Claire Ogawa, Nidhi Raviprasad, Billy Woodward
         </p>
     </section>
 
-    <section id="section6">
+    <section id="section7">
         <h2>References</h2>
         <p id="cite1">[1] J. Huynh, "Separating Axis Theorem for Oriented Bounding Boxes." Available: <a href="https://www.jkh.me/files/tutorials/Separating%20Axis%20Theorem%20for%20Oriented%20Bounding%20Boxes.pdf">https://www.jkh.me/files/tutorials/Separating%20Axis%20Theorem%20for%20Oriented%20Bounding%20Boxes.pdf</a>.</p>
-        <p id="cite1">[2] C. Parker, "Boids Pseudocode" Available: <a href="http://www.kfish.org/boids/pseudocode.html">http://www.kfish.org/boids/pseudocode.html</a>.</p>
-        <p id="cite1">[3] Graphics Compendium, "Chapter 71: Cook-Torrance" Available: <a href="https://graphicscompendium.com/references/cook-torrance">https://graphicscompendium.com/references/cook-torrance</a>.</p>
-        <p id="cite1">[4] V. Gordan, "Computer Graphics Tutorial - PBR (Physically Based Rendering)" Available: <a href="https://www.youtube.com/watch?v=RRE-F57fbXw&pp=ygUacGh5c2ljYWxseSBiYXNlZCByZW5kZXJpbmc%3D">https://www.youtube.com/watch?v=RRE-F57fbXw&pp=ygUacGh5c2ljYWxseSBiYXNlZCByZW5kZXJpbmc%3D</a>.</p>
+        <p id="cite2">[2] C. Parker, "Boids Pseudocode" Available: <a href="http://www.kfish.org/boids/pseudocode.html">http://www.kfish.org/boids/pseudocode.html</a>.</p>
+        <p id="cite3">[3] Graphics Compendium, "Chapter 71: Cook-Torrance" Available: <a href="https://graphicscompendium.com/references/cook-torrance">https://graphicscompendium.com/references/cook-torrance</a>.</p>
+        <p id="cite4">[4] V. Gordan, "Computer Graphics Tutorial - PBR (Physically Based Rendering)" Available: <a href="https://www.youtube.com/watch?v=RRE-F57fbXw&pp=ygUacGh5c2ljYWxseSBiYXNlZCByZW5kZXJpbmc%3D">https://www.youtube.com/watch?v=RRE-F57fbXw&pp=ygUacGh5c2ljYWxseSBiYXNlZCByZW5kZXJpbmc%3D</a>.</p>
 
     </section>
     <script src="scripts.js"></script>
